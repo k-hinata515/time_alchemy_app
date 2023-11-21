@@ -8,7 +8,7 @@ class Start extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaあああ
         );
   }
 }
