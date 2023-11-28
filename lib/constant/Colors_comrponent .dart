@@ -1,5 +1,5 @@
 class Colors_compornet {
    //test
 
-   //add
+   //adds
 }
