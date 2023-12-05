@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -6,16 +8,18 @@ import 'package:time_alchemy_app/firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-// ios
-  // ここでFirebaseの初期化を行う前に、既存のFirebase Appが存在しないことを確認する
-  if (Firebase.apps.isEmpty) {
-    await Firebase.initializeApp();
-  }
-
-// android
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
+  // if (Platform.isIOS) {
+  //   // ios
+  //   // ここでFirebaseの初期化を行う前に、既存のFirebase Appが存在しないことを確認する
+  //   if (Firebase.apps.isEmpty) {
+  //     await Firebase.initializeApp();
+  //   }
+  // } else if (Platform.isAndroid) {
+  // android
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  // }
 
   runApp(MyApp());
 }
