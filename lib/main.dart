@@ -1,7 +1,27 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'package:firebase_core/firebase_core.dart';
+import 'package:time_alchemy_app/firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // if (Platform.isIOS) {
+  //   // ios
+  //   // ここでFirebaseの初期化を行う前に、既存のFirebase Appが存在しないことを確認する
+  //   if (Firebase.apps.isEmpty) {
+  //     await Firebase.initializeApp();
+  //   }
+  // } else if (Platform.isAndroid) {
+  // android
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  // }
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
