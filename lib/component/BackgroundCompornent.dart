@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
-import 'package:time_alchemy_app/screen_pod.dart';
+import 'package:time_alchemy_app/constant/screen_pod.dart';
 
 class BackgroundWidget extends StatelessWidget {
   @override
