@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 
 // 背景茶色の時のappber
-class AppBarWhiteTextCompornent extends StatelessWidget {
+class AppBarWhiteTextCompornent extends StatelessWidget
+    implements PreferredSizeWidget {
   final String title; //Appbarテキスト
   final String rightText;
   final GestureTapCallback onPressedLeft; //画面遷移したい画面のタグ
@@ -10,14 +11,17 @@ class AppBarWhiteTextCompornent extends StatelessWidget {
   final bool showLeftIcon; // テキストとアイコンを表示するかどうかのフラグ
   final bool showRightText;
 
-  const AppBarWhiteTextCompornent({
+  @override
+  final Size preferredSize;
+
+  AppBarWhiteTextCompornent({
     required this.title,
     required this.rightText,
     required this.onPressedLeft,
     required this.onPressedRight,
     this.showLeftIcon = true, // デフォルトは表示
     this.showRightText = true,
-  });
+  }) : preferredSize = Size.fromHeight(kToolbarHeight + 5); // AppBarの高さを指定
 
   Widget build(BuildContext context) {
     return AppBar(
@@ -74,7 +78,8 @@ class AppBarWhiteTextCompornent extends StatelessWidget {
 }
 
 // 背景白色の時のappber(左backIcon)
-class AppBarBrackIconCompornent extends StatelessWidget {
+class AppBarBrackIconCompornent extends StatelessWidget
+    implements PreferredSizeWidget {
   final String title; //Appbarテキスト
   final String rightText; // 右テキスト
   final GestureTapCallback onPressedLeft; //画面遷移したい画面のタグ
@@ -82,14 +87,17 @@ class AppBarBrackIconCompornent extends StatelessWidget {
   final bool showLeftIcon; // テキストとアイコンを表示するかどうかのフラグ
   final bool showRightText;
 
-  const AppBarBrackIconCompornent({
+  @override
+  final Size preferredSize;
+
+  AppBarBrackIconCompornent({
     required this.title,
     required this.rightText,
     required this.onPressedLeft,
     required this.onPressedRight,
     this.showLeftIcon = true, // デフォルトは表示
     this.showRightText = true,
-  });
+  }) : preferredSize = Size.fromHeight(kToolbarHeight + 5); // AppBarの高さを指定
 
   Widget build(BuildContext context) {
     return AppBar(
