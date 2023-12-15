@@ -1,11 +1,34 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-void main() {
-  runApp(const MyApp());
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:time_alchemy_app/component/ButtonCompornent.dart';
+import 'package:time_alchemy_app/component/textformfield.dart';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:time_alchemy_app/firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // if (Platform.isIOS) {
+  //   // ios
+  //   // ここでFirebaseの初期化を行う前に、既存のFirebase Appが存在しないことを確認する
+  //   if (Firebase.apps.isEmpty) {
+  //     await Firebase.initializeApp();
+  //   }
+  // } else if (Platform.isAndroid) {
+  // android
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  // }
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+   MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -31,6 +54,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  // _MyHomePageState{Key?key;}): super(key: key);
   int _counter = 0;
 
   void _incrementCounter() {
@@ -46,7 +70,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-  
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -59,12 +82,19 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+           ChoiceButtonRed(
+            height: 100,
+            width: 15,
+            text: '次へ',
+            onPressed : (){
+              context.push('/second');
+            }
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            MyTextFormField(
+              inputText: 'aaaaa',
+              hintText: '名前を入力してください',
+              height: 40,
+              width: 150,
             ),
           ],
         ),

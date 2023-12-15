@@ -9,3 +9,4 @@ class Colors_compornet {
   static const textfontColorWhite = Color(0xFFFCFBFF);
   static const borderColorGray = Color(0xFFD4C9C9);
 }
+

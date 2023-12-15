@@ -1,23 +1,62 @@
 import 'package:flutter/material.dart';
-
-class ChoiceButton extends StatelessWidget{
+import 'package:time_alchemy_app/constant/screen_pod.dart';
+class ChoiceButtonRed extends StatelessWidget{
   final String text;    //ボタンのテキスト
   final GestureTapCallback onPressed; //画面遷移したい画面のタグ
-  const ChoiceButton({required this.text,required this.onPressed});
+  final double height;
+  final double width;
+  ChoiceButtonRed({required this.text,required this.onPressed ,required this.height ,required this.width , });
 
-    Widget build(BuildContext context){
-      double screenWidth = MediaQuery.of(context).size.width;  //画面サイズ（横幅） 
-      double screenHeight = MediaQuery.of(context).size.height; //画面サイズ（縦幅)
-    return OutlinedButton(
-      child: Text(text),
-      onPressed: onPressed,
-      style: OutlinedButton.styleFrom(
-        shape: const StadiumBorder(),
-        fixedSize: Size(
-          screenWidth*1.33,
-          screenHeight*0.45,
+    @override
+      Widget build(BuildContext context){
+        final screen = ScreenRef(context).watch(screenProvider);
+        return ElevatedButton(
+          onPressed:onPressed,
+          child: Text(
+            text,
+            style: TextStyle(
+              color: Color.fromRGBO(252, 251, 255, 1,),
+            ),
+            ),
+          style: ElevatedButton.styleFrom(
+            elevation:20,
+            fixedSize: Size(screen.designH(height),screen.designW(width)), 
+            backgroundColor: Color.fromRGBO(126, 70, 62, 1),
+            shape: RoundedRectangleBorder(
+              borderRadius:  BorderRadius.circular(15),
+            ),
           ),
-      )
-      );
-    } 
+        );
+      } 
 }
+
+class ChoiceButtonWhite extends StatelessWidget{
+    final String text;    //ボタンのテキスト
+  final GestureTapCallback onPressed; //画面遷移したい画面のタグ
+  final double height;
+  final double width;
+  ChoiceButtonWhite({required this.text,required this.onPressed ,required this.height ,required this.width , });
+
+    @override
+      Widget build(BuildContext context){
+        final screen = ScreenRef(context).watch(screenProvider);
+        return ElevatedButton(
+          onPressed:onPressed,
+          child: Text(
+            text,
+            style: TextStyle(
+              color: Color.fromRGBO(51, 51, 51, 1),
+            ),
+            ),
+          style: ElevatedButton.styleFrom(
+            elevation:20,
+            fixedSize: Size(screen.designH(height),screen.designW(width)), 
+            backgroundColor: Color.fromRGBO(252, 251, 255, 1,),
+            shape: RoundedRectangleBorder(
+              borderRadius:  BorderRadius.circular(15),
+            ),
+          ),
+        );
+      } 
+}
+
