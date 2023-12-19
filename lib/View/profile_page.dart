@@ -34,6 +34,7 @@ class ProfileEditPage extends StatelessWidget {
       body: Stack(
         children: [
           AppBackground(),
+          hobbyElements(),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -84,7 +85,7 @@ class ProfileEditPage extends StatelessWidget {
   }
 }
 
-// 背景の茶色丸
+//茶色背景
 class AppBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -101,9 +102,68 @@ class AppBackground extends StatelessWidget {
               height: height + 70,
               width: width + 70,
               decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color:
-                      Colors_compornet.globalBackgroundColorRed.withOpacity(1)),
+                shape: BoxShape.circle,
+                color: Colors_compornet.globalBackgroundColorRed.withOpacity(1),
+              ),
+            ),
+          ),
+        ],
+      );
+    });
+  }
+}
+
+//趣味表示
+class hobbyElements extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final textContents = ["ゲーム", "太鼓の達人", "パソコン"];
+
+    // 各要素の前に「・」を追加
+    final formattedContents = textContents.map((text) => '・ $text').toList();
+
+    return LayoutBuilder(builder: (context, constraint) {
+      return Column(
+        children: [
+          SizedBox(height: 380),
+          Text(
+            '趣味',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors_compornet.globalBackgroundColorRed,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: Container(
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors_compornet.globalBackgroundColorRed,
+                  width: 2.0,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (int i = 0; i < textContents.length; i++)
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        formattedContents[i],
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors_compornet.globalBackgroundColorRed,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         ],
