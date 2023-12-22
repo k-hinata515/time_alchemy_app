@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:time_alchemy_app/View/profile_edit_page.dart';
 
 class Colors_compornet {
   static const globalBackgroundColorRed = Color(0xFF7E463E); //赤色
@@ -8,5 +9,5 @@ class Colors_compornet {
   static const textfontColorBlack = Color(0xFf333333);
   static const textfontColorWhite = Color(0xFFFCFBFF);
   static const borderColorGray = Color(0xFFD4C9C9);
+  static const hobbyDisplayWhite = Color(0xFFFAF9F4);
 }
-
