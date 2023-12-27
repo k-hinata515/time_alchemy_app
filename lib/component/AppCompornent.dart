@@ -107,7 +107,7 @@ class AppBarBrackIconCompornent extends StatelessWidget
           ? IconButton(
               // 戻るアイコン
               icon: const Icon(Icons.arrow_back_ios_new),
-              color: Colors_compornet.globalBackgroundColorwhite,
+              color: Colors_compornet.globalBackgroundColorRed,
               onPressed: onPressedLeft,
             )
           : null, // アイコン非表示
@@ -120,7 +120,7 @@ class AppBarBrackIconCompornent extends StatelessWidget
               fontSize: 25,
               fontWeight: FontWeight.bold,
               letterSpacing: 1,
-              color: Colors.white,
+              color: Colors_compornet.textfontColorBlack,
             ),
           ),
           if (title.split('\n').length > 1)
@@ -130,7 +130,7 @@ class AppBarBrackIconCompornent extends StatelessWidget
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,
-                color: Colors.white,
+                color: Colors_compornet.textfontColorBlack,
               ),
             ),
         ],
@@ -142,7 +142,7 @@ class AppBarBrackIconCompornent extends StatelessWidget
                 child: Text(
                   rightText,
                   style: const TextStyle(
-                    color: Colors_compornet.globalBackgroundColorwhite,
+                    color: Colors_compornet.textfontColorBlack,
                     fontSize: 15,
                   ),
                 ),
@@ -150,7 +150,8 @@ class AppBarBrackIconCompornent extends StatelessWidget
             ]
           : null,
       shape: const Border(
-          bottom: BorderSide(color: Colors.orange, width: 1)), // 下にボーダー線
+          bottom: BorderSide(
+              color: Colors_compornet.borderColorGray, width: 1)), // 下にボーダー線
     );
   }
 }
