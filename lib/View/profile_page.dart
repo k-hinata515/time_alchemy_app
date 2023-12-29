@@ -34,7 +34,7 @@ class ProfileEditPage extends StatelessWidget {
       body: Stack(
         children: [
           AppBackground(),
-          hobbyElements(),
+          HobbyDisplay(),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -114,7 +114,7 @@ class AppBackground extends StatelessWidget {
 }
 
 //趣味表示
-class hobbyElements extends StatelessWidget {
+class HobbyDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textContents = ["ゲーム", "太鼓の達人", "パソコン"];
