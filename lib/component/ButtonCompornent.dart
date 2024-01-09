@@ -20,7 +20,7 @@ class ChoiceButtonRed extends StatelessWidget{
             ),
           style: ElevatedButton.styleFrom(
             elevation:20,
-            fixedSize: Size(screen.designW(width),screen.designH(height)), 
+            fixedSize: Size(screen.designH(height),screen.designW(width)), 
             backgroundColor: Color.fromRGBO(126, 70, 62, 1),
             shape: RoundedRectangleBorder(
               borderRadius:  BorderRadius.circular(40),
