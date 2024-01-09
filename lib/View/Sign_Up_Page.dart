@@ -42,6 +42,7 @@ class _Sign_Up_Page extends State<Sign_Up_Page>{
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);  //screenpodの処理
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors_compornet.globalBackgroundColorRed,
       appBar: AppBarWhiteTextCompornent(
         title: '新規登録',
