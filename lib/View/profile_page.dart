@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
+import 'package:time_alchemy_app/constant/screen_pod.dart';
 import 'package:time_alchemy_app/screen_pod.dart';
 
 void main() => runApp(
