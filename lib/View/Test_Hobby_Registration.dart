@@ -10,11 +10,11 @@ import 'package:time_alchemy_app/constant/screen_pod.dart';
 void main() => runApp(
   DevicePreview(
     enabled: !kReleaseMode,
-    builder: (context) => Hobby_Registration(), // Wrap your app
+    builder: (context) => Test(), // Wrap your app
   ),
 );
-class Hobby_Registration  extends StatelessWidget {
-   Hobby_Registration({Key? key}) : super(key: key);
+class Test extends StatelessWidget {
+   Test({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,18 +25,18 @@ class Hobby_Registration  extends StatelessWidget {
       builder: DevicePreview.appBuilder,
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
-      home: SelectedHobby(),
+      home: TestPage(),
     );
   }
 }
 
-class SelectedHobby extends StatefulWidget {
-   SelectedHobby({Key? key}) : super(key: key);
+class TestPage extends StatefulWidget {
+   TestPage({Key? key}) : super(key: key);
 
   @override
-  State<SelectedHobby> createState() => _SelectedHobby();
+  State<TestPage> createState() => _TestPageState();
 }
-class _SelectedHobby extends State<SelectedHobby> {
+class _TestPageState extends State<TestPage> {
   final List<String> tag = [
     //
     'ビール',
@@ -103,7 +103,6 @@ class _SelectedHobby extends State<SelectedHobby> {
         rightText: '次へ',
         onPressedLeft: () => {},
         onPressedRight: () => {},
-        showLeftIcon: false,
       ),
       body: Stack(
         children: [
