@@ -103,7 +103,7 @@ class _SelectedHobby extends State<SelectedHobby> {
         rightText: '次へ',
         onPressedLeft: () => {},
         onPressedRight: () => {},
-        showLeftIcon: false,
+        showRightText: false,
       ),
       body: Stack(
         children: [
