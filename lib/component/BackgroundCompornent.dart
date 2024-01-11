@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
@@ -7,28 +9,34 @@ class BackgroundWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
     return Container(
-      // 背景の茶色の色を指定
       color: Colors_compornet.globalBackgroundColorRed,
       child: Stack(
         children: [
           Positioned(
-            top: screen.designH(-150), // 画像の位置を調整
-            left: screen.designW(25),
+            top: screen.designH(-250),
+            left: screen.designW(55),
             child: Image.asset(
               'assets/logo_images/BackgroundTimeImage.png',
-              width: screen.designH(570), // 画像のサイズを調整
+              width: screen.designH(570),
               height: screen.designW(513),
               fit: BoxFit.cover,
             ),
           ),
           Positioned(
-            bottom: screen.designH(0), // 画像の位置を調整
+            top: screen.designH(70),
+            bottom: screen.designH(0),
             left: screen.designW(0),
-            child: Image.asset(
-              'assets/logo_images/Background.png',
-              width: screen.designH(393), // 画像のサイズを調整
-              height: screen.designW(716),
-              fit: BoxFit.cover,
+            right: screen.designW(0),
+            child: Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors_compornet.globalBackgroundColorwhite,
+                borderRadius: BorderRadius.only(
+                   topLeft: Radius.circular(45),
+                  topRight: Radius.circular(45),
+                ),
+              ),
             ),
           ),
         ],
@@ -36,3 +44,4 @@ class BackgroundWidget extends StatelessWidget {
     );
   }
 }
+
