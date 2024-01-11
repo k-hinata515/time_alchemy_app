@@ -1,11 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:time_alchemy_app/component/ButtonCompornent.dart';
-import 'package:time_alchemy_app/component/textformfield.dart';
-
 import 'package:firebase_core/firebase_core.dart';
+import 'package:time_alchemy_app/View/Login.dart';
+import 'package:time_alchemy_app/View/Sign_Up_Page.dart';
+import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
+import 'package:time_alchemy_app/constant/screen_pod.dart';
 import 'package:time_alchemy_app/firebase_options.dart';
 
 void main() async {
@@ -24,86 +22,98 @@ void main() async {
   );
   // }
 
-  runApp(MyApp());
+  runApp(StartPage());
 }
 
-class MyApp extends StatelessWidget {
-   MyApp({super.key});
-
-  // This widget is the root of your application.
+class StartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-      
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: _StartPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  // _MyHomePageState{Key?key;}): super(key: key);
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
+class _StartPage extends StatelessWidget {
+  _StartPage({super.key});
   @override
   Widget build(BuildContext context) {
+    final screen = ScreenRef(context).watch(screenProvider);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-           ChoiceButtonRed(
-            height: 100,
-            width: 15,
-            text: '次へ',
-            onPressed : (){
-              context.push('/second');
-            }
-            ),
-            MyTextFormField(
-              inputText: 'aaaaa',
-              hintText: '名前を入力してください',
-              height: 40,
-              width: 150,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+        backgroundColor: Colors_compornet.globalBackgroundColorwhite,
+        body: Container(
+          alignment: Alignment.bottomCenter,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(height: screen.designH(140)),
+              const Text(
+                'TimeAlchemyへようこそ！',
+                style: TextStyle(
+                  color: Colors_compornet.globalBackgroundColorRed,
+                  fontSize: 30,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Image.asset('assets/logo_images/TimeAlchemy_logo.png'),
+              // SizedBox(height: screen.designH(130)), // テキストとボタンの間に余白を追加
+              Container(
+                margin: const EdgeInsets.only(
+                  top: 0,
+                  bottom: 10,
+                ),
+                child: TextButton(
+                  child: Text('ログイン'),
+                  style: TextButton.styleFrom(
+                    textStyle: TextStyle(
+                      fontSize: 27,
+                    ),
+                    backgroundColor: Colors_compornet.globalBackgroundColorRed,
+                    foregroundColor:
+                        Colors_compornet.globalBackgroundColorwhite,
+                    minimumSize: Size(
+                      screen.designH(315),
+                      screen.designW(62),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()),
+                    );
+                  },
+                ),
+              ),
+              Container(
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(
+                      fontSize: 27,
+                    ),
+                    foregroundColor: Colors_compornet.globalBackgroundColorRed,
+                    side: const BorderSide(
+                      color: Colors_compornet.globalBackgroundColorRed,
+                      width: 1,
+                    ),
+                    minimumSize: Size(
+                      screen.designH(315),
+                      screen.designW(62),
+                    ),
+                  ),
+                  child: const Text('新規登録'),
+                  //ToDo
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Sign_Up_Page()),
+                    );
+                  },
+                ),
+              ),
+              // ChoiceButton(text: 'text', onPressed: () {})
+            ],
+          ),
+        ));
   }
 }
