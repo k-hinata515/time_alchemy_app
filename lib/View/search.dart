@@ -39,8 +39,11 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPage extends State<SearchPage> {
+  final TextEditingController _next_destinationController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+
+    String next_destination = '';
     final screen = ScreenRef(context).watch(screenProvider);
     return MaterialApp(
       home: Scaffold(
@@ -85,7 +88,12 @@ class _SearchPage extends State<SearchPage> {
                           MyTextFormField(
                             labelText: '次の予定の目的地', 
                             height: screen.designH(45), 
-                            width: screen.designW(200)
+                            width: screen.designW(200),
+                            onTextChanged: (text){
+                              setState(() {
+                                next_destination =text.trim();
+                              });
+                            }, controller:_next_destinationController, 
                           ),
                           SizedBox(height:screen.designH(16)),
                           TextDisplay(

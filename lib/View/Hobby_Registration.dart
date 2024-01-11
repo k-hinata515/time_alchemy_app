@@ -6,7 +6,6 @@ import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
 import 'package:time_alchemy_app/component/ButtonCompornent.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
-
 void main() => runApp(
   DevicePreview(
     enabled: !kReleaseMode,
@@ -103,7 +102,7 @@ class _SelectedHobby extends State<SelectedHobby> {
         rightText: '次へ',
         onPressedLeft: () => {},
         onPressedRight: () => {},
-        showRightText: false,
+        showRightText: false, //右の
       ),
       body: Stack(
         children: [
