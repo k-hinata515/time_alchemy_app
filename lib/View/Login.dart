@@ -44,12 +44,15 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPage extends State<LoginPage> {
+  
   final LoginBackend _loginBackend = LoginBackend();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    String email  ='';
+    String password ='';
     final screen = ScreenRef(context).watch(screenProvider); //screenpodの処理
 
     return Scaffold(
@@ -79,19 +82,34 @@ class _LoginPage extends State<LoginPage> {
                     height: 40,
                     width: 300,
                     labelText: 'ユーザーID、メールアドレス、電話番号 ',
+                    onTextChanged:(text){
+                      setState(() {
+                        email = text.trim();
+                      });
+                      
+                    }, controller: _emailController,
                   ),
                   SizedBox(
                     height: screen.designH(32),
                   ),
-                  MyTextFormField(labelText: 'パスワード', height: 40, width: 300),
+                  MyTextFormField(
+                    labelText: 'パスワード', 
+                    height: 40, 
+                    width: 300,
+                    onTextChanged: (text){
+                      setState(() {
+                        password = text.trim();
+                      });
+                    },
+                    controller: _passwordController,
+                    ),
                   SizedBox(
                     height: screen.designH(24),
                   ),
                   ChoiceButtonRed(
                       text: 'ログイン',
                       onPressed: () async {
-                        String email = _emailController.text.trim();
-                        String password = _passwordController.text.trim();
+                        
 
                         if (email.isNotEmpty && password.isNotEmpty) {
                           try {
