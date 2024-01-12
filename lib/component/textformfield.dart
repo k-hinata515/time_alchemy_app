@@ -8,8 +8,7 @@ class MyTextFormField extends StatelessWidget {
   final double height;
   final double width;
   final TextEditingController controller ;
-  final Function(String) onTextChanged;
-  MyTextFormField({required this.labelText, required this.height,required this.width, required this.onTextChanged, required this.controller, });
+  MyTextFormField({required this.labelText, required this.height,required this.width,  required this.controller, });
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +30,7 @@ class MyTextFormField extends StatelessWidget {
           width:screen.designW(width), // 横幅の変更
           child: TextFormField(
             controller: controller,
-            onChanged: (text){
-              onTextChanged(text);
-            },
+            
             decoration: InputDecoration(
               filled: true,
               fillColor: Colors_compornet.globalBackgroundColorwhite,
