@@ -79,28 +79,20 @@ class _LoginPage extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.start, //垂直方こうに中央寄せ
                 children: [
                   MyTextFormField(
+                    obscuretext: false,
                     height: 40,
                     width: 300,
                     labelText: 'ユーザーID、メールアドレス、電話番号 ',
-                    onTextChanged:(text){
-                      setState(() {
-                        email = text.trim();
-                      });
-                      
-                    }, controller: _emailController,
+                    controller: _emailController,
                   ),
                   SizedBox(
                     height: screen.designH(32),
                   ),
                   MyTextFormField(
+                    obscuretext: true,
                     labelText: 'パスワード', 
                     height: 40, 
                     width: 300,
-                    onTextChanged: (text){
-                      setState(() {
-                        password = text.trim();
-                      });
-                    },
                     controller: _passwordController,
                     ),
                   SizedBox(
@@ -109,7 +101,6 @@ class _LoginPage extends State<LoginPage> {
                   ChoiceButtonRed(
                       text: 'ログイン',
                       onPressed: () async {
-                        
 
                         if (email.isNotEmpty && password.isNotEmpty) {
                           try {

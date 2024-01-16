@@ -8,7 +8,8 @@ class MyTextFormField extends StatelessWidget {
   final double height;
   final double width;
   final TextEditingController controller ;
-  MyTextFormField({required this.labelText, required this.height,required this.width,  required this.controller, });
+  final bool obscuretext;
+  MyTextFormField({required this.labelText, required this.height,required this.width,  required this.controller, required this.obscuretext});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +31,7 @@ class MyTextFormField extends StatelessWidget {
           width:screen.designW(width), // 横幅の変更
           child: TextFormField(
             controller: controller,
-            
+            obscureText: obscuretext,
             decoration: InputDecoration(
               filled: true,
               fillColor: Colors_compornet.globalBackgroundColorwhite,
@@ -44,7 +45,6 @@ class MyTextFormField extends StatelessWidget {
               focusedBorder: OutlineInputBorder(
                 borderSide:  BorderSide(
                   color:  Colors_compornet.globalBackgroundColorRed, width: 2,
-                  
                 ),
                 borderRadius: BorderRadius.circular(40) 
               )
@@ -55,6 +55,37 @@ class MyTextFormField extends StatelessWidget {
       // ),
     );
   }
+}
+class SearchTextField extends StatelessWidget{
+  final String hintText;
+  final double height;
+  final double width;
+  final TextEditingController controller ;
+  SearchTextField({required this.hintText, required this.height,required this.width,  required this.controller,});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: height,
+      width: width,
+      child: TextField(
+        
+        controller: controller,
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.only(bottom: 8), //入力されたTextの位置の設定
+          fillColor: Colors_compornet.globalBackgroundColorwhite,
+          filled: true,
+          prefixIcon: Icon(
+            Icons.search,   //先頭のアイコン設定
+          ),
+          hintText: hintText, 
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+          )
+        ),
+      ),
+    );
+  }
+  
 }
 
 

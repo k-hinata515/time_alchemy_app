@@ -81,7 +81,7 @@ class _Registered_Content_Page extends State<Registered_Content_Page>{
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);  //screenpodの処理
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: false,  //キーボード表示時のオーバーフローを無くす
       backgroundColor:  Colors_compornet.globalBackgroundColorRed,
       appBar: AppBarWhiteTextCompornent(
         title: '登録内容の確認',

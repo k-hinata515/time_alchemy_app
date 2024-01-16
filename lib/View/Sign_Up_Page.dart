@@ -68,6 +68,7 @@ class _Sign_Up_Page extends State<Sign_Up_Page> {
               child: Column(
                 children: [
                   MyTextFormField(
+                    obscuretext: false,
                     height: 40,
                     width: 300,
                     labelText: 'ユーザー名 ',
@@ -77,6 +78,7 @@ class _Sign_Up_Page extends State<Sign_Up_Page> {
                     height: screen.designH(24),
                   ),
                   MyTextFormField(
+                    obscuretext: false,
                     height: 40,
                     width: 300,
                     labelText: 'メールアドレスまたは電話番号',
@@ -86,6 +88,7 @@ class _Sign_Up_Page extends State<Sign_Up_Page> {
                     height: screen.designH(24),
                   ),
                   MyTextFormField(
+                    obscuretext: true,
                     height: 40,
                     width: 300,
                     labelText: 'パスワード',

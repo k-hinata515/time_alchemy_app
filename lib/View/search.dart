@@ -86,14 +86,11 @@ class _SearchPage extends State<SearchPage> {
                         children: [
                           SizedBox(height: screen.designH(16),),
                           MyTextFormField(
+                            obscuretext: false,
                             labelText: '次の予定の目的地', 
                             height: screen.designH(45), 
                             width: screen.designW(200),
-                            onTextChanged: (text){
-                              setState(() {
-                                next_destination =text.trim();
-                              });
-                            }, controller:_next_destinationController, 
+                            controller:_next_destinationController, 
                           ),
                           SizedBox(height:screen.designH(16)),
                           TextDisplay(
@@ -110,7 +107,9 @@ class _SearchPage extends State<SearchPage> {
                       height: screen.designH(45),
                       width: screen.designW(250), 
                       text: '検索', 
-                      onPressed: () {  },
+                      onPressed: () {  
+                        print(_next_destinationController.text);
+                      },
                     )
                   ],
                 ),

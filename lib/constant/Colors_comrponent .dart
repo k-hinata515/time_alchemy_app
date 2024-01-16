@@ -13,4 +13,5 @@ class Colors_compornet {
   static const borderColorGray = Color(0xFFD4C9C9);
   static const hobbyDisplayWhite = Color(0xFFFAF9F4);
   static const selectedtagdefault = Color(0xFFD9D9D9);
+  static const narrow_down = Color(0xFF654E48);
 }
