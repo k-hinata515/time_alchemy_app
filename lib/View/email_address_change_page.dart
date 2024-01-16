@@ -5,7 +5,6 @@ import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/ButtonCompornent.dart';
 import 'package:time_alchemy_app/component/textformfield.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
-import 'package:time_alchemy_app/screen_pod.dart';
 
 void main() => runApp(
       DevicePreview(
@@ -46,21 +45,20 @@ class EmailAddressChangePage extends StatelessWidget {
             SizedBox(
               height: screen.height * 0.15,
             ),
-            MailChangeFormField(
-              inputText: 'inputText',
-              hintText: '現在のメールアドレス',
-              height: screen.height * 0.05,
-              width: screen.width * 0.8,
+            MyTextFormField(
+              labelText: '現在のメールアドレス',
+              height: 40,
+              width: 300,
             ),
 
             SizedBox(
               height: screen.height * 0.02,
             ),
+
             MyTextFormField(
-              inputText: 'inputText',
-              hintText: '変更したいメールアドレス',
-              height: screen.height * 0.05,
-              width: screen.width * 0.8,
+              labelText: '変更したいメールアドレス',
+              height: 40,
+              width: 300,
             ),
             SizedBox(
               height: screen.height * 0.15,
@@ -71,8 +69,8 @@ class EmailAddressChangePage extends StatelessWidget {
               onPressed: () {
                 //TODO: メールアドレス変更処理を実行する
               },
-              height: 100,
-              width: 10,
+              height: 0.01,
+              width: 0.01,
             ),
           ],
         ),
