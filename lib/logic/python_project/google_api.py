@@ -40,7 +40,7 @@ def nearbysearch_places():
         "languageCode": "ja",   # 取得する場所情報の言語
         "includedTypes": [place_type],  # 取得する場所の種類
         "excludedPrimaryTypes": ['hotel','train_station','airport','gym'],  # 除外する場所の種類
-        "maxResultCount": 2,   # 取得する場所の最大数
+        "maxResultCount": 4,   # 取得する場所の最大数
         "locationRestriction": {    # 取得する場所の範囲
             "circle": {
                 "center": {
@@ -57,7 +57,7 @@ def nearbysearch_places():
     headers = {
         "Content-Type": "application/json",
         "X-Goog-Api-Key": API_KEY,
-        "X-Goog-FieldMask": "places.location,places.id,places.displayName.text,places.types,places.primaryType,places.rating,places.photos.name"
+        "X-Goog-FieldMask": "places.location,places.id,places.displayName.text,places.types,places.primaryType,places.rating,places.photos.name,places.priceLevel,places.websiteUri"
     }
 
     # リクエストを送信してレスポンスのJSONを取得
