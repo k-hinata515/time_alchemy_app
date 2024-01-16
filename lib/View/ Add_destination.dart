@@ -1,10 +1,11 @@
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert';
 import '../env/env.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
 import 'package:time_alchemy_app/component/ButtonCompornent.dart';
 import 'package:time_alchemy_app/component/textformfield.dart';
@@ -58,7 +59,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   @override
   void initState() {
     super.initState();
-    // _nearbySearchRequest();
+    _nearbySearchRequest();
   }
   
 
@@ -89,6 +90,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
         _isNearbySearch = true;
       });
     }
+    print(_placesResponse['places'][0]['websiteUri']);
+    print(_placesResponse['places'][0]['priceLevel']);
   }         
 
     // Places API (nearbySearch)にリクエストするための関数
@@ -298,116 +301,136 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                     child: ListView.builder(
                       itemCount: _placesResponse['places'].length,
                       itemBuilder: (BuildContext context, int index) {
-                        return Column(
-                          children: [
-                            Container(
-                              width: screen.designW(350),
-                              height: screen.designH(90),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Colors_compornet.globalBackgroundColorwhite.withOpacity(0.7),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black26,
-                                    spreadRadius: 0.5,
-                                    blurRadius: 5.0,
-                                    offset: Offset(0, 5),
-                                  ),
-                                ],
-                              ),
-                              child: Stack(
-                                children: [
-                                  Row(
-                                    children: [
-                                      SizedBox(width: screen.designW(16)),
-                                      SizedBox(
-                                        width: screen.designW(85),
-                                        height: screen.designH(75),
-                                        child: FittedBox(
-                                          child: _placesResponse['places'][index]['photos'] != null
-                                              ? Image.network(
-                                                  "https://places.googleapis.com/v1/${_placesResponse['places'][index]['photos'][0]['name']}/media?key=$API_KEY&max_height_px=150&max_width_px=150",
-                                                  fit: BoxFit.cover,
-                                                  width: screen.designW(85),
-                                                  height: screen.designH(75),
-                                                )
-                                              : Icon(
-                                                  Icons.no_photography,
-                                                  color: Colors_compornet.textfontColorBlack,
-                                                ),
-                                        ),
-                                      ),
-                                      SizedBox(width: screen.designW(16)),
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                                _textWrap(_placesResponse['places'][index]['displayName']['text'], 12 , 24),
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors_compornet.textfontColorBlack,
-                                            ),
+                        return GestureDetector(
+                          onTap: () {
+                            if (_placesResponse['places'][index]['websiteUri'] != null){
+                              launchUrl(
+                                Uri.parse(_placesResponse['places'][index]['websiteUri']),
+                                mode: LaunchMode.platformDefault,
+                                webOnlyWindowName: '_blank'
+                              );
+                            }else{
+                              Fluttertoast.showToast(
+                                msg: 'URLが存在しません',
+                                fontSize: 15,
+                                textColor: Colors.white,
+                                backgroundColor: Colors.black,
+                              );
+                            }
+                          },
+                          child:Column(
+                            children: [
+                              Container(
+                                width: screen.designW(350),
+                                height: screen.designH(90),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors_compornet.globalBackgroundColorwhite.withOpacity(0.7),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black26,
+                                      spreadRadius: 0.5,
+                                      blurRadius: 5.0,
+                                      offset: Offset(0, 5),
+                                    ),
+                                  ],
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        SizedBox(width: screen.designW(16)),
+                                        SizedBox(
+                                          width: screen.designW(85),
+                                          height: screen.designH(75),
+                                          child: FittedBox(
+                                            child: _placesResponse['places'][index]['photos'] != null
+                                                ? Image.network(
+                                                    "https://places.googleapis.com/v1/${_placesResponse['places'][index]['photos'][0]['name']}/media?key=$API_KEY&max_height_px=150&max_width_px=150",
+                                                    fit: BoxFit.cover,
+                                                    width: screen.designW(85),
+                                                    height: screen.designH(75),
+                                                  )
+                                                : Icon(
+                                                    Icons.no_photography,
+                                                    color: Colors_compornet.textfontColorBlack,
+                                                  ),
                                           ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                '評価:',
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  color: Colors_compornet.textfontColorBlack,
-                                                ),
+                                        ),
+                                        SizedBox(width: screen.designW(16)),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                                  _textWrap(_placesResponse['places'][index]['displayName']['text'], 12 , 24),
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors_compornet.textfontColorBlack,
                                               ),
-                                              _placesResponse['places'][index]['rating'] != null
-                                                  ? SizedBox(
-                                                      height: screen.designH(16),
-                                                      child: FittedBox(
-                                                        child: RatingBar.builder(
-                                                          initialRating: _placesResponse['places'][index]['rating'].toDouble(),
-                                                          itemBuilder: (context, index) => Icon(
-                                                            Icons.star,
-                                                            color: Colors.amber,
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  '評価:',
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors_compornet.textfontColorBlack,
+                                                  ),
+                                                ),
+                                                _placesResponse['places'][index]['rating'] != null
+                                                    ? SizedBox(
+                                                        height: screen.designH(16),
+                                                        child: FittedBox(
+                                                          child:Row(
+                                                            children: [
+                                                              if(_placesResponse['places'][index]['rating'] != null)
+                                                              // 評価の数だけ星を表示
+                                                              for (var i = 0; i < _placesResponse['places'][index]['rating'].floor(); i++)
+                                                                const Icon(Icons.star, color: Colors.orange),
+                                                              if(_placesResponse['places'][index]['rating'] != null)
+                                                              // 評価の数が5に満たない場合、星の枠を表示
+                                                              for (var j = 0; j < 5 - _placesResponse['places'][index]['rating'].floor(); j++)
+                                                                const Icon(Icons.star_border, color: Colors.orange),
+                                                            ],
                                                           ),
-                                                          allowHalfRating: true,
-                                                          onRatingUpdate: (rating) {},
-                                                          itemCount: 5,
+                                                        ),
+                                                      )
+                                                    : Text(
+                                                        'なし',
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: Colors_compornet.textfontColorBlack,
                                                         ),
                                                       ),
-                                                    )
-                                                  : Text(
-                                                      'なし',
-                                                      style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors_compornet.textfontColorBlack,
-                                                      ),
-                                                    ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  Positioned(
-                                    right: screen.designW(10),
-                                    top: screen.designH(20),
-                                    child: Transform.scale(
-                                      scale: 1.5,
-                                      child: Checkbox(
-                                        value: is_Checked,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            is_Checked = value!;
-                                          });
-                                        },
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    Positioned(
+                                      right: screen.designW(10),
+                                      top: screen.designH(20),
+                                      child: Transform.scale(
+                                        scale: 1.5,
+                                        child: Checkbox(
+                                          value: is_Checked,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              is_Checked = value!;
+                                            });
+                                          },
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            SizedBox(height: screen.designH(16)),
-                          ],
+                              SizedBox(height: screen.designH(16)),
+                            ],
+                          ),
                         );
                       },
                     ),
