@@ -52,7 +52,6 @@ class MyTextFormField extends StatelessWidget {
           ),
         ),
       ],
-      // ),
     );
   }
 }
@@ -61,7 +60,8 @@ class SearchTextField extends StatelessWidget{
   final double height;
   final double width;
   final TextEditingController controller ;
-  SearchTextField({required this.hintText, required this.height,required this.width,  required this.controller,});
+  final Function(String) onEditingComplete;
+  SearchTextField({required this.hintText, required this.height,required this.width,  required this.controller, required this.onEditingComplete,});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -82,6 +82,10 @@ class SearchTextField extends StatelessWidget{
             borderRadius: BorderRadius.circular(20),
           )
         ),
+        onEditingComplete: () {
+          onEditingComplete(controller.text); // 入力されたテキストを指定された関数に渡す
+          FocusScope.of(context).unfocus(); // キーボードを閉じる
+        },
       ),
     );
   }
