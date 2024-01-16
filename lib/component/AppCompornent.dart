@@ -177,7 +177,7 @@ class AppBarBrackTextButtonCompornent extends StatelessWidget
     required this.onPressedLeft,
     required this.onPressedRight,
     this.showLeftIcon = true, // デフォルトは表示
-    this.showRightText = true,
+    this.showRightText = true, 
   }) : preferredSize = Size.fromHeight(kToolbarHeight + 5); // AppBarの高さを指定
 
   @override
@@ -197,9 +197,10 @@ class AppBarBrackTextButtonCompornent extends StatelessWidget
               onPressed: onPressedLeft,
               child: Text(
                 leftText,
+                
                 style: const TextStyle(
                   color: Colors_compornet.textfontColorBlack,
-                  fontSize: 15,
+                  fontSize: 12,
                 ),
               ),
             )
