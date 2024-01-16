@@ -41,9 +41,7 @@ class _Sign_Up_Page extends State<Sign_Up_Page> {
   final TextEditingController  username_controller = TextEditingController();
   final TextEditingController  mailaddress_controller = TextEditingController();
   final TextEditingController  password_controller = TextEditingController();
-  String username ='';
-  String mailaddress ='';
-  String password ='';
+
   @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider); //screenpodの処理
@@ -73,11 +71,6 @@ class _Sign_Up_Page extends State<Sign_Up_Page> {
                     height: 40,
                     width: 300,
                     labelText: 'ユーザー名 ',
-                    onTextChanged: (text){
-                      setState(() {
-                        username = text.trim();
-                      });
-                    },
                     controller: username_controller,
                   ),
                   SizedBox(
@@ -87,11 +80,6 @@ class _Sign_Up_Page extends State<Sign_Up_Page> {
                     height: 40,
                     width: 300,
                     labelText: 'メールアドレスまたは電話番号',
-                    onTextChanged: (text){
-                      setState(() {
-                        mailaddress = text.trim();
-                      });
-                    },
                     controller: mailaddress_controller,
                   ),
                   SizedBox(
@@ -101,11 +89,6 @@ class _Sign_Up_Page extends State<Sign_Up_Page> {
                     height: 40,
                     width: 300,
                     labelText: 'パスワード',
-                    onTextChanged: (text){
-                      setState(() {
-                        password = text.trim();
-                      });
-                    },
                     controller: password_controller,
                   ),
                   SizedBox(
@@ -113,7 +96,12 @@ class _Sign_Up_Page extends State<Sign_Up_Page> {
                   ),
                   ChoiceButtonRed(
                     text: '次へ',
-                    onPressed: () => {},
+                    onPressed: () => {
+                      // コンソールに変数の値を表示
+                      print(username_controller.text),
+                      print(mailaddress_controller.text.trim()),
+                      print(password_controller.text)
+                    },
                     height: 150,
                     width: 45,
                   ),
