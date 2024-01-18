@@ -5,20 +5,22 @@ import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/ButtonCompornent.dart';
 import 'package:time_alchemy_app/component/textformfield.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
+import 'package:time_alchemy_app/screen_pod.dart';
 
 void main() => runApp(
       DevicePreview(
         enabled: !kReleaseMode,
-        builder: (context) => MyApp(), // MyAppを直接指定
+        builder: (context) => email_address_change_page(), // MyAppを直接指定
       ),
     );
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class email_address_change_page extends StatelessWidget {
+   email_address_change_page({Key? key}) : super(key : key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       builder: DevicePreview.appBuilder,
       home: EmailAddressChangePage(),
     );
@@ -28,6 +30,10 @@ class MyApp extends StatelessWidget {
 class EmailAddressChangePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    String nextPassword = '';
+    String currentPassword = '';
+    final TextEditingController _currentpasswordcontroller = TextEditingController();
+    final TextEditingController _nextpasswordcontroller = TextEditingController(); 
     final screen = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors_compornet.globalBackgroundColorwhite,
@@ -48,17 +54,20 @@ class EmailAddressChangePage extends StatelessWidget {
             MyTextFormField(
               labelText: '現在のメールアドレス',
               height: 40,
-              width: 300,
+              width:300,
+              controller: _currentpasswordcontroller,
+              obscuretext: false,
             ),
 
             SizedBox(
               height: screen.height * 0.02,
             ),
-
             MyTextFormField(
               labelText: '変更したいメールアドレス',
               height: 40,
               width: 300,
+              controller: _nextpasswordcontroller,
+              obscuretext: false, //パスワードを
             ),
             SizedBox(
               height: screen.height * 0.15,
@@ -68,13 +77,20 @@ class EmailAddressChangePage extends StatelessWidget {
               text: '変更',
               onPressed: () {
                 //TODO: メールアドレス変更処理を実行する
+                currentPassword = _currentpasswordcontroller.text;
+                nextPassword =_nextpasswordcontroller.text;
+                 //テスト
+                print(currentPassword);
+                print(nextPassword);
               },
-              height: 0.01,
-              width: 0.01,
+              height: 100,
+              width: 10,
             ),
           ],
         ),
       ),
     );
   }
+  
+  void setState(Null Function() param0) {}
 }
