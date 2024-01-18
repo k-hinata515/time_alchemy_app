@@ -44,15 +44,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPage extends State<LoginPage> {
-  
   final LoginBackend _loginBackend = LoginBackend();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    String email  ='';
-    String password ='';
+    String email = '';
+    String password = '';
     final screen = ScreenRef(context).watch(screenProvider); //screenpodの処理
 
     return Scaffold(
@@ -90,18 +89,19 @@ class _LoginPage extends State<LoginPage> {
                   ),
                   MyTextFormField(
                     obscuretext: true,
-                    labelText: 'パスワード', 
-                    height: 40, 
+                    labelText: 'パスワード',
+                    height: 40,
                     width: 300,
                     controller: _passwordController,
-                    ),
-                  SizedBox(
-                    height: screen.designH(24),
                   ),
+                  SizedBox(height: screen.designH(24)),
                   ChoiceButtonRed(
                       text: 'ログイン',
                       onPressed: () async {
-
+                        email = _emailController.text;
+                        password = _passwordController.text;
+                        print(email);
+                        print(password);
                         if (email.isNotEmpty && password.isNotEmpty) {
                           try {
                             User? user = await _loginBackend
@@ -109,11 +109,11 @@ class _LoginPage extends State<LoginPage> {
 
                             if (user != null) {
                               // ログイン成功時にsearch.dartに画面遷移
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Search()),
-                              );
+                              // Navigator.pushReplacement(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //       builder: (context) => Search()),
+                              // );
                             }
                           } on FirebaseAuthException catch (e) {
                             // FirebaseAuthExceptionからエラーコードを取得し、エラーメッセージを表示
