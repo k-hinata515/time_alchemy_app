@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert';
-import '../env/env.dart';
+// import '../env/env.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +11,7 @@ import 'package:time_alchemy_app/component/ButtonCompornent.dart';
 import 'package:time_alchemy_app/component/textformfield.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
+
 
 void main() => runApp(
       DevicePreview(
@@ -43,7 +44,7 @@ class Add_destination_Page extends StatefulWidget {
 
 class _Add_destination_Page extends State<Add_destination_Page> {
   final TextEditingController searchtextfieldcontroller = TextEditingController();
-  final API_KEY = Env.key; // APIキー
+  // final API_KEY = Env.key; // APIキー
   Map<String, dynamic> _placesResponse = {}; // Places APIのレスポンスデータを格納するList
   // List<dynamic> _place_photo = [];
   bool _isNearbySearch = false;    // リクエスト中かどうかを判定するフラグ
@@ -51,15 +52,17 @@ class _Add_destination_Page extends State<Add_destination_Page> {
 
   //test
   final List<String> narrow_down = [
-    '評価順',
-    'ランチ',
-    '価格が低い',
+    '暇つぶしにおすすめのスポット',
+    'レストラン',
+    'カフェ',
+    'ラーメン',
+    '休憩場所'
   ];
 
   @override
   void initState() {
     super.initState();
-    _nearbySearchRequest();
+    // _nearbySearchRequest();
   }
   
 
@@ -72,8 +75,14 @@ class _Add_destination_Page extends State<Add_destination_Page> {
       print('緯度:$lat''経度:$lon');
 
       // Places API (nearbySearch) にリクエスト
+      // final http.Response placesResponse = await http.get(
+      //     Uri.parse('http://192.168.11.10:5000/current_nearbysearch?latitude=$lat&longitude=$lon'));
+          
+      // Places API (nearbySearch) にリクエスト
       final http.Response placesResponse = await http.get(
-          Uri.parse('http://192.168.11.10:5000/current_nearbysearch?latitude=$lat&longitude=$lon'));
+          Uri.parse('http://10.104.0.164:5000/current_nearbysearch?latitude=$lat&longitude=$lon'));
+
+      
 
       setState(() {
         // 取得したデータを _placesResponse に代入
@@ -106,8 +115,13 @@ class _Add_destination_Page extends State<Add_destination_Page> {
 
       // Places API (textSearch) にリクエスト
 
-      final http.Response placesResponse = await http.get(
-          Uri.parse('http://192.168.11.10:5000/current_textsearch?&textQuery=$text&latitude=$lat&longitude=$lon'));
+      // final http.Response placesResponse = await http.get(
+      //     Uri.parse('http://192.168.11.10:5000/current_textsearch?&textQuery=$text&latitude=$lat&longitude=$lon'));
+
+        final http.Response placesResponse = await http.get(
+          Uri.parse('http://10.104.0.164:5000/current_textsearch?&textQuery=$text&latitude=$lat&longitude=$lon'));
+
+
 
       setState(() {
         // 取得したデータを _placesResponse に代入
@@ -160,7 +174,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
         actions: [
           Container(
             width: screen.designW(200),
-            height: screen.designH(16),
+            height: screen.designH(40),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
               color: Colors_compornet.globalBackgroundColorwhite.withOpacity(0.85),
@@ -259,31 +273,35 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                     itemCount: narrow_down.length,
                     itemBuilder: (BuildContext context, int index) {
                       final String narrow_down_tag = narrow_down[index];
-                      return Container(
-                        margin: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors_compornet.textfontcolorocher,
-                          borderRadius: BorderRadius.all(Radius.circular(25)),
-                          border: Border.all(
-                            width: screen.designW(5),
-                            color: Colors.transparent,
-                          ),
-                        ),
-                        child: Center(
-                          child : FittedBox(
-                            fit: BoxFit.fitWidth,
-                            child: Text(
-                            '#$narrow_down_tag',
-                            style: TextStyle(
-                              color: Colors_compornet.globalBackgroundColorwhite,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
+                      return GestureDetector(
+                        onTap: () {
+                          // _textSearchRequest(narrow_down_tag);
+                        },
+                        child:Container(
+                          margin: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors_compornet.textfontcolorocher,
+                            borderRadius: BorderRadius.all(Radius.circular(25)),
+                            border: Border.all(
+                              width: screen.designW(5),
+                              color: Colors.transparent,
                             ),
                           ),
+                          child: Center(
+                            child : FittedBox(
+                              fit: BoxFit.fitWidth,
+                              child: Text(
+                              '#$narrow_down_tag',
+                              style: TextStyle(
+                                color: Colors_compornet.globalBackgroundColorwhite,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
                           )
-                          
                         ),
                         alignment: Alignment.center, // テキストを中央に配置
+                      ),
                       );
                     },
                   ),
@@ -343,19 +361,19 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                         SizedBox(
                                           width: screen.designW(85),
                                           height: screen.designH(75),
-                                          child: FittedBox(
-                                            child: _placesResponse['places'][index]['photos'] != null
-                                                ? Image.network(
-                                                    "https://places.googleapis.com/v1/${_placesResponse['places'][index]['photos'][0]['name']}/media?key=$API_KEY&max_height_px=150&max_width_px=150",
-                                                    fit: BoxFit.cover,
-                                                    width: screen.designW(85),
-                                                    height: screen.designH(75),
-                                                  )
-                                                : Icon(
-                                                    Icons.no_photography,
-                                                    color: Colors_compornet.textfontColorBlack,
-                                                  ),
-                                          ),
+                                          // child: FittedBox(
+                                          //   child: _placesResponse['places'][index]['photos'] != null
+                                          //       ? Image.network(
+                                          //           "https://places.googleapis.com/v1/${_placesResponse['places'][index]['photos'][0]['name']}/media?key=$API_KEY&max_height_px=150&max_width_px=150",
+                                          //           fit: BoxFit.cover,
+                                          //           width: screen.designW(85),
+                                          //           height: screen.designH(75),
+                                          //         )
+                                          //       : Icon(
+                                          //           Icons.no_photography,
+                                          //           color: Colors_compornet.textfontColorBlack,
+                                          //         ),
+                                          // ),
                                         ),
                                         SizedBox(width: screen.designW(16)),
                                         Column(
