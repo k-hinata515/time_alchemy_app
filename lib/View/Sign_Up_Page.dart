@@ -1,6 +1,8 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:time_alchemy_app/View/Hobby_Registration.dart';
+import 'package:time_alchemy_app/View/Registered_Content.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
 import 'package:time_alchemy_app/component/ButtonCompornent.dart';
@@ -8,6 +10,7 @@ import 'package:time_alchemy_app/component/IconButton.dart';
 import 'package:time_alchemy_app/component/textformfield.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
+import 'package:time_alchemy_app/logic/flutter/Sign_Up_Page_b.dart';
 
 void main() => runApp(
       DevicePreview(
@@ -37,10 +40,12 @@ class Sign_Up_Page extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _Sign_Up_Page();
 }
+
 class _Sign_Up_Page extends State<Sign_Up_Page> {
-  final TextEditingController  username_controller = TextEditingController();
-  final TextEditingController  mailaddress_controller = TextEditingController();
-  final TextEditingController  password_controller = TextEditingController();
+  final TextEditingController username_controller = TextEditingController();
+  final TextEditingController mailaddress_controller = TextEditingController();
+  final TextEditingController password_controller = TextEditingController();
+  String errorText = '';
 
   @override
   Widget build(BuildContext context) {
@@ -99,12 +104,11 @@ class _Sign_Up_Page extends State<Sign_Up_Page> {
                   ),
                   ChoiceButtonRed(
                     text: '次へ',
-                    onPressed: () => {
-                      // コンソールに変数の値を表示
-                      print(username_controller.text),
-                      print(mailaddress_controller.text.trim()),
-                      print(password_controller.text)
-                    },
+                    onPressed: () => _validateAndNavigate(context),
+                    // コンソールに変数の値を表示
+                    // print(username_controller.text),
+                    // print(mailaddress_controller.text.trim()),
+                    // print(password_controller.text),
                     height: 150,
                     width: 45,
                   ),
@@ -138,6 +142,16 @@ class _Sign_Up_Page extends State<Sign_Up_Page> {
           )
         ],
       ),
+    );
+  }
+
+  void _validateAndNavigate(BuildContext context) {
+    // バックエンドの処理を呼び出し
+    validateAndNavigate(
+      context,
+      username_controller.text,
+      mailaddress_controller.text.trim(),
+      password_controller.text,
     );
   }
 }

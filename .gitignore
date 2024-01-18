@@ -42,3 +42,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/ios
+/macos
+/windows
+pubspec.locks
+/android/app/google-services.json
