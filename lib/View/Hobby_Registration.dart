@@ -89,7 +89,7 @@ class _SelectedHobby extends State<SelectedHobby> {
     return Scaffold(
       backgroundColor: Colors_compornet.globalBackgroundColorRed,
       appBar: AppBarWhiteTextCompornent(
-        title: '趣味を選択',
+        title: '趣味・興味を選択',
         rightText: '次へ',
         onPressedLeft: () => {
           // "戻る" ボタンが押されたときの処理
