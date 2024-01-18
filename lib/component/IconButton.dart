@@ -101,3 +101,25 @@ class Instagram_IconButton extends StatelessWidget{
   );
 }
 }
+class MapIconButton extends StatelessWidget{
+  final GestureTapCallback onPressed;
+  final double width;
+  final double height;
+MapIconButton({required this.onPressed, required this.width,required this.height});
+  @override
+  Widget build(BuildContext context) {
+    return MaterialButton(
+      height: height,
+      minWidth: width,
+      onPressed: onPressed,
+      child: Icon(
+            Icons.location_on,
+            ),
+            padding: EdgeInsets.all(16),
+            color: Colors_compornet.globalBackgroundColorRed,
+            textColor: Colors_compornet.globalBackgroundColorwhite,
+            shape: CircleBorder(),
+      );
+  }
+
+}
