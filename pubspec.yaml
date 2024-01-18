@@ -35,7 +35,7 @@ dependencies:
     sdk: flutter
   flutter_screenutil: ^5.3.1 #追加 2023/12/12
   image_picker: ^0.8.4+3
-    intl: ^0.18.1 #現在時刻取得
+    
   
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
