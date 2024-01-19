@@ -79,19 +79,25 @@ class _SearchPage extends State<SearchPage> {
       body: Stack(
         children: [
           BackgroundWidget(),
-          Center(
+          Container(
+            padding: EdgeInsets.only(top: screen.designH(150)),
             child: Row(
               children: [
                 SizedBox(
-                  width: screen.designW(16),
+                  width: screen.designW(7),
                 ),
-                //現在時刻取得
-                Padding(
-                  padding: EdgeInsets.only(top: screen.designH(75)),
+                Container(
                   child: Row(
                     children: [
-                      Align(
-                        alignment: Alignment(0, -0.63),
+                      //現在時刻表示
+                      SizedBox(
+                        width: screen.designW(7),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(
+                          top: screen.designH(22),
+                        ),
+                        alignment: Alignment.topLeft,
                         child: Text(
                           now_time,
                           style: TextStyle(
@@ -103,21 +109,24 @@ class _SearchPage extends State<SearchPage> {
                       ),
                       //スペース
                       SizedBox(
-                        width: screen.designW(16),
+                        width: screen.designW(7),
                       ),
-                      //時系列線
+
                       Stack(
-                        alignment: Alignment.center,
+                        alignment: Alignment.topCenter,
                         children: [
+                          //時系列線
+
                           Align(
-                            alignment: Alignment(0, -0.5),
+                            alignment: Alignment.topCenter,
                             child: Dashed_Line(
                               height: screen.designH(350),
                               width: screen.designW(2), // Dashed_Line の幅を変更
                             ),
                           ),
+                          // ↓アイコンと〇図形
                           Align(
-                            alignment: Alignment(0, -0.65),
+                            alignment: Alignment(0, -0.95),
                             child: Container(
                               width: screen.designW(36),
                               height: screen.designH(36),
@@ -141,84 +150,86 @@ class _SearchPage extends State<SearchPage> {
                   ),
                 ),
 
+                //時系列棒と現在地などの間隔
+                SizedBox(
+                  width: screen.designW(20),
+                ),
                 //現在地
-                Padding(
-                  padding: EdgeInsets.only(top: screen.designH(190)),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      TextFormButton(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(
+                        left: screen.designW(15),
+                      ),
+                      child: TextFormButton(
                         height: 40,
                         width: 220,
                         labelText: '現在地',
                         exampletext: '中崎町',
                       ),
-                      SizedBox(height: screen.designH(45)),
-                      Container(
-                        height: screen.designH(175),
-                        width: screen.designW(260),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors_compornet
-                                .globalBackgroundColorRed, // 枠線の色
-                            width: 2.0, // 枠線の太さ
+                    ),
+                    SizedBox(height: screen.designH(45)),
+                    Container(
+                      height: screen.designH(175),
+                      width: screen.designW(260),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color:
+                              Colors_compornet.globalBackgroundColorRed, // 枠線の色
+                          width: 2.0, // 枠線の太さ
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      // 他のウィジェットをここに追加
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: screen.designH(20),
                           ),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        // 他のウィジェットをここに追加
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: screen.designH(20),
-                            ),
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width: screen.designW(20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              MyTextFormField(
+                                labelText: '次の目的地',
+                                height: 30,
+                                width: 165,
+                                controller: destination_controller,
+                                obscuretext: false,
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  // マップアイコンを押した時の処理をここに記述
+                                },
+                                icon: Icon(
+                                  Icons.add_location_alt,
+                                  color:
+                                      Colors_compornet.globalBackgroundColorRed,
+                                  size: 40,
                                 ),
-                                MyTextFormField(
-                                  labelText: '次の目的地',
-                                  height: 30,
-                                  width: 180,
-                                  controller: destination_controller,
-                                  obscuretext: false,
-                                ),
-                                SizedBox(
-                                  width: screen.designW(3),
-                                ),
-                                IconButton(
-                                  onPressed: () {
-                                    // マップアイコンを押した時の処理をここに記述
-                                  },
-                                  icon: Icon(
-                                    Icons.add_location_alt,
-                                    color: Colors_compornet
-                                        .globalBackgroundColorRed,
-                                    size: 40,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: screen.designH(5),
-                            ),
-                            TimePickerSample(),
-                          ],
-                        ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: screen.designH(5),
+                          ),
+                          TimePickerSample(),
+                        ],
                       ),
-                      SizedBox(
-                        height: screen.designH(100),
-                      ),
-                      ChoiceButtonRed(
-                        height: 250,
-                        width: 45,
-                        text: '検索',
-                        onPressed: () {
-                          print(_next_destinationController.text);
-                        },
-                      ),
-                    ],
-                  ),
+                    ),
+                    SizedBox(
+                      height: screen.designH(100),
+                    ),
+                    ChoiceButtonRed(
+                      height: 250,
+                      width: 45,
+                      text: '検索',
+                      onPressed: () {
+                        print(_next_destinationController.text);
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
