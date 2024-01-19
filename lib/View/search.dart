@@ -14,6 +14,7 @@ import 'package:time_alchemy_app/component/ToggleButton.dart';
 import 'package:time_alchemy_app/component/textformfield.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
+import 'package:time_alchemy_app/logic/flutter/geolocation.dart';
 
 void main() => runApp(
       DevicePreview(
@@ -44,11 +45,36 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPage extends State<SearchPage> {
-  String now_time =
-      DateFormat('HH:mm').format(DateTime.now()).toString(); //現在時刻
+  String now_time = DateFormat('HH:mm').format(DateTime.now()).toString(); //現在時刻
+
   final TextEditingController destination_controller = TextEditingController();
-  final TextEditingController _next_destinationController =
-      TextEditingController();
+  final TextEditingController _next_destinationController = TextEditingController();
+
+  double _latitude = 0.0; // 緯度
+  double _longitude = 0.0; // 経度
+
+
+  // 現在地を取得する関数
+  Future<void> _getCurrentLocation() async {
+    try {
+      // Geolocationインスタンス作成
+      final geolocation = Geolocation();
+      // 現在地取得
+      final position = await geolocation.determinePosition();
+      // 現在地の緯度経度を取得
+      _latitude = position.latitude;
+      _longitude= position.longitude;
+
+      print('緯度: $_latitude 経度: $_longitude');
+      
+    } catch (error) {
+      setState(() {
+        print(error);
+      });
+    }
+  }
+
+
   void showFilterInOrOut() {
     showModalBottomSheet(
       context: context,

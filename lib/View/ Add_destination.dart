@@ -1,4 +1,5 @@
 import 'package:http/http.dart' as http;
+import 'package:time_alchemy_app/logic/flutter/geolocation.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert';
@@ -46,43 +47,64 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   final TextEditingController searchtextfieldcontroller = TextEditingController();
   // final API_KEY = Env.key; // APIキー
   Map<String, dynamic> _placesResponse = {}; // Places APIのレスポンスデータを格納するList
-  // List<dynamic> _place_photo = [];
+  double _latitude = 0.0; // 緯度
+  double _longitude = 0.0; // 経度
+  bool _isHobby = false;    // おすすめか趣味かを判定するフラグ
+  bool _isRequestOpenAI = false;    // openAIにリクエストするかどうかを判定するフラグ
   bool _isNearbySearch = false;    // リクエスト中かどうかを判定するフラグ
   bool _isTextSearch = false;    // リクエスト中かどうかを判定するフラグ
+  
 
-  //test
-  final List<String> narrow_down = [
-    '暇つぶしにおすすめのスポット',
+  final List<String> _recommend_tag = [
     'レストラン',
     'カフェ',
     'ラーメン',
-    '休憩場所'
+  ];
+
+  final List<String> _hobby_tag = [
+    '周辺の観光名所',
+    'お土産におすすめのお店',
+    '食べ歩きにおすすめの場所',
+    '温泉地'
   ];
 
   @override
   void initState() {
     super.initState();
-    // _nearbySearchRequest();
+    // 初回時の現在地を取得
+    Future(() async {
+      await _getCurrentLocation(); 
+      await _nearbySearchRequest();
+    });
+  }
+
+  // 現在地を取得する関数
+  Future<void> _getCurrentLocation() async {
+    try {
+      // Geolocationインスタンス作成
+      final geolocation = Geolocation();
+      // 現在地取得
+      final position = await geolocation.determinePosition();
+      // 現在地の緯度経度を取得
+      _latitude = position.latitude;
+      _longitude= position.longitude;
+
+      print('緯度: $_latitude 経度: $_longitude');
+      
+    } catch (error) {
+      setState(() {
+        print(error);
+      });
+    }
   }
   
 
   // Places API (nearbySearch)にリクエストするための関数
   Future<void> _nearbySearchRequest() async {
     try {
-      final lat = 34.7055051;
-      final lon = 135.4983028;
-      
-      print('緯度:$lat''経度:$lon');
-
-      // Places API (nearbySearch) にリクエスト
-      // final http.Response placesResponse = await http.get(
-      //     Uri.parse('http://192.168.11.10:5000/current_nearbysearch?latitude=$lat&longitude=$lon'));
-          
       // Places API (nearbySearch) にリクエスト
       final http.Response placesResponse = await http.get(
-          Uri.parse('http://10.104.0.164:5000/current_nearbysearch?latitude=$lat&longitude=$lon'));
-
-      
+          Uri.parse('http://192.168.11.10:5000/current_nearbysearch?latitude=$_latitude&longitude=$_longitude'));
 
       setState(() {
         // 取得したデータを _placesResponse に代入
@@ -99,29 +121,14 @@ class _Add_destination_Page extends State<Add_destination_Page> {
         _isNearbySearch = true;
       });
     }
-    print(_placesResponse['places'][0]['websiteUri']);
-    print(_placesResponse['places'][0]['priceLevel']);
   }         
 
-    // Places API (nearbySearch)にリクエストするための関数
+  // Places API (nearbySearch)にリクエストするための関数
   Future<void> _textSearchRequest(String text) async {
     try {
-      //TODO:位置情報取得処理
-      //test
-      final lat = 34.7055051;
-      final lon = 135.4983028;
-      
-      print('緯度:$lat''経度:$lon');
-
       // Places API (textSearch) にリクエスト
-
-      // final http.Response placesResponse = await http.get(
-      //     Uri.parse('http://192.168.11.10:5000/current_textsearch?&textQuery=$text&latitude=$lat&longitude=$lon'));
-
-        final http.Response placesResponse = await http.get(
-          Uri.parse('http://10.104.0.164:5000/current_textsearch?&textQuery=$text&latitude=$lat&longitude=$lon'));
-
-
+      final http.Response placesResponse = await http.get(
+        Uri.parse('http://192.168.11.10:5000/current_textsearch?&textQuery=$text&latitude=$_latitude&longitude=$_longitude'));
 
       setState(() {
         // 取得したデータを _placesResponse に代入
@@ -179,36 +186,128 @@ class _Add_destination_Page extends State<Add_destination_Page> {
               borderRadius: BorderRadius.circular(15),
               color: Colors_compornet.globalBackgroundColorwhite.withOpacity(0.85),
             ),
-            child: DefaultTabController(
-              length: 2,
-              initialIndex: 0,
-              child: TabBar(
-                unselectedLabelColor: Colors_compornet.textfontColorBlack,
-                labelColor: Colors_compornet.globalBackgroundColorRed,
-                indicator: BoxDecoration(
-                  border: Border.all(color: Colors_compornet.textfontColorBlack),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                tabs: <Widget>[
-                  GestureDetector(
-                    child:Tab(
-                      text: 'おすすめ',
-                    ),
+            child:Center(
+              child: Row(
+                children: [
+                  InkWell(
                     onTap: () {
-                      _nearbySearchRequest();
+                      setState(() {
+                        _isRequestOpenAI = false;
+                        _isHobby = false;
+                        Future(() async {
+                          await _getCurrentLocation(); 
+                          await _nearbySearchRequest();
+                        });   
+                      });
                     },
-                  ),
-                  GestureDetector(
-                    child:Tab(
-                      text: '趣味',
+                    child: Container(
+                      width: screen.designW(100),
+                      height: screen.designH(40),
+                      decoration: BoxDecoration(
+                        border: _isHobby == false 
+                          ? Border.all(color: Colors_compornet.globalBackgroundColorRed) 
+                          : Border.all(color: Colors_compornet.globalBackgroundColorwhite.withOpacity(0)),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child:Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          'おすすめ',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            color: _isHobby == false 
+                            ?Colors_compornet.globalBackgroundColorRed
+                            :Colors_compornet.textfontcolorocher
+                          ),
+                        ),
+                      ),
                     ),
-                    onTap: () {
-                      //TODO:AI側へのリクエスト処理
-                    },
                   ),
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        _isRequestOpenAI = true;  
+                        _isHobby = true;
+                        Future(() async {
+                          await _getCurrentLocation(); 
+                          // TODO:AI側へのリクエスト関数
+                          await _getCurrentLocation();
+                          await _textSearchRequest(_hobby_tag[0]);  //test
+                        });                   
+                      });
+                    },
+                    child: Container(
+                      width: screen.designW(100),
+                      height: screen.designH(40),
+                      decoration: BoxDecoration(
+                        border: _isHobby == true 
+                          ? Border.all(color: Colors_compornet.globalBackgroundColorRed)
+                          : Border.all(color: Colors_compornet.globalBackgroundColorwhite.withOpacity(0)),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Align(
+                        alignment: Alignment.center,
+                          child: Text(
+                            '趣味',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                              color: _isHobby == true
+                              ?Colors_compornet.globalBackgroundColorRed
+                              :Colors_compornet.textfontcolorocher
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
+            // child: DefaultTabController(
+            //   length: 2,
+            //   initialIndex: 0,
+            //   child: TabBar(
+            //     unselectedLabelColor: Colors_compornet.textfontColorBlack,
+            //     labelColor: Colors_compornet.globalBackgroundColorRed,
+            //     indicator: BoxDecoration(
+            //       border: Border.all(color: Colors_compornet.textfontColorBlack),
+            //       borderRadius: BorderRadius.circular(12),
+            //     ),
+            //     tabs: <Widget>[
+            //       InkWell(                  
+            //         onTap: () async{                      
+            //           setState(() {
+            //             _isRequestOpenAI = false;
+            //             Future(() async {
+            //               await _getCurrentLocation(); 
+            //               // await _nearbySearchRequest();
+            //             });   
+            //           });
+            //         },
+            //         child:Tab(
+            //           text: 'おすすめ',
+            //         ),
+            //       ),
+            //       InkWell(
+            //         onTap: () async{
+            //           //TODO:AI側へのリクエスト処理
+            //           setState(() {
+            //             _isRequestOpenAI = true;  
+            //             Future(() async {
+            //               await _getCurrentLocation(); 
+            //               // TODO:AI側へのリクエスト関数
+            //               await _textSearchRequest(_hobby_tag[0]);  //test
+            //             });                   
+            //           });
+            //         },
+            //         child:Tab(
+            //           text: '趣味',
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ),
           SizedBox(
             width: screen.designW(100),
@@ -270,12 +369,12 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                   height: screen.designH(50),
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: narrow_down.length,
+                    itemCount: _isRequestOpenAI == true ? _hobby_tag.length : _recommend_tag.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final String narrow_down_tag = narrow_down[index];
+                      final String narrow_down_tag = _isRequestOpenAI == true ? _hobby_tag[index] : _recommend_tag[index];
                       return GestureDetector(
                         onTap: () {
-                          // _textSearchRequest(narrow_down_tag);
+                          _textSearchRequest(narrow_down_tag);
                         },
                         child:Container(
                           margin: EdgeInsets.all(8),
@@ -308,13 +407,14 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                 ),
               ],
             ),
-  //ここから          
+  //ここから   ?     
             Padding(
               padding: EdgeInsets.only(top: screen.designH(110)),
               child: Column(
                 children: [
-                  if(_isNearbySearch == true)
-                  Container(
+                  //データがある時の処理
+                  _isNearbySearch == true && _placesResponse.isNotEmpty
+                  ?Container(
                     height: screen.designH(500), // 仮の高さ。必要に応じて調整してください。
                     child: ListView.builder(
                       itemCount: _placesResponse['places'].length,
@@ -452,9 +552,50 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                         );
                       },
                     ),
-                  ),                
-                  //ここまで            
-                  SizedBox(height: screen.designH(16),),
+                  )
+                  //データがない時の処理
+                  :Center(
+                    child: Column(
+                      children: [
+                        SizedBox(height: screen.designH(200)),
+                        Text(
+                          'データがありません',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors_compornet.textfontColorBlack,
+                          ),
+                        ),
+                        SizedBox(height: screen.designH(16)),
+                        Text(
+                          '検索条件を変更してください',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors_compornet.textfontColorBlack,
+                          ),
+                        ),
+                        SizedBox(height: screen.designH(16),),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: ChoiceButtonRed(
+                            text: '更新',
+                            onPressed: (){
+                              //追加を押した時の処理
+                              Future(() async {
+                                await _getCurrentLocation();    //test
+                                await _nearbySearchRequest();   //test
+                              });
+                            },
+                            height: 150,    //50  
+                            width: 50,      //140
+                          ),
+                        )
+                      ],
+                    ),
+                  ),            
+                  //ここまで
+                  SizedBox(height: screen.designH(16)),   
+                  if(_placesResponse.isNotEmpty)        
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: ChoiceButtonRed(
@@ -473,5 +614,5 @@ class _Add_destination_Page extends State<Add_destination_Page> {
         ),
       ),
     );
-  }
+  }  
 }
