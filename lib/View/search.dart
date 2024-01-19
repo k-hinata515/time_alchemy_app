@@ -46,14 +46,36 @@ class SearchPage extends StatefulWidget {
 class _SearchPage extends State<SearchPage> {
   String now_time =
       DateFormat('HH:mm').format(DateTime.now()).toString(); //現在時刻
+  final TextEditingController destination_controller = TextEditingController();
   final TextEditingController _next_destinationController =
       TextEditingController();
+  void showFilterInOrOut() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     String next_destination = '';
     final screen = ScreenRef(context).watch(screenProvider);
     return Scaffold(
       backgroundColor: Colors_compornet.globalBackgroundColorRed,
+      appBar: AppBarWhiteTextCompornent(
+        title: 'TimeAlchemy',
+        rightText: '次へ',
+        onPressedLeft: () => {},
+        onPressedRight: () => {},
+        showRightText: false, //次へ
+      ),
       body: Stack(
         children: [
           BackgroundWidget(),
@@ -147,22 +169,40 @@ class _SearchPage extends State<SearchPage> {
                         child: Column(
                           children: [
                             SizedBox(
-                              height: screen.designH(16),
+                              height: screen.designH(20),
                             ),
-                            MyTextFormField(
-                              obscuretext: false,
-                              labelText: '次の予定の目的地',
-                              height: 40,
-                              width: 220,
-                              controller: _next_destinationController,
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width: screen.designW(20),
+                                ),
+                                MyTextFormField(
+                                  labelText: '次の目的地',
+                                  height: 30,
+                                  width: 180,
+                                  controller: destination_controller,
+                                  obscuretext: false,
+                                ),
+                                SizedBox(
+                                  width: screen.designW(3),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    // マップアイコンを押した時の処理をここに記述
+                                  },
+                                  icon: Icon(
+                                    Icons.add_location_alt,
+                                    color: Colors_compornet
+                                        .globalBackgroundColorRed,
+                                    size: 40,
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: screen.designH(16)),
-                            TextDisplay(
-                              labelText: '次の予定の到着時間',
-                              height: 40,
-                              width: 220,
-                              exampletext: '１３時',
+                            SizedBox(
+                              height: screen.designH(5),
                             ),
+                            TimePickerSample(),
                           ],
                         ),
                       ),
@@ -195,15 +235,91 @@ class _SearchPage extends State<SearchPage> {
               height: screen.designH(20),
             ),
           ),
-          AppBarWhiteTextCompornent(
-            title: 'TimeAlchemy',
-            rightText: '次へ',
-            onPressedLeft: () => {},
-            onPressedRight: () => {},
-            showRightText: false, //次へ
-          ),
         ],
       ),
     );
+  }
+}
+
+class TimePickerSample extends StatefulWidget {
+  TimePickerSample({Key? key}) : super(key: key);
+
+  @override
+  _TimePickerSampleState createState() => _TimePickerSampleState();
+}
+
+class _TimePickerSampleState extends State<TimePickerSample> {
+  TimeOfDay? selectedTime;
+  String now_time =
+      DateFormat('HH:mm').format(DateTime.now()).toString(); //現在時刻
+  @override
+  Widget build(BuildContext context) {
+    final screen = MediaQuery.of(context).size;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "次の予定の到着時間",
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors_compornet.textfontcolorocher,
+          ),
+        ),
+        SizedBox(
+          height: screen.height * 0.002,
+        ),
+        ElevatedButton(
+          //到着時間選択
+          onPressed: () => _pickTime(context),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors_compornet.textfontColorWhite,
+            onPrimary: Colors_compornet.globalBackgroundColorRed,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(40),
+            ),
+            side: BorderSide(
+              color: Colors_compornet.globalBackgroundColorRed,
+              width: 2.0,
+            ),
+            padding: EdgeInsets.symmetric(
+              vertical: screen.height * 0.01,
+              horizontal: screen.width * 0.02,
+            ), // パディングを設定
+            minimumSize: Size(
+              screen.width * 0.55,
+              screen.height * 0.05,
+            ), // 最小サイズを設定
+          ),
+          child: Text(
+            selectedTime != null
+                ? "${selectedTime!.hour.toString().padLeft(2, '0')}:${selectedTime!.minute.toString().padLeft(2, '0')}"
+                : "$now_time",
+            style: TextStyle(
+              fontSize: 20,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future _pickTime(BuildContext context) async {
+    // デフォルトの初期時間を設定
+    final now = DateTime.now();
+    final initialTime = TimeOfDay.fromDateTime(now);
+
+    // showTimePickerを呼び出し、ユーザーが新しい時間を選択するのを待機
+    final newTime =
+        await showTimePicker(context: context, initialTime: initialTime);
+
+    // ユーザーが時間を選択した場合
+    if (newTime != null) {
+      // 選択された時間を状態にセットして、画面を再描画
+      setState(() => selectedTime = newTime);
+    } else {
+      // キャンセルされた場合は何もせずに処理を終了
+      return;
+    }
   }
 }
