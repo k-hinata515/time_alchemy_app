@@ -222,8 +222,8 @@ class _SearchPage extends State<SearchPage> {
                       height: screen.designH(100),
                     ),
                     ChoiceButtonRed(
-                      height: 250,
-                      width: 45,
+                      height: 45,
+                      width: 250,
                       text: '検索',
                       onPressed: () {
                         print(_next_destinationController.text);
