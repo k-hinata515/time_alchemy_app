@@ -74,7 +74,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
     // 初回時の現在地を取得
     Future(() async {
       await _getCurrentLocation(); 
-      await _nearbySearchRequest();
+      // await _nearbySearchRequest();
     });
   }
 
@@ -196,7 +196,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                         _isHobby = false;
                         Future(() async {
                           await _getCurrentLocation(); 
-                          await _nearbySearchRequest();
+                          // await _nearbySearchRequest();
                         });   
                       });
                     },
@@ -233,7 +233,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                           await _getCurrentLocation(); 
                           // TODO:AI側へのリクエスト関数
                           await _getCurrentLocation();
-                          await _textSearchRequest(_hobby_tag[0]);  //test
+                          // await _textSearchRequest(_hobby_tag[0]);  //test
                         });                   
                       });
                     },
@@ -275,7 +275,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
             //       borderRadius: BorderRadius.circular(12),
             //     ),
             //     tabs: <Widget>[
-            //       InkWell(                  
+            //       GestureDetector(                  
             //         onTap: () async{                      
             //           setState(() {
             //             _isRequestOpenAI = false;
@@ -289,7 +289,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
             //           text: 'おすすめ',
             //         ),
             //       ),
-            //       InkWell(
+            //       GestureDetector(
             //         onTap: () async{
             //           //TODO:AI側へのリクエスト処理
             //           setState(() {
@@ -374,7 +374,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                       final String narrow_down_tag = _isRequestOpenAI == true ? _hobby_tag[index] : _recommend_tag[index];
                       return GestureDetector(
                         onTap: () {
-                          _textSearchRequest(narrow_down_tag);
+                          // _textSearchRequest(narrow_down_tag);
                         },
                         child:Container(
                           margin: EdgeInsets.all(8),
@@ -583,7 +583,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                               //追加を押した時の処理
                               Future(() async {
                                 await _getCurrentLocation();    //test
-                                await _nearbySearchRequest();   //test
+                                // await _nearbySearchRequest();   //test
                               });
                             },
                             height: 150,    //50  
