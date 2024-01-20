@@ -52,8 +52,16 @@ class _SearchPage extends State<SearchPage> {
   final TextEditingController _next_destinationController =
       TextEditingController();
 
-  double _latitude = 0.0; // 緯度
-  double _longitude = 0.0; // 経度
+  String _latitude = ''; // 緯度
+  String _longitude = ''; // 経度
+
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation();
+    print('緯度: $_latitude 経度: $_longitude');
+  }
 
   // 現在地を取得する関数
   Future<void> _getCurrentLocation() async {
@@ -63,8 +71,8 @@ class _SearchPage extends State<SearchPage> {
       // 現在地取得
       final position = await geolocation.determinePosition();
       // 現在地の緯度経度を取得
-      _latitude = position.latitude;
-      _longitude = position.longitude;
+      _latitude = position.latitude.toString();
+      _longitude= position.longitude.toString();
 
       print('緯度: $_latitude 経度: $_longitude');
     } catch (error) {
@@ -191,7 +199,8 @@ class _SearchPage extends State<SearchPage> {
                         height: 40,
                         width: 220,
                         labelText: '現在地',
-                        exampletext: '中崎町',
+                        exampletext: _latitude == '' && _longitude == '' 
+                        ? '現在地を取得中' : '$_latitude, $_longitude',
                       ),
                     ),
                     SizedBox(height: screen.designH(45)),
