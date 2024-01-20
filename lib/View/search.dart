@@ -14,6 +14,7 @@ import 'package:time_alchemy_app/component/ToggleButton.dart';
 import 'package:time_alchemy_app/component/textformfield.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
+import 'package:time_alchemy_app/logic/flutter/geolocation.dart';
 
 void main() => runApp(
       DevicePreview(
@@ -44,32 +45,85 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPage extends State<SearchPage> {
-  String now_time =
-      DateFormat('HH:mm').format(DateTime.now()).toString(); //現在時刻
-  final TextEditingController _next_destinationController =
-      TextEditingController();
+  String now_time = DateFormat('HH:mm').format(DateTime.now()).toString(); //現在時刻
+
+  final TextEditingController destination_controller = TextEditingController();
+  final TextEditingController _next_destinationController = TextEditingController();
+
+  double _latitude = 0.0; // 緯度
+  double _longitude = 0.0; // 経度
+
+
+  // 現在地を取得する関数
+  Future<void> _getCurrentLocation() async {
+    try {
+      // Geolocationインスタンス作成
+      final geolocation = Geolocation();
+      // 現在地取得
+      final position = await geolocation.determinePosition();
+      // 現在地の緯度経度を取得
+      _latitude = position.latitude;
+      _longitude= position.longitude;
+
+      print('緯度: $_latitude 経度: $_longitude');
+      
+    } catch (error) {
+      setState(() {
+        print(error);
+      });
+    }
+  }
+
+
+  void showFilterInOrOut() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     String next_destination = '';
     final screen = ScreenRef(context).watch(screenProvider);
     return Scaffold(
       backgroundColor: Colors_compornet.globalBackgroundColorRed,
+      appBar: AppBarWhiteTextCompornent(
+        title: 'TimeAlchemy',
+        rightText: '次へ',
+        onPressedLeft: () => {},
+        onPressedRight: () => {},
+        showRightText: false, //次へ
+      ),
       body: Stack(
         children: [
           BackgroundWidget(),
-          Center(
+          Container(
+            padding: EdgeInsets.only(top: screen.designH(150)),
             child: Row(
               children: [
                 SizedBox(
-                  width: screen.designW(16),
+                  width: screen.designW(7),
                 ),
-                //現在時刻取得
-                Padding(
-                  padding: EdgeInsets.only(top: screen.designH(75)),
+                Container(
                   child: Row(
                     children: [
-                      Align(
-                        alignment: Alignment(0, -0.63),
+                      //現在時刻表示
+                      SizedBox(
+                        width: screen.designW(7),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(
+                          top: screen.designH(22),
+                        ),
+                        alignment: Alignment.topLeft,
                         child: Text(
                           now_time,
                           style: TextStyle(
@@ -81,21 +135,24 @@ class _SearchPage extends State<SearchPage> {
                       ),
                       //スペース
                       SizedBox(
-                        width: screen.designW(16),
+                        width: screen.designW(7),
                       ),
-                      //時系列線
+
                       Stack(
-                        alignment: Alignment.center,
+                        alignment: Alignment.topCenter,
                         children: [
+                          //時系列線
+
                           Align(
-                            alignment: Alignment(0, -0.5),
+                            alignment: Alignment.topCenter,
                             child: Dashed_Line(
                               height: screen.designH(350),
                               width: screen.designW(2), // Dashed_Line の幅を変更
                             ),
                           ),
+                          // ↓アイコンと〇図形
                           Align(
-                            alignment: Alignment(0, -0.65),
+                            alignment: Alignment(0, -0.95),
                             child: Container(
                               width: screen.designW(36),
                               height: screen.designH(36),
@@ -119,66 +176,86 @@ class _SearchPage extends State<SearchPage> {
                   ),
                 ),
 
+                //時系列棒と現在地などの間隔
+                SizedBox(
+                  width: screen.designW(20),
+                ),
                 //現在地
-                Padding(
-                  padding: EdgeInsets.only(top: screen.designH(190)),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      TextFormButton(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(
+                        left: screen.designW(15),
+                      ),
+                      child: TextFormButton(
                         height: 40,
                         width: 220,
                         labelText: '現在地',
                         exampletext: '中崎町',
                       ),
-                      SizedBox(height: screen.designH(45)),
-                      Container(
-                        height: screen.designH(175),
-                        width: screen.designW(260),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors_compornet
-                                .globalBackgroundColorRed, // 枠線の色
-                            width: 2.0, // 枠線の太さ
+                    ),
+                    SizedBox(height: screen.designH(45)),
+                    Container(
+                      height: screen.designH(175),
+                      width: screen.designW(260),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color:
+                              Colors_compornet.globalBackgroundColorRed, // 枠線の色
+                          width: 2.0, // 枠線の太さ
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      // 他のウィジェットをここに追加
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: screen.designH(20),
                           ),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        // 他のウィジェットをここに追加
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: screen.designH(16),
-                            ),
-                            MyTextFormField(
-                              obscuretext: false,
-                              labelText: '次の予定の目的地',
-                              height: 40,
-                              width: 220,
-                              controller: _next_destinationController,
-                            ),
-                            SizedBox(height: screen.designH(16)),
-                            TextDisplay(
-                              labelText: '次の予定の到着時間',
-                              height: 40,
-                              width: 220,
-                              exampletext: '１３時',
-                            ),
-                          ],
-                        ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              MyTextFormField(
+                                labelText: '次の目的地',
+                                height: 30,
+                                width: 165,
+                                controller: destination_controller,
+                                obscuretext: false,
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  // マップアイコンを押した時の処理をここに記述
+                                },
+                                icon: Icon(
+                                  Icons.add_location_alt,
+                                  color:
+                                      Colors_compornet.globalBackgroundColorRed,
+                                  size: 40,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: screen.designH(5),
+                          ),
+                          TimePickerSample(),
+                        ],
                       ),
-                      SizedBox(
-                        height: screen.designH(100),
-                      ),
-                      ChoiceButtonRed(
-                        height: 250,
-                        width: 45,
-                        text: '検索',
-                        onPressed: () {
-                          print(_next_destinationController.text);
-                        },
-                      ),
-                    ],
-                  ),
+                    ),
+                    SizedBox(
+                      height: screen.designH(100),
+                    ),
+                    ChoiceButtonRed(
+                      height: 45,
+                      width: 250,
+                      text: '検索',
+                      onPressed: () {
+                        print(_next_destinationController.text);
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -195,15 +272,91 @@ class _SearchPage extends State<SearchPage> {
               height: screen.designH(20),
             ),
           ),
-          AppBarWhiteTextCompornent(
-            title: 'TimeAlchemy',
-            rightText: '次へ',
-            onPressedLeft: () => {},
-            onPressedRight: () => {},
-            showRightText: false, //次へ
-          ),
         ],
       ),
     );
+  }
+}
+
+class TimePickerSample extends StatefulWidget {
+  TimePickerSample({Key? key}) : super(key: key);
+
+  @override
+  _TimePickerSampleState createState() => _TimePickerSampleState();
+}
+
+class _TimePickerSampleState extends State<TimePickerSample> {
+  TimeOfDay? selectedTime;
+  String now_time =
+      DateFormat('HH:mm').format(DateTime.now()).toString(); //現在時刻
+  @override
+  Widget build(BuildContext context) {
+    final screen = MediaQuery.of(context).size;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "次の予定の到着時間",
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors_compornet.textfontcolorocher,
+          ),
+        ),
+        SizedBox(
+          height: screen.height * 0.002,
+        ),
+        ElevatedButton(
+          //到着時間選択
+          onPressed: () => _pickTime(context),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors_compornet.textfontColorWhite,
+            onPrimary: Colors_compornet.globalBackgroundColorRed,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(40),
+            ),
+            side: BorderSide(
+              color: Colors_compornet.globalBackgroundColorRed,
+              width: 2.0,
+            ),
+            padding: EdgeInsets.symmetric(
+              vertical: screen.height * 0.01,
+              horizontal: screen.width * 0.02,
+            ), // パディングを設定
+            minimumSize: Size(
+              screen.width * 0.55,
+              screen.height * 0.05,
+            ), // 最小サイズを設定
+          ),
+          child: Text(
+            selectedTime != null
+                ? "${selectedTime!.hour.toString().padLeft(2, '0')}:${selectedTime!.minute.toString().padLeft(2, '0')}"
+                : "$now_time",
+            style: TextStyle(
+              fontSize: 20,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future _pickTime(BuildContext context) async {
+    // デフォルトの初期時間を設定
+    final now = DateTime.now();
+    final initialTime = TimeOfDay.fromDateTime(now);
+
+    // showTimePickerを呼び出し、ユーザーが新しい時間を選択するのを待機
+    final newTime =
+        await showTimePicker(context: context, initialTime: initialTime);
+
+    // ユーザーが時間を選択した場合
+    if (newTime != null) {
+      // 選択された時間を状態にセットして、画面を再描画
+      setState(() => selectedTime = newTime);
+    } else {
+      // キャンセルされた場合は何もせずに処理を終了
+      return;
+    }
   }
 }

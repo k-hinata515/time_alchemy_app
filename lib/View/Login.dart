@@ -108,12 +108,12 @@ class _LoginPage extends State<LoginPage> {
                                 .signInWithEmailAndPassword(email, password);
 
                             if (user != null) {
-                              // ログイン成功時にsearch.dartに画面遷移
-                              // Navigator.pushReplacement(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //       builder: (context) => Search()),
-                              // );
+                              //ログイン成功時にsearch.dartに画面遷移
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Search()),
+                              );
                             }
                           } on FirebaseAuthException catch (e) {
                             // FirebaseAuthExceptionからエラーコードを取得し、エラーメッセージを表示
