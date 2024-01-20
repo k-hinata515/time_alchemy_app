@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
+import 'package:time_alchemy_app/constant/screen_pod.dart';
 
-// 背景茶色の時のappber
 class AppBarWhiteTextCompornent extends StatelessWidget
     implements PreferredSizeWidget {
   final String title; //Appbarテキスト
@@ -21,25 +21,31 @@ class AppBarWhiteTextCompornent extends StatelessWidget
     required this.onPressedRight,
     this.showLeftIcon = true, // デフォルトは表示
     this.showRightText = true,
-  }) : preferredSize = Size.fromHeight(kToolbarHeight + 5); // AppBarの高さを指定
+  }) : preferredSize = Size.fromHeight(kToolbarHeight + 70); // AppBarの高さを指定
 
+  @override
   Widget build(BuildContext context) {
+    final screen = ScreenRef(context).watch(screenProvider);
+
     return AppBar(
-      elevation: 0, // 背景透明
-      backgroundColor: Colors.transparent,
+      elevation: 0,
+      backgroundColor: Colors_compornet.globalBackgroundColorRed,
+      bottom: PreferredSize(
+        preferredSize: Size.fromHeight(0), // AppBarの下線を削除
+        child: Container(),
+      ),
       leading: showLeftIcon
           ? IconButton(
-              // 戻るアイコン
               icon: const Icon(Icons.arrow_back_ios_new),
               color: Colors_compornet.globalBackgroundColorwhite,
               onPressed: onPressedLeft,
             )
-          : null, // アイコン非表示
+          : null,
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title.split('\n')[0], // 改行コードで分割し、最初の行を表示
+            title.split('\n')[0],
             style: const TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.bold,
@@ -49,7 +55,7 @@ class AppBarWhiteTextCompornent extends StatelessWidget
           ),
           if (title.split('\n').length > 1)
             Text(
-              title.split('\n')[1], // 2行目があれば表示
+              title.split('\n')[1],
               style: const TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
@@ -73,6 +79,25 @@ class AppBarWhiteTextCompornent extends StatelessWidget
               ),
             ]
           : null,
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(
+              'assets/logo_images/BackgroundTimeImage.png',
+            ),
+            fit: BoxFit.none,
+          ),
+        ),
+        child: Align(
+          alignment: Alignment.topRight,
+          child: Padding(
+            padding: EdgeInsets.only(right: screen.designW(190)),
+            child: Container(
+                // ここに適用したい子要素を追加
+                ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -177,7 +202,7 @@ class AppBarBrackTextButtonCompornent extends StatelessWidget
     required this.onPressedLeft,
     required this.onPressedRight,
     this.showLeftIcon = true, // デフォルトは表示
-    this.showRightText = true, 
+    this.showRightText = true,
   }) : preferredSize = Size.fromHeight(kToolbarHeight + 5); // AppBarの高さを指定
 
   @override
@@ -197,7 +222,6 @@ class AppBarBrackTextButtonCompornent extends StatelessWidget
               onPressed: onPressedLeft,
               child: Text(
                 leftText,
-                
                 style: const TextStyle(
                   color: Colors_compornet.textfontColorBlack,
                   fontSize: 12,

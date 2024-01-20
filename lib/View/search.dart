@@ -45,14 +45,15 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPage extends State<SearchPage> {
-  String now_time = DateFormat('HH:mm').format(DateTime.now()).toString(); //現在時刻
+  String now_time =
+      DateFormat('HH:mm').format(DateTime.now()).toString(); //現在時刻
 
   final TextEditingController destination_controller = TextEditingController();
-  final TextEditingController _next_destinationController = TextEditingController();
+  final TextEditingController _next_destinationController =
+      TextEditingController();
 
   double _latitude = 0.0; // 緯度
   double _longitude = 0.0; // 経度
-
 
   // 現在地を取得する関数
   Future<void> _getCurrentLocation() async {
@@ -63,17 +64,15 @@ class _SearchPage extends State<SearchPage> {
       final position = await geolocation.determinePosition();
       // 現在地の緯度経度を取得
       _latitude = position.latitude;
-      _longitude= position.longitude;
+      _longitude = position.longitude;
 
       print('緯度: $_latitude 経度: $_longitude');
-      
     } catch (error) {
       setState(() {
         print(error);
       });
     }
   }
-
 
   void showFilterInOrOut() {
     showModalBottomSheet(
@@ -94,7 +93,7 @@ class _SearchPage extends State<SearchPage> {
     String next_destination = '';
     final screen = ScreenRef(context).watch(screenProvider);
     return Scaffold(
-      backgroundColor: Colors_compornet.globalBackgroundColorRed,
+      resizeToAvoidBottomInset: false,
       appBar: AppBarWhiteTextCompornent(
         title: 'TimeAlchemy',
         rightText: '次へ',
@@ -268,8 +267,8 @@ class _SearchPage extends State<SearchPage> {
                 // MapIconButton が押されたときの処理
                 print('Map Icon Button Pressed');
               },
-              width: screen.designW(20),
-              height: screen.designH(20),
+              width: screen.designW(60),
+              height: screen.designH(60),
             ),
           ),
         ],
@@ -310,7 +309,7 @@ class _TimePickerSampleState extends State<TimePickerSample> {
           //到着時間選択
           onPressed: () => _pickTime(context),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors_compornet.textfontColorWhite,
+            backgroundColor: Colors_compornet.textEntryField,
             onPrimary: Colors_compornet.globalBackgroundColorRed,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(40),
