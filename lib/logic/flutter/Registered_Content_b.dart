@@ -59,7 +59,7 @@ Future<void> saveUserInfoToFirestore(
 ) async {
   try {
     // Firestoreのusersコレクションにユーザー情報を保存
-    List<String> hobbyIds = await getHobbyIds(selectedTags);
+
     await FirebaseFirestore.instance.collection('users').doc(userId).set({
       'user': {
         'user_id': userId,
@@ -69,7 +69,7 @@ Future<void> saveUserInfoToFirestore(
 
         //'password': password, // パスワードの保存はセキュリティ上の理由から非推奨です。通常は保存しないか、安全な方法で保存します。
       },
-      'hobby_user': {'user_id': hobbyIds}
+      'hobby_user': {'hobby_List': selectedTags}
     });
 
     // 保存成功時の処理
@@ -82,26 +82,6 @@ Future<void> saveUserInfoToFirestore(
       print('エラー: $e');
     }
   }
-}
-
-Future<List<String>> getHobbyIds(List<String> selectedTags) async {
-  // hobbyコレクションからselectedTagsと一致するhobby_idを取得する処理
-  List<String> hobbyIds = [];
-
-  try {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('hobby')
-        .where('selectedTags', arrayContains: selectedTags)
-        .get();
-
-    for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-      hobbyIds.add(doc.id);
-    }
-  } catch (e) {
-    print("Error getting hobby ids: $e");
-  }
-
-  return hobbyIds;
 }
 
 // 画面遷移する関数

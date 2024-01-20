@@ -6,7 +6,6 @@ import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
 import 'package:time_alchemy_app/component/ButtonCompornent.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:time_alchemy_app/logic/flutter/Hobby_Registration_b.dart';
 
 void main() => runApp(
