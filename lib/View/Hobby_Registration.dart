@@ -155,6 +155,7 @@ class _SelectedHobby extends State<SelectedHobby> {
                                       : Colors_compornet
                                           .textfontColorBlack, //選択されていない時のTextのカラー
                                   fontWeight: FontWeight.bold, //フォント
+                                  fontSize: currentTag.length > 6 ?screen.designW(8) : screen.designW(12),
                                 ),
                               ),
                             ),

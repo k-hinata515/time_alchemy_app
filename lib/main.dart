@@ -38,6 +38,7 @@ class _StartPage extends StatelessWidget {
   _StartPage({super.key});
   @override
   Widget build(BuildContext context) {
+    debugShowCheckedModeBanner: false;//debugをけすやつ
     final screen = ScreenRef(context).watch(screenProvider);
     return Scaffold(
         backgroundColor: Colors_compornet.globalBackgroundColorwhite,
