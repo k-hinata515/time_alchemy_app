@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'package:time_alchemy_app/logic/flutter/geolocation.dart';
+import 'package:time_alchemy_app/logic/flutter/time_conversion.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert';
@@ -50,7 +51,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   Map<String, dynamic> _rootResponse = {}; // Directions APIのレスポンスデータを格納するList
   String _latitude = ''; // 緯度
   String _longitude = ''; // 経度
-  List<bool> checkboxStates = []; // 各要素のチェックボックスの状態を管理するリスト  
+  List<bool> checkboxStates = []; // 各要素のチェックボックスの状態を管理するリスト 
+  List<String> time = [];
   bool _isHobby = false;    // おすすめか趣味かを判定するフラグ
   bool _isRequestOpenAI = false;    // openAIにリクエストするかどうかを判定するフラグ
   bool _isNearbySearch = false;    // リクエストが完了したかどうかを判定するフラグ
@@ -61,18 +63,37 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   String _testlongitude = '135.298658';
 
   final List<String> _waypoints = []; // 経由地を格納するList
+
+
+  final List<Map<String, String?>> destination = [];
   
   final List<String> _recommend_tag = [
     'レストラン',
     'カフェ',
     'ラーメン',
   ];
+  //test(旅行の場合)
+  // final List<String> _hobby_tag = [
+  //   '周辺の観光名所',
+  //   'お土産におすすめのお店',
+  //   '食べ歩きにおすすめ',
+  //   '温泉地'
+  // ];
 
+  // //test(ファッションの場合)
+  // final List<String> _hobby_tag = [
+  //   '洋服店',
+  //   '靴屋',
+  //   '古着',
+  //   'アクセサリー店'
+  // ];
+
+  //test(スポーツとバー巡りの場合)
   final List<String> _hobby_tag = [
-    '周辺の観光名所',
-    'お土産におすすめのお店',
-    '食べ歩きにおすすめの場所',
-    '温泉地'
+    'スポーツバー',
+    'スポーツにおすすめなレジャー施設',
+    'お酒の種類が豊富なバー',
+    'スポーツ用品店'
   ];
 
   @override
@@ -81,8 +102,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
     // 初回時の現在地を取得
     Future(() async {
       await _getCurrentLocation(); 
-      await _nearbySearchRequest();
-      checkboxStates = await List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
+      // await _nearbySearchRequest();
+      // checkboxStates = await List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
     });
   }
 
@@ -111,12 +132,17 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   Future<void> _nearbySearchRequest() async {
     try {
       // Places API (nearbySearch) にリクエスト
+      // final http.Response placesResponse = await http.get(
+      //     Uri.parse('http://IP:Port/current_nearbysearch?latitude=$_latitude&longitude=$_longitude'));
+
+      // Places API (nearbySearch) にリクエスト
       final http.Response placesResponse = await http.get(
-          Uri.parse('http://192.168.11.10:5000/current_nearbysearch?latitude=$_latitude&longitude=$_longitude'));
+          Uri.parse('http://IP:Port/current_nearbysearch?latitude=34.70672267&longitude=135.50321211'));
 
       setState(() {
         // 取得したデータを _placesResponse に代入
         _placesResponse = json.decode(placesResponse.body);
+        checkboxStates = List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
         _isNearbySearch = true;
       });
 
@@ -132,12 +158,17 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   Future<void> _textSearchRequest(String text) async {
     try {
       // Places API (textSearch) にリクエスト
+      // final http.Response placesResponse = await http.get(
+      //   Uri.parse('http://IP:Port/current_textsearch?textQuery=$text&latitude=$_latitude&longitude=$_longitude'));
+
+      // Places API (nearbySearch) にリクエスト
       final http.Response placesResponse = await http.get(
-        Uri.parse('http://192.168.11.10:5000/current_textsearch?textQuery=$text&latitude=$_latitude&longitude=$_longitude'));
+          Uri.parse('http://IP:Port/current_textsearch?textQuery=$text&latitude=34.70672267&longitude=135.50321211'));
 
       setState(() {
         // 取得したデータを _placesResponse に代入
         _placesResponse = json.decode(placesResponse.body);
+        checkboxStates = List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
         // _isSearchをfalseに設定
         _isTextSearch = true;
       });
@@ -148,6 +179,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
         _placesResponse = {};
       });
     }
+
+    print(_placesResponse);
   }  
 
   // Directions APIにリクエストするための関数
@@ -155,14 +188,19 @@ class _Add_destination_Page extends State<Add_destination_Page> {
     try {
       //到着時間を設定
       DateTime now = DateTime.now();
-      DateTime arrival_time = await DateTime(now.year, now.month, now.day, 03, 0, 0).toUtc();
+      DateTime arrival_time = await DateTime(now.year, now.month, now.day, 13, 0, 0).toUtc();
       //UTCに変換
       String arrival_time_UTC = await arrival_time.toUtc().toIso8601String();
 
       // Directions API にリクエスト
-      final http.Response directionsResponse = await http.get(
+      // final http.Response directionsResponse = await http.get(
+      //     Uri.parse(
+      //       'http://IP:Port/current_places_root?origin=$_latitude,$_longitude&destination=$_testlatiude,$_testlongitude&waypoints=$_waypoints&arrival_time=$arrival_time_UTC'));
+
+        final http.Response directionsResponse = await http.get(
           Uri.parse(
-            'http://192.168.11.10:5000/current_places_root?origin=$_latitude,$_longitude&destination=$_testlatiude,$_testlongitude&waypoints=$_waypoints&arrival_time=$arrival_time_UTC'));
+            'http://IP:Port/current_places_root?origin=34.70672267,135.50321211&destination=$_testlatiude,$_testlongitude&waypoints=$_waypoints&arrival_time=$arrival_time_UTC'));
+
 
       setState(() {
         // 取得したデータを _placesResponse に代入
@@ -226,7 +264,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                         _isHobby = false;
                         Future(() async {
                           await _getCurrentLocation(); 
-                          // await _nearbySearchRequest();
+                          await _nearbySearchRequest();
                         });   
                       });
                     },
@@ -524,9 +562,9 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                             setState(() {
                                               checkboxStates[index] = value!;
                                               if(checkboxStates[index] == true){
-                                                _waypoints.add(_placesResponse['places'][index]['id']);
+                                                _waypoints.add(_placesResponse['places'][index]['displayName']['text']);
                                               } else {
-                                                _waypoints.remove(_placesResponse['places'][index]['id']);
+                                                _waypoints.remove(_placesResponse['places'][index]['displayName']['text']);
                                               }
                                               print(_waypoints);
                                             });
@@ -577,8 +615,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                 // await _nearbySearchRequest();   //test
                               });
                             },
-                            height: 50,    //50  
                             width: 140,      //140
+                            height: 50,    //50  
                           ),
                         )
                       ],
@@ -592,11 +630,14 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                       text: '追加',
                       onPressed: (){
                         //追加を押した時の処理
-                        _directionsRequest();
-                        
+                        Future(() async {
+                          //追加したい場所のルートをと移動時間を取得
+                          // await _directionsRequest();
+                          
+                        });
                       },
-                      height: 50,    //50  
-                      width: 140,      //140
+                      width: 50,      //140
+                      height: 140,    //50  
                     ),
                   )
                 ],
