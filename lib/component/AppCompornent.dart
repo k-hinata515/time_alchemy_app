@@ -26,79 +26,163 @@ class AppBarWhiteTextCompornent extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
-
-    return AppBar(
-      elevation: 0,
-      backgroundColor: Colors_compornet.globalBackgroundColorRed,
-      bottom: PreferredSize(
-        preferredSize: Size.fromHeight(0), // AppBarの下線を削除
-        child: Container(),
-      ),
-      leading: showLeftIcon
-          ? IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new),
-              color: Colors_compornet.globalBackgroundColorwhite,
-              onPressed: onPressedLeft,
-            )
-          : null,
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title.split('\n')[0],
-            style: const TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1,
-              color: Colors.white,
-            ),
-          ),
-          if (title.split('\n').length > 1)
-            Text(
-              title.split('\n')[1],
-              style: const TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1,
-                color: Colors.white,
-              ),
-            ),
-        ],
-      ),
-      actions: showRightText
-          ? [
-              TextButton(
-                onPressed: onPressedRight,
-                child: Text(
-                  rightText,
-                  style: const TextStyle(
-                    color: Colors_compornet.globalBackgroundColorwhite,
-                    fontSize: 15,
+    final screen2 = MediaQuery.of(context).size;
+    return Stack(
+      children: [
+        Container(
+          child: Positioned(
+            top: screen.designH(-40),
+            right: screen.designW(-150),
+            child: Container(
+              color: Colors_compornet.globalBackgroundColorRed,
+              child: Container(
+                width: screen.designW(550), // 画像の幅を適切に設定してください
+                height: screen.designH(350), // 画像の高さを適切に設定してください
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(
+                      'assets/logo_images/BackgroundTimeImage.png',
+                    ),
+                    fit: BoxFit.none,
                   ),
                 ),
               ),
-            ]
-          : null,
-      flexibleSpace: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-              'assets/logo_images/BackgroundTimeImage.png',
             ),
-            fit: BoxFit.none,
           ),
         ),
-        child: Align(
-          alignment: Alignment.topRight,
-          child: Padding(
-            padding: EdgeInsets.only(right: screen.designW(190)),
-            child: Container(
-                // ここに適用したい子要素を追加
+        AppBar(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          //backgroundColor: Colors_compornet.globalBackgroundColorRed,
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(0), // AppBarの下線を削除
+            child: Container(),
+          ),
+          leading: showLeftIcon
+              ? IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new),
+                  color: Colors_compornet.globalBackgroundColorwhite,
+                  onPressed: onPressedLeft,
+                )
+              : null,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title.split('\n')[0],
+                style: const TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                  color: Colors.white,
                 ),
+              ),
+              if (title.split('\n').length > 1)
+                Text(
+                  title.split('\n')[1],
+                  style: const TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                    color: Colors.white,
+                  ),
+                ),
+            ],
           ),
+          actions: showRightText
+              ? [
+                  TextButton(
+                    onPressed: onPressedRight,
+                    child: Text(
+                      rightText,
+                      style: const TextStyle(
+                        color: Colors_compornet.globalBackgroundColorwhite,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ]
+              : null,
         ),
-      ),
+      ],
     );
+
+    // return new MaterialApp(
+    //     home: Stack(
+    //   children: <Widget>[
+    //     Align(
+    //       alignment: Alignment(1, 0),
+    //       child: Container(
+    //         height: double.infinity,
+    //         width: double.infinity,
+    //         decoration: BoxDecoration(
+    //           image: DecorationImage(
+    //             image: AssetImage(
+    //               'assets/logo_images/BackgroundTimeImage.png',
+    //             ),
+    //             fit: BoxFit.cover,
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //     Scaffold(
+    //       backgroundColor: Colors.transparent,
+    //       appBar: AppBar(
+    //         backgroundColor: Colors.transparent,
+    //         elevation: 0.0,
+    //         bottom: PreferredSize(
+    //           preferredSize: Size.fromHeight(0), // AppBarの下線を削除
+    //           child: Container(),
+    //         ),
+    //         leading: showLeftIcon
+    //             ? IconButton(
+    //                 icon: const Icon(Icons.arrow_back_ios_new),
+    //                 color: Colors_compornet.globalBackgroundColorwhite,
+    //                 onPressed: onPressedLeft,
+    //               )
+    //             : null,
+    //         title: Column(
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           children: [
+    //             Text(
+    //               title.split('\n')[0],
+    //               style: const TextStyle(
+    //                 fontSize: 25,
+    //                 fontWeight: FontWeight.bold,
+    //                 letterSpacing: 1,
+    //                 color: Colors.white,
+    //               ),
+    //             ),
+    //             if (title.split('\n').length > 1)
+    //               Text(
+    //                 title.split('\n')[1],
+    //                 style: const TextStyle(
+    //                   fontSize: 25,
+    //                   fontWeight: FontWeight.bold,
+    //                   letterSpacing: 1,
+    //                   color: Colors.white,
+    //                 ),
+    //               ),
+    //           ],
+    //         ),
+    //         actions: showRightText
+    //             ? [
+    //                 TextButton(
+    //                   onPressed: onPressedRight,
+    //                   child: Text(
+    //                     rightText,
+    //                     style: const TextStyle(
+    //                       color: Colors_compornet.globalBackgroundColorwhite,
+    //                       fontSize: 15,
+    //                     ),
+    //                   ),
+    //                 ),
+    //               ]
+    //             : null,
+    //       ),
+    //     ),
+    //   ],
+    // ));
   }
 }
 
