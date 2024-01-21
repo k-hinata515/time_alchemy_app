@@ -47,14 +47,21 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   final TextEditingController searchtextfieldcontroller = TextEditingController();
   // final API_KEY = Env.key; // APIキー
   Map<String, dynamic> _placesResponse = {}; // Places APIのレスポンスデータを格納するList
-  double _latitude = 0.0; // 緯度
-  double _longitude = 0.0; // 経度
+  Map<String, dynamic> _rootResponse = {}; // Directions APIのレスポンスデータを格納するList
+  String _latitude = ''; // 緯度
+  String _longitude = ''; // 経度
+  List<bool> checkboxStates = []; // 各要素のチェックボックスの状態を管理するリスト  
   bool _isHobby = false;    // おすすめか趣味かを判定するフラグ
   bool _isRequestOpenAI = false;    // openAIにリクエストするかどうかを判定するフラグ
-  bool _isNearbySearch = false;    // リクエスト中かどうかを判定するフラグ
-  bool _isTextSearch = false;    // リクエスト中かどうかを判定するフラグ
-  
+  bool _isNearbySearch = false;    // リクエストが完了したかどうかを判定するフラグ
+  bool _isTextSearch = false;    // リクエスト完了したかどうかを判定するフラグ
 
+  //test
+  String _testlatiude = '34.412729';
+  String _testlongitude = '135.298658';
+
+  final List<String> _waypoints = []; // 経由地を格納するList
+  
   final List<String> _recommend_tag = [
     'レストラン',
     'カフェ',
@@ -74,7 +81,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
     // 初回時の現在地を取得
     Future(() async {
       await _getCurrentLocation(); 
-      // await _nearbySearchRequest();
+      await _nearbySearchRequest();
+      checkboxStates = await List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
     });
   }
 
@@ -86,8 +94,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
       // 現在地取得
       final position = await geolocation.determinePosition();
       // 現在地の緯度経度を取得
-      _latitude = position.latitude;
-      _longitude= position.longitude;
+      _latitude = position.latitude.toString();
+      _longitude= position.longitude.toString();
 
       print('緯度: $_latitude 経度: $_longitude');
       
@@ -109,7 +117,6 @@ class _Add_destination_Page extends State<Add_destination_Page> {
       setState(() {
         // 取得したデータを _placesResponse に代入
         _placesResponse = json.decode(placesResponse.body);
-        // _isSearchをfalseに設定
         _isNearbySearch = true;
       });
 
@@ -117,8 +124,6 @@ class _Add_destination_Page extends State<Add_destination_Page> {
       setState(() {
         print(error);
         _placesResponse = {};
-        // _isSearchをfalseに設定
-        _isNearbySearch = true;
       });
     }
   }         
@@ -128,7 +133,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
     try {
       // Places API (textSearch) にリクエスト
       final http.Response placesResponse = await http.get(
-        Uri.parse('http://192.168.11.10:5000/current_textsearch?&textQuery=$text&latitude=$_latitude&longitude=$_longitude'));
+        Uri.parse('http://192.168.11.10:5000/current_textsearch?textQuery=$text&latitude=$_latitude&longitude=$_longitude'));
 
       setState(() {
         // 取得したデータを _placesResponse に代入
@@ -141,11 +146,37 @@ class _Add_destination_Page extends State<Add_destination_Page> {
       setState(() {
         print(error);
         _placesResponse = {};
-        // _isSearchをfalseに設定
-        _isTextSearch = true;
       });
     }
   }  
+
+  // Directions APIにリクエストするための関数
+  Future<void> _directionsRequest() async {
+    try {
+      //到着時間を設定
+      DateTime now = DateTime.now();
+      DateTime arrival_time = await DateTime(now.year, now.month, now.day, 03, 0, 0).toUtc();
+      //UTCに変換
+      String arrival_time_UTC = await arrival_time.toUtc().toIso8601String();
+
+      // Directions API にリクエスト
+      final http.Response directionsResponse = await http.get(
+          Uri.parse(
+            'http://192.168.11.10:5000/current_places_root?origin=$_latitude,$_longitude&destination=$_testlatiude,$_testlongitude&waypoints=$_waypoints&arrival_time=$arrival_time_UTC'));
+
+      setState(() {
+        // 取得したデータを _placesResponse に代入
+        _rootResponse = json.decode(directionsResponse.body);
+        print(_rootResponse);
+      });
+
+    } catch (error) {
+      setState(() {
+        print(error);
+        _rootResponse = {};
+      });
+    }
+  }
 
   //テキストの長さで改行する関数
   String _textWrap(String text,  int line , int stop) {
@@ -166,7 +197,6 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
-    bool  is_Checked = false; //チェックボックスの状態管理 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors_compornet.globalBackgroundColorRed,
@@ -264,50 +294,6 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                 ],
               ),
             ),
-            // child: DefaultTabController(
-            //   length: 2,
-            //   initialIndex: 0,
-            //   child: TabBar(
-            //     unselectedLabelColor: Colors_compornet.textfontColorBlack,
-            //     labelColor: Colors_compornet.globalBackgroundColorRed,
-            //     indicator: BoxDecoration(
-            //       border: Border.all(color: Colors_compornet.textfontColorBlack),
-            //       borderRadius: BorderRadius.circular(12),
-            //     ),
-            //     tabs: <Widget>[
-            //       GestureDetector(                  
-            //         onTap: () async{                      
-            //           setState(() {
-            //             _isRequestOpenAI = false;
-            //             Future(() async {
-            //               await _getCurrentLocation(); 
-            //               // await _nearbySearchRequest();
-            //             });   
-            //           });
-            //         },
-            //         child:Tab(
-            //           text: 'おすすめ',
-            //         ),
-            //       ),
-            //       GestureDetector(
-            //         onTap: () async{
-            //           //TODO:AI側へのリクエスト処理
-            //           setState(() {
-            //             _isRequestOpenAI = true;  
-            //             Future(() async {
-            //               await _getCurrentLocation(); 
-            //               // TODO:AI側へのリクエスト関数
-            //               await _textSearchRequest(_hobby_tag[0]);  //test
-            //             });                   
-            //           });
-            //         },
-            //         child:Tab(
-            //           text: '趣味',
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
           ),
           SizedBox(
             width: screen.designW(100),
@@ -407,7 +393,6 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                 ),
               ],
             ),
-  //ここから   ?     
             Padding(
               padding: EdgeInsets.only(top: screen.designH(110)),
               child: Column(
@@ -534,10 +519,16 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                       child: Transform.scale(
                                         scale: 1.5,
                                         child: Checkbox(
-                                          value: is_Checked,
+                                          value: checkboxStates[index],
                                           onChanged: (value) {
                                             setState(() {
-                                              is_Checked = value!;
+                                              checkboxStates[index] = value!;
+                                              if(checkboxStates[index] == true){
+                                                _waypoints.add(_placesResponse['places'][index]['id']);
+                                              } else {
+                                                _waypoints.remove(_placesResponse['places'][index]['id']);
+                                              }
+                                              print(_waypoints);
                                             });
                                           },
                                         ),
@@ -586,14 +577,13 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                 // await _nearbySearchRequest();   //test
                               });
                             },
-                            height: 150,    //50  
-                            width: 50,      //140
+                            height: 50,    //50  
+                            width: 140,      //140
                           ),
                         )
                       ],
                     ),
                   ),            
-                  //ここまで
                   SizedBox(height: screen.designH(16)),   
                   if(_placesResponse.isNotEmpty)        
                   Align(
@@ -602,9 +592,11 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                       text: '追加',
                       onPressed: (){
                         //追加を押した時の処理
+                        _directionsRequest();
+                        
                       },
-                      height: 150,    //50  
-                      width: 50,      //140
+                      height: 50,    //50  
+                      width: 140,      //140
                     ),
                   )
                 ],
