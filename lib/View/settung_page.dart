@@ -140,7 +140,7 @@ class _LogoutDialogState extends State<LogoutDialog> {
                 actions: [
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors_compornet.hobbyDisplayWhite,
+                      color: Colors_compornet.globalBackgroundColorwhite,
                       borderRadius: BorderRadius.circular(30.0), // ボタンの角丸
                     ),
                     child: TextButton(

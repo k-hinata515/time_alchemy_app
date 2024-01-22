@@ -5,6 +5,7 @@ import 'package:device_preview/device_preview.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
+import 'package:time_alchemy_app/constant/screen_pod.dart';
 import 'package:time_alchemy_app/screen_pod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/src/rendering/stack.dart';
@@ -278,7 +279,7 @@ class _HobbyDisplayState extends State<HobbyDisplay> {
                           color: Colors_compornet.globalBackgroundColorRed,
                           width: 1.0,
                         ),
-                        color: Colors_compornet.hobbyDisplayWhite,
+                        color: Colors_compornet.globalBackgroundColorwhite,
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
