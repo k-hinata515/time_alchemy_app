@@ -25,4 +25,5 @@ class Colors_compornet {
       Color(0xFFEED8D2); //search.dartのNavigation iconで使用
   static const textfontColorBlack = Color(0xFf333333); //textの基本的な黒に使用
   static const textfontColorWhite = Color(0xFFFCFBFF); //textの基本的な白に使用
+  static const staytime = Color(0xFF24889E);
 }

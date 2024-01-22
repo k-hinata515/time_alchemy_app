@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
+import 'package:time_alchemy_app/component/Dashed_Line.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
 import 'package:intl/intl.dart';
@@ -20,6 +23,7 @@ class Navigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      
       debugShowCheckedModeBanner: false,
       useInheritedMediaQuery: true,
       locale: DevicePreview.locale(context),
@@ -55,26 +59,31 @@ class _Navigation_Page extends State<Navigation_Page> {
       'label': '大阪駅',
       'arrival_time': '11:45',
       'departure_time': '15:00',
+      'staying time':'15',
     },
     {
       'label': '福島駅',
       'arrival_time': '11:53',
       'departure_time': '11:55',
+      'staying time' :'2',
     },
     {
       'label': '西九条駅',
       'arrival_time': '11:58',
       'departure_time': '12:04',
+      'staying time':'6'
     },
     {
       'label': 'ユニバーサルシティ駅',
       'arrival_time': '12:09',
-      'departure_time': '12:09',
+      'departure_time': '12:11',
+      'staying time':'2'
     },
     {
       'label': 'ユニバーサルスタジオジャパン',
       'arrival_time': '12:16',
       'departure_time': null,
+      'staying time':null
     },
   ];
   @override
@@ -121,9 +130,12 @@ class _Navigation_Page extends State<Navigation_Page> {
                                 fontSize: screen.designH(16),
                                 fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(
-                            width: screen.designW(48),
+                          SizedBox(width: screen.designW(8),),
+                          Icon(
+                            Icons.directions_run,
+                            size: screen.designW(45),
                           ),
+
                           //ボタンだった場合の処理
                           ElevatedButton(
                             onPressed: () {
@@ -188,6 +200,9 @@ class _Navigation_Page extends State<Navigation_Page> {
                               destinationData['arrival_time'];
                           final String? departureTime =
                               destinationData['departure_time'];
+                          final String? stayingtime = destinationData['staying time'];
+                              
+
                           return Column(
                             children: [
                               SizedBox(
@@ -235,9 +250,7 @@ class _Navigation_Page extends State<Navigation_Page> {
                                                         FontWeight.bold),
                                               ),
                                           ]),
-                                      SizedBox(
-                                        width: screen.designW(48),
-                                      ),
+                                          SizedBox(width: screen.designW(48),),
                                       ElevatedButton(
                                         onPressed: () {
                                           // 現在地を押された時の処理
@@ -277,16 +290,81 @@ class _Navigation_Page extends State<Navigation_Page> {
                                           ],
                                         ),
                                       ),
+                                      IconButton(
+                                        color: Colors_compornet.globalBackgroundColorRed,
+                                        iconSize: screen.designH(30),
+                                        onPressed: () { 
+                                          //ここでsearch.dartにページ遷移するかAdd destination.dartに遷移する処理を書く
+                                          if(departureTime ==null){
+                                            //ここにsearch.dartにページ遷移するコード
+                                          }else{
+                                            //ここにAdd destination.dartにページ遷移するコードを書く
+
+                                          }
+                                        }, 
+                                        icon:Icon(Icons.location_on),
+                                      ),
+                                      if(stayingtime!=null)
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                         child: Container(//以下を入れる
+                                          height: screen.designH(40),
+                                          width: screen.designW(40),
+                                          decoration:  BoxDecoration(
+                                            color: Colors_compornet.textfontColorWhite,
+                                            shape: BoxShape.circle,
+                                            border: Border.all(color: Colors_compornet.globalBackgroundColorRed),
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              SizedBox(height: screen.designH(3),),
+                                              Text(
+                                                '滞在時間',
+                                                style: TextStyle(
+                                                    fontSize: screen.designW(7),
+                                                    fontWeight: FontWeight.bold
+                                                ),
+                                              ),
+                                              SizedBox(height: screen.designH(1),),
+                                              Text(
+                                                '$stayingtime分',
+                                                style: TextStyle(
+                                                  color: Colors_compornet.staytime,
+                                                  fontWeight: FontWeight.bold
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      )
                                     ],
-                                  ))
+                                  )
+                                ),
                             ],
                           );
-                        }),
+                        }
+                      ),
                   ],
                 ),
               ),
             ),
           ),
+          // Stack(
+          //   alignment: Alignment.topLeft,
+          //   children: [
+          //     //時系列線
+
+          //     Align(
+          //       alignment: Alignment(-0.5,-01),
+          //       child: Dashed_Line(
+          //         height: double.infinity,
+          //         width: screen.designW(4), // Dashed_Line の幅を変更
+          //       ),
+          //     ),
+          //     // ↓アイコンと〇図形
+              
+          //   ],
+          // ),
         ],
       ),
     );
