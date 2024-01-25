@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: ProfileEditPage(),
     );
   }
@@ -55,6 +56,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
+    // 名前
+    final TextEditingController nameController = TextEditingController();
+    // ID
+    final TextEditingController IDController = TextEditingController();
 
     return Scaffold(
       backgroundColor: Colors_compornet.globalBackgroundColorwhite,
@@ -105,10 +110,15 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             ),
             BorderLine(),
             //名前
-            const NameRow(
+            NameRow(
               label: '名前',
               value: 'tanaso',
               widthSize: 0.15,
+              controller: nameController,
+              onEditingComplete: (text) {
+                // ここで編集が完了したときの処理を行う
+                print('Name edited: $text');
+              },
             ),
             SizedBox(
               height: screen.designH(10),
@@ -120,10 +130,15 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               height: screen.designH(10),
             ),
             //ユーザーＩＤ
-            const NameRow(
-              label: 'ユーザーID',
-              value: 'tana.2220029',
-              widthSize: 0.08,
+            NameRow(
+              label: 'ユーザー名',
+              value: 'tanaso',
+              widthSize: 0.15,
+              controller: IDController,
+              onEditingComplete: (text) {
+                // ここで編集が完了したときの処理を行う
+                print('Name edited: $text');
+              },
             ),
             BorderLine(),
             //趣味表示
@@ -178,6 +193,8 @@ class NameRow extends StatefulWidget {
   final double labelFontSize;
   final double valueFontSize;
   final double widthSize;
+  final TextEditingController controller;
+  final Function(String) onEditingComplete;
 
   const NameRow({
     required this.label,
@@ -185,6 +202,8 @@ class NameRow extends StatefulWidget {
     this.labelFontSize = 14.0,
     this.valueFontSize = 17.0,
     required this.widthSize,
+    required this.controller,
+    required this.onEditingComplete,
   });
 
   @override
@@ -208,15 +227,25 @@ class _NameRowState extends State<NameRow> {
             fontSize: widget.labelFontSize,
           ),
         ),
-        SizedBox(
-          width: screen.width * widget.widthSize,
-        ),
-        Text(
-          widget.value,
-          style: TextStyle(
-            color: Colors.black, // ここに適切な色を指定
-            fontSize: widget.valueFontSize,
-            fontWeight: FontWeight.bold,
+        Spacer(),
+        Container(
+          width: screen.width * 0.7,
+          height: screen.height * 0.04,
+          child: TextField(
+            controller: widget.controller,
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.only(bottom: 8),
+              fillColor: Colors_compornet.globalBackgroundColorwhite,
+              filled: true,
+              border: InputBorder.none,
+            ),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+            onEditingComplete: () {
+              widget.onEditingComplete(widget.controller.text);
+              FocusScope.of(context).unfocus();
+            },
           ),
         ),
       ],
