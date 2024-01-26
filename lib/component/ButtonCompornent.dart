@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
 
 class ChoiceButtonRed extends StatelessWidget {
@@ -16,23 +17,26 @@ class ChoiceButtonRed extends StatelessWidget {
     @override
       Widget build(BuildContext context){
         final screen = ScreenRef(context).watch(screenProvider);
-        return ElevatedButton(
+        return SizedBox(
+          height: screen.designH(height),
+          width: screen.designW(width),
+          child: ElevatedButton(
           onPressed:onPressed,
           child: Text(
             text,
             style: TextStyle(
               color: Color.fromRGBO(252, 251, 255, 1,),
-              fontSize: 20,
+              fontSize: screen.designW(15),
             ),
             ),
           style: ElevatedButton.styleFrom(
             elevation:20,
-            fixedSize: Size(screen.designH(height),screen.designW(width)), 
             backgroundColor: Color.fromRGBO(126, 70, 62, 1),
             shape: RoundedRectangleBorder(
               borderRadius:  BorderRadius.circular(40),
             ),
           ),
+        )
         );
       } 
 }
