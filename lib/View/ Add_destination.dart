@@ -1,10 +1,11 @@
 import 'package:http/http.dart' as http;
+import 'package:time_alchemy_app/View/Navigation.dart';
 import 'package:time_alchemy_app/logic/flutter/geolocation.dart';
 import 'package:time_alchemy_app/logic/flutter/time_conversion.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert';
-// import '../env/env.dart';
+import '../env/env.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -45,40 +46,52 @@ class Add_destination_Page extends StatefulWidget {
 }
 
 class _Add_destination_Page extends State<Add_destination_Page> {
-  final TextEditingController searchtextfieldcontroller = TextEditingController();
-  // final API_KEY = Env.key; // APIキー
-  Map<String, dynamic> _placesResponse = {}; // Places APIのレスポンスデータを格納するList
-  Map<String, dynamic> _rootResponse = {}; // Directions APIのレスポンスデータを格納するList
-  String _latitude = ''; // 緯度
-  String _longitude = ''; // 経度
+  final TextEditingController searchtextfieldcontroller = TextEditingController();  // 検索テキストフィールドのコントローラー
+  final API_KEY = Env.key; // APIキー(画像取得用)
+
+  final List<Map<String, String?>> Navigation_List = [];  //Navigation_Pageに渡すリスト
+  List<Map<String, String?>> time_List = [];  // 出発、到着、平均滞在時刻を格納するリスト
+
+
+  Map<String, dynamic> _placesResponse = {}; // Places APIのレスポンスデータを格納するリスト
+  Map<String, dynamic> _rootResponse = {}; // Directions APIのレスポンスデータを格納するリスト
+
+  String _latitude = ''; // 緯度を格納する変数
+  String _longitude = ''; // 経度を格納する変数
+  String _average_stay_time = ''; // 平均滞在時間を格納する変数
+
+  List<String> travel_time_List = [];//移動時間を格納するリスト
+  List<String> _waypoints_List = []; // 経由地を格納するリスト
+
   List<bool> checkboxStates = []; // 各要素のチェックボックスの状態を管理するリスト 
-  List<String> time = [];
   bool _isHobby = false;    // おすすめか趣味かを判定するフラグ
-  bool _isRequestOpenAI = false;    // openAIにリクエストするかどうかを判定するフラグ
   bool _isNearbySearch = false;    // リクエストが完了したかどうかを判定するフラグ
-  bool _isTextSearch = false;    // リクエスト完了したかどうかを判定するフラグ
-
-  //test
-  String _testlatiude = '34.412729';
-  String _testlongitude = '135.298658';
-
-  final List<String> _waypoints = []; // 経由地を格納するList
+  // bool _isTextSearch = false;    // リクエスト完了したかどうかを判定するフラグ
+  bool _isRequestOpenAI = false;    // openAIにリクエストするかどうかを判定するフラグ
 
 
-  final List<Map<String, String?>> destination = [];
-  
   final List<String> _recommend_tag = [
     'レストラン',
     'カフェ',
     'ラーメン',
   ];
+
+  //test(次の予定の時間)
+  DateTime _testtime = DateTime(2023, 1, 28, 19, 0, 00);
+
+  //test(最終目的地)
+  String _testlatiude = ' 34.7055051';
+  String _testlongitude = '135.4983028';
+  String _test_place_name = '梅田駅';
+
+
   //test(旅行の場合)
-  // final List<String> _hobby_tag = [
-  //   '周辺の観光名所',
-  //   'お土産におすすめのお店',
-  //   '食べ歩きにおすすめ',
-  //   '温泉地'
-  // ];
+  final List<String> _hobby_tag = [
+    '周辺の観光名所',
+    'お土産におすすめのお店',
+    '食べ歩きにおすすめ',
+    '温泉地'
+  ];
 
   // //test(ファッションの場合)
   // final List<String> _hobby_tag = [
@@ -88,22 +101,26 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   //   'アクセサリー店'
   // ];
 
-  //test(スポーツとバー巡りの場合)
-  final List<String> _hobby_tag = [
-    'スポーツバー',
-    'スポーツにおすすめなレジャー施設',
-    'お酒の種類が豊富なバー',
-    'スポーツ用品店'
-  ];
+  // //test(スポーツとバー巡りの場合)
+  // final List<String> _hobby_tag = [
+  //   'スポーツバー',
+  //   'スポーツにおすすめなレジャー施設',
+  //   'お酒の種類が豊富なバー',
+  //   'スポーツ用品店'
+  // ];
 
   @override
   void initState() {
     super.initState();
     // 初回時の現在地を取得
     Future(() async {
-      await _getCurrentLocation(); 
-      // await _nearbySearchRequest();
-      // checkboxStates = await List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
+      try{
+        await _getCurrentLocation(); 
+        await _nearbySearchRequest();
+        checkboxStates = await List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
+      }catch(e){
+          print('検索データがないよ:$e');
+      }
     });
   }
 
@@ -132,12 +149,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   Future<void> _nearbySearchRequest() async {
     try {
       // Places API (nearbySearch) にリクエスト
-      // final http.Response placesResponse = await http.get(
-      //     Uri.parse('http://IP:Port/current_nearbysearch?latitude=$_latitude&longitude=$_longitude'));
-
-      // Places API (nearbySearch) にリクエスト
       final http.Response placesResponse = await http.get(
-          Uri.parse('http://IP:Port/current_nearbysearch?latitude=34.70672267&longitude=135.50321211'));
+          Uri.parse('http://IP:Port/current_nearbysearch?latitude=$_latitude&longitude=$_longitude'));
 
       setState(() {
         // 取得したデータを _placesResponse に代入
@@ -154,23 +167,19 @@ class _Add_destination_Page extends State<Add_destination_Page> {
     }
   }         
 
-  // Places API (nearbySearch)にリクエストするための関数
+  // Places API (textSearch)にリクエストするための関数
   Future<void> _textSearchRequest(String text) async {
     try {
       // Places API (textSearch) にリクエスト
-      // final http.Response placesResponse = await http.get(
-      //   Uri.parse('http://IP:Port/current_textsearch?textQuery=$text&latitude=$_latitude&longitude=$_longitude'));
-
-      // Places API (nearbySearch) にリクエスト
       final http.Response placesResponse = await http.get(
-          Uri.parse('http://IP:Port/current_textsearch?textQuery=$text&latitude=34.70672267&longitude=135.50321211'));
+          Uri.parse('http://IP:Port/current_textsearch?textQuery=$text&latitude=$_latitude&longitude=$_longitude'));
 
       setState(() {
         // 取得したデータを _placesResponse に代入
         _placesResponse = json.decode(placesResponse.body);
         checkboxStates = List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
-        // _isSearchをfalseに設定
-        _isTextSearch = true;
+        // _isTextSearchをfalseに設定
+        // _isTextSearch = true;
       });
 
     } catch (error) {
@@ -179,8 +188,6 @@ class _Add_destination_Page extends State<Add_destination_Page> {
         _placesResponse = {};
       });
     }
-
-    print(_placesResponse);
   }  
 
   // Directions APIにリクエストするための関数
@@ -192,22 +199,18 @@ class _Add_destination_Page extends State<Add_destination_Page> {
       //UTCに変換
       String arrival_time_UTC = await arrival_time.toUtc().toIso8601String();
 
-      // Directions API にリクエスト
-      // final http.Response directionsResponse = await http.get(
-      //     Uri.parse(
-      //       'http://IP:Port/current_places_root?origin=$_latitude,$_longitude&destination=$_testlatiude,$_testlongitude&waypoints=$_waypoints&arrival_time=$arrival_time_UTC'));
-
-        final http.Response directionsResponse = await http.get(
-          Uri.parse(
-            'http://IP:Port/current_places_root?origin=34.70672267,135.50321211&destination=$_testlatiude,$_testlongitude&waypoints=$_waypoints&arrival_time=$arrival_time_UTC'));
-
+      final http.Response directionsResponse = await http.get(
+        Uri.parse(
+          'http://IP:Port/current_places_root?origin=$_latitude,$_longitude&destination=$_testlatiude,$_testlongitude&waypoints=$_waypoints_List&arrival_time=$arrival_time_UTC'));
 
       setState(() {
         // 取得したデータを _placesResponse に代入
         _rootResponse = json.decode(directionsResponse.body);
-        print(_rootResponse);
       });
-
+      // 取得した移動時間をtimeに格納
+      for(int i = 0; i < _rootResponse['routes'][0]['legs'].length; i++){
+        travel_time_List.add(_rootResponse['routes'][0]['legs'][i]['duration']['text']);
+      }
     } catch (error) {
       setState(() {
         print(error);
@@ -301,7 +304,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                           await _getCurrentLocation(); 
                           // TODO:AI側へのリクエスト関数
                           await _getCurrentLocation();
-                          // await _textSearchRequest(_hobby_tag[0]);  //test
+                          await _textSearchRequest(_hobby_tag[0]);  //test
                         });                   
                       });
                     },
@@ -382,7 +385,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                       controller: searchtextfieldcontroller,
                       onEditingComplete: (text) {
                         if (text.isNotEmpty) {
-                          // _textSearchRequest(text);
+                          _textSearchRequest(text);
                         }
                       },
                     ),
@@ -398,7 +401,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                       final String narrow_down_tag = _isRequestOpenAI == true ? _hobby_tag[index] : _recommend_tag[index];
                       return GestureDetector(
                         onTap: () {
-                          // _textSearchRequest(narrow_down_tag);
+                          _textSearchRequest(narrow_down_tag);
                         },
                         child:Container(
                           margin: EdgeInsets.all(8),
@@ -562,11 +565,11 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                             setState(() {
                                               checkboxStates[index] = value!;
                                               if(checkboxStates[index] == true){
-                                                _waypoints.add(_placesResponse['places'][index]['displayName']['text']);
+                                                _waypoints_List.add(_placesResponse['places'][index]['displayName']['text']);
                                               } else {
-                                                _waypoints.remove(_placesResponse['places'][index]['displayName']['text']);
+                                                _waypoints_List.remove(_placesResponse['places'][index]['displayName']['text']);
                                               }
-                                              print(_waypoints);
+                                              print(_waypoints_List);
                                             });
                                           },
                                         ),
@@ -615,8 +618,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                 // await _nearbySearchRequest();   //test
                               });
                             },
-                            width: 140,      //140
-                            height: 50,    //50  
+                            width: 50,      //140
+                            height: 140,    //50  
                           ),
                         )
                       ],
@@ -632,8 +635,35 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                         //追加を押した時の処理
                         Future(() async {
                           //追加したい場所のルートをと移動時間を取得
-                          // await _directionsRequest();
+                          await _directionsRequest();
+                          //出発、到着、平均滞在時刻を取得
+                          time_List =  await Time_Conversion().convertTime(DateTime.now() , travel_time_List , _testtime);
                           
+                          // Navigation_Listに経由地の名、到着、出発時刻を格納
+                          for(int i = 0; i <= time_List.length - 1; i++){
+                            Navigation_List.add({
+                              'name': _waypoints_List[i],
+                              'arrival_time': time_List[i]['arrival_time'],
+                              'departure_time': time_List[i]['departure_time'],
+                            });
+                            if(i == time_List.length - 1 ){
+                              _average_stay_time = time_List[i]['average_stay_time'].toString();
+                            }
+                          }
+                          // Navigation_Pageに遷移
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Navigation(
+                                Navigation_List: Navigation_List, // 経由地の名、到着、出発時刻を格納したリスト
+                                average_stay_time: _average_stay_time, // 平均滞在時間  
+                                next_appointment_place: _test_place_name, //test 次の予定の場所
+                                next_appointment_time: _testtime.minute < 10 
+                                  ? "${_testtime.hour}:0${_testtime.minute}" 
+                                  : "${_testtime.hour}:${_testtime.minute}", //test 次の予定の時間
+                              ),
+                            ),
+                          );
                         });
                       },
                       width: 50,      //140

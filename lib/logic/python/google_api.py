@@ -1,3 +1,7 @@
+#pip install python-dotenv
+#pip install flask
+#pip install requests
+
 # pythonProjectフォルダに移動
 # export FLASK_APP=google_api.py で環境変数を設定
 # echo $FLASK_APPで環境変数が設定されているか確認
@@ -42,7 +46,7 @@ def nearbysearch_places():
         "languageCode": "ja",   # 取得する場所情報の言語
         "includedTypes": [place_type],  # 取得する場所の種類
         "excludedPrimaryTypes": ['hotel','train_station','airport','gym'],  # 除外する場所の種類
-        "maxResultCount": 20,   # 取得する場所の最大数
+        "maxResultCount": 2,   # 取得する場所の最大数
         "locationRestriction": {    # 取得する場所の範囲
             "circle": {
                 "center": {
@@ -59,7 +63,7 @@ def nearbysearch_places():
     headers = {
         "Content-Type": "application/json",
         "X-Goog-Api-Key": PLACES_API_KEY,
-        "X-Goog-FieldMask": "places.location,places.id,places.displayName.text,places.types,places.primaryType,places.rating,places.photos.name,places.priceLevel,places.websiteUri"
+        "X-Goog-FieldMask": "places.location,places.id,places.displayName.text,places.types,places.primaryType,places.rating,places.photos.name,places.name,places.websiteUri"
     }
 
     # リクエストを送信してレスポンスのJSONを取得
@@ -96,7 +100,7 @@ def textsearch_places():
     params = {
         "textQuery" : textQuery,    # 入力されたテキスト
         "languageCode": "ja",
-        "maxResultCount": 2,
+        "maxResultCount": 3,
         "locationBias": {    # 取得する場所の範囲
             "circle": {
                 "center": {
@@ -114,7 +118,7 @@ def textsearch_places():
     headers = {
         "Content-Type": "application/json",
         "X-Goog-Api-Key": PLACES_API_KEY,
-        "X-Goog-FieldMask": "places.location,places.id,places.displayName.text,places.types,places.primaryType,places.rating,places.photos.name"
+        "X-Goog-FieldMask": "places.name,places.location,places.id,places.displayName.text,places.types,places.primaryType,places.rating,places.photos.name,places.websiteUri"
     }
 
     # リクエストを送信してレスポンスのJSONを取得
@@ -156,10 +160,15 @@ def places_root():
         
     # transit_routing_preference = request.args.get('transit_routing_preference', default ='', type=str)
         
-    if request.args.get('waypoints', default ='', type=str) == '':
-        alternatives = request.args.get('alternatives', default = True, type=bool)
-    else:
-        alternatives = request.args.get('alternatives', default = False, type=bool)
+    # if request.args.get('waypoints', default ='', type=str) == '':
+    #     alternatives = request.args.get('alternatives', default = True, type=bool)
+    # else:
+    #     alternatives = request.args.get('alternatives', default = False, type=bool)
+
+    #waypointsをリストに変換
+    waypoints = '|'.join(waypoints.split(',') )
+
+    print(waypoints)
 
     # リクエストパラメータを設定
     params = {
@@ -174,7 +183,7 @@ def places_root():
         # "transit_routing_preference" : less_walking, # less_walking or fewer_transfers      
             # less_walking は、歩行距離に制限を付けてルートを計算するよう指定。
             # fewer_transfers は、乗り換え回数に制限を付けてルートを計算するよう指定
-        "alternatives" : alternatives,  # 代替ルート（中間地点がない場合のみ）
+        # "alternatives" : alternatives,  # 代替ルート（中間地点がない場合のみ）
         # "region" : 'jp',  # 地域
         "optimize_waypoints" : True,  # 経由地の最適化
         "travel_mode" : 'WALKING',    # 交通手段
