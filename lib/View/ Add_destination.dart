@@ -5,7 +5,7 @@ import 'package:time_alchemy_app/logic/flutter/time_conversion.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert';
-import '../env/env.dart';
+// import '../env/env.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +47,7 @@ class Add_destination_Page extends StatefulWidget {
 
 class _Add_destination_Page extends State<Add_destination_Page> {
   final TextEditingController searchtextfieldcontroller = TextEditingController();  // 検索テキストフィールドのコントローラー
-  final API_KEY = Env.key; // APIキー(画像取得用)
+  // final API_KEY = Env.key; // APIキー(画像取得用)
 
   final List<Map<String, String?>> Navigation_List = [];  //Navigation_Pageに渡すリスト
   List<Map<String, String?>> time_List = [];  // 出発、到着、平均滞在時刻を格納するリスト
@@ -113,15 +113,15 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   void initState() {
     super.initState();
     // 初回時の現在地を取得
-    Future(() async {
-      try{
-        await _getCurrentLocation(); 
-        await _nearbySearchRequest();
-        checkboxStates = await List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
-      }catch(e){
-          print('検索データがないよ:$e');
-      }
-    });
+    // Future(() async {
+    //   try{
+    //     await _getCurrentLocation(); 
+    //     await _nearbySearchRequest();
+    //     checkboxStates = await List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
+    //   }catch(e){
+    //       print('検索データがないよ:$e');
+    //   }
+    // });
   }
 
   // 現在地を取得する関数
@@ -635,7 +635,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                         //追加を押した時の処理
                         Future(() async {
                           //追加したい場所のルートをと移動時間を取得
-                          await _directionsRequest();
+                          // await _directionsRequest();
                           //出発、到着、平均滞在時刻を取得
                           time_List =  await Time_Conversion().convertTime(DateTime.now() , travel_time_List , _testtime);
                           
