@@ -13,12 +13,12 @@ import 'package:intl/intl.dart';
 void main() => runApp(
       DevicePreview(
         enabled: !kReleaseMode,
-        builder: (context) => Navigation(), // MyAppを直接指定
+        builder: (context) => Navigation(Navigation_List: [], average_stay_time: '', next_appointment_place: '', next_appointment_time: '', ), // MyAppを直接指定
       ),
     );
 
 class Navigation extends StatelessWidget {
-  Navigation({Key? key});
+  Navigation({Key? key, required List<Map<String, String?>> Navigation_List, required String average_stay_time, required String next_appointment_place, required String next_appointment_time});
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +43,7 @@ class Navigation_Page extends StatefulWidget {
 }
 
 class _Navigation_Page extends State<Navigation_Page> {
+
   String now_time =
       DateFormat('HH:mm').format(DateTime.now()).toString(); //現在時刻
 
