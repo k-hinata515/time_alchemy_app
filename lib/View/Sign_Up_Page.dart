@@ -106,12 +106,8 @@ class _Sign_Up_Page extends State<Sign_Up_Page> {
                   ChoiceButtonRed(
                     text: '次へ',
                     onPressed: () => _validateAndNavigate(context),
-                    // コンソールに変数の値を表示
-                    // print(username_controller.text),
-                    // print(mailaddress_controller.text.trim()),
-                    // print(password_controller.text),
-                    height: 150,
-                    width: 45,
+                    height: 45,
+                    width: 120,
                   ),
                   SizedBox(
                     height: screen.designH(24),

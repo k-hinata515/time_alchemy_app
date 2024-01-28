@@ -173,8 +173,8 @@ class _SelectedHobby extends State<SelectedHobby> {
                 width: MediaQuery.of(context).size.width, // 横幅を画面幅いっぱいに
                 child: Center(
                   child: ChoiceButtonRed(
-                    height: 100,
-                    width: 15,
+                    height: 45,
+                    width: 120,
                     text: '次へ',
                     onPressed: () => _validateAndNavigate(context),
                   ),

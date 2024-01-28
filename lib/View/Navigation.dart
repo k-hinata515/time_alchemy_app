@@ -308,9 +308,10 @@ class _Navigation_Page extends State<Navigation_Page> {
                                       if(stayingtime!=null)
                                       Align(
                                         alignment: Alignment.centerRight,
-                                         child: Container(//以下を入れる
-                                          height: screen.designH(40),
-                                          width: screen.designW(40),
+                                         child: Container(
+                                          alignment: Alignment.center,
+                                          height: screen.designH(50),
+                                          width: screen.designW(50),
                                           decoration:  BoxDecoration(
                                             color: Colors_compornet.textfontColorWhite,
                                             shape: BoxShape.circle,
@@ -331,7 +332,9 @@ class _Navigation_Page extends State<Navigation_Page> {
                                                 '$stayingtime分',
                                                 style: TextStyle(
                                                   color: Colors_compornet.staytime,
-                                                  fontWeight: FontWeight.bold
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: screen.designW(12),
+
                                                 ),
                                               )
                                             ],

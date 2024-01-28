@@ -134,109 +134,103 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
           _controller = controller;
         },
       ),
-      Padding(
-        padding: EdgeInsets.only(bottom: screen.designH(650)),
-        child: Column(
-          children: [
+      Column(
+        children: [
           Container(
-            height:screen.designH(40),
+            height: screen.designH(40),
             width: double.infinity,
             color: Colors_compornet.globalBackgroundColorRed,
           ),
           Container(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                Container(
-                  width: screen.designW(1),
-                ),
-                Container(
-                  height: screen.designH(95),
-                  decoration: BoxDecoration(
-                    color: Colors_compornet.textfontColorWhite,
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(width: screen.designW(8)),
-                      Container(
-                        height: screen.designH(45),
-                        width: screen.designW(75),
-                        decoration: BoxDecoration(
-                          color: Colors_compornet.globalBackgroundColorRed,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '現在地',
-                            style: TextStyle(
-                              color: Colors_compornet.globalBackgroundColorwhite,
-                            ),
-                          ),
-                        ),
-                      ),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: data.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            margin: EdgeInsets.only(left: 8),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  height: screen.designH(3),
-                                  width: screen.designW(70),
-                                  color: Colors_compornet.globalBackgroundColorRed,
-                                ),
-                                Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Colors_compornet.globalBackgroundColorRed,
-                                ),
-                                Container(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SizedBox(
-                                        width: screen.designW(60),
-                                        height: screen.designH(50),
-                                        child: FittedBox(
-                                          fit: BoxFit.contain,
-                                          child: Image.asset(
-                                            data[index],
-                                          ),
-                                        ),
-                                      ),
-                                      Text(
-                                        label[index],
-                                        style: TextStyle(
-                                          color: Colors_compornet.textfontcolorocher,
-                                          fontSize: label[index].length > 7
-                                              ? screen.designH(10)
-                                              : screen.designH(12),
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(width: screen.designW(8)),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+        height: screen.designH(95),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors_compornet.globalBackgroundColorwhite,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10),
+            topRight: Radius.circular(10),
           ),
         ),
-          ],
-        )
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              SizedBox(width:screen.designW(4)),
+              Container(
+                height: screen.designH(45),
+                width: screen.designW(75),
+                decoration: BoxDecoration(
+                  color: Colors_compornet.globalBackgroundColorRed,
+                  
+                ),
+                child: Center(
+                  child: Text(
+                    '現在地',
+                    style: TextStyle(
+                      color: Colors_compornet.globalBackgroundColorwhite,
+                      fontSize: screen.designW(15)
+                    ),
+                  ),
+                ),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    margin: EdgeInsets.only(left: 8),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          height: screen.designH(3),
+                          width: screen.designW(70),
+                          color: Colors_compornet.globalBackgroundColorRed,
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors_compornet.globalBackgroundColorRed,
+                        ),
+                        Container(
+                          child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: screen.designW(60),
+                              height: screen.designH(50),
+                              child: FittedBox(
+                                fit:BoxFit.contain ,
+                              child: Image.asset(
+                                data[index],
+                              ),
+                            ),
+                            ),
+                            
+                        Text(
+                          label[index],
+                          style: TextStyle(
+                            color: Colors_compornet.textfontcolorocher,
+                            fontSize: label[index].length > 7
+                                ? screen.designH(8)
+                                : screen.designH(12),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                          ],
+                        )
+                        ),
+                        SizedBox(width: screen.designW(8),)
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+        ],
       ),
     ],
   ),
