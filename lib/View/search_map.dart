@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:time_alchemy_app/View/search.dart';
 import 'package:time_alchemy_app/logic/flutter/search_map_b.dart';
 
+//
 void main() => runApp(
       DevicePreview(
         enabled: !kReleaseMode,
