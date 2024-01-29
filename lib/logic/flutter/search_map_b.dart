@@ -14,8 +14,7 @@ class _Search_Map_Page extends State<Search_Map_Page> {
 
   @override
   void initState() {
-    googlePlace = GooglePlace(
-        "AIzaSyA9iecZxr9RjOOcq7u79J0KeUXb9bH1FHI"); // ⬅︎GoogleMapと同じAPIキーを指定。
+    googlePlace = GooglePlace("API_key"); // ⬅︎GoogleMapと同じAPIキーを指定。
     super.initState();
   }
 
