@@ -5,6 +5,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:time_alchemy_app/View/search_map.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
 import 'package:time_alchemy_app/component/ButtonCompornent.dart';
@@ -15,6 +16,7 @@ import 'package:time_alchemy_app/component/textformfield.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
 import 'package:time_alchemy_app/logic/flutter/geolocation.dart';
+import 'package:time_alchemy_app/logic/flutter/search_map_b.dart';
 
 void main() => runApp(
       DevicePreview(
@@ -55,7 +57,6 @@ class _SearchPage extends State<SearchPage> {
   String _latitude = ''; // 緯度
   String _longitude = ''; // 経度
 
-
   @override
   void initState() {
     super.initState();
@@ -72,7 +73,7 @@ class _SearchPage extends State<SearchPage> {
       final position = await geolocation.determinePosition();
       // 現在地の緯度経度を取得
       _latitude = position.latitude.toString();
-      _longitude= position.longitude.toString();
+      _longitude = position.longitude.toString();
 
       print('緯度: $_latitude 経度: $_longitude');
     } catch (error) {
@@ -199,8 +200,9 @@ class _SearchPage extends State<SearchPage> {
                         height: 40,
                         width: 220,
                         labelText: '現在地',
-                        exampletext: _latitude == '' && _longitude == '' 
-                        ? '現在地を取得中' : '$_latitude, $_longitude',
+                        exampletext: _latitude == '' && _longitude == ''
+                            ? '現在地を取得中'
+                            : '$_latitude, $_longitude',
                       ),
                     ),
                     SizedBox(height: screen.designH(45)),
@@ -235,6 +237,11 @@ class _SearchPage extends State<SearchPage> {
                               IconButton(
                                 onPressed: () {
                                   // マップアイコンを押した時の処理をここに記述
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => SearchMap()),
+                                  );
                                 },
                                 icon: Icon(
                                   Icons.add_location_alt,

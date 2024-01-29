@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:device_preview/device_preview.dart';
@@ -49,16 +50,16 @@ class _SearchMapState extends State<SearchMap> {
     zoom: 14.4746,
   );
 
-  Future<void> searchLocation(List result) async {
+  Future<void> searchLocation(Map data) async {
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      target:
-          LatLng(result[0], result[1]), // CameraPositionのtargetに経度・緯度の順で指定します。
+      target: LatLng(data['latitude'], data['longitude']),
       zoom: 15,
     )));
+    print(data['placeName']); // 場所名を取得
   }
 
-   @override
+  @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
     return Scaffold(
@@ -73,16 +74,18 @@ class _SearchMapState extends State<SearchMap> {
               _controller.complete(controller);
             },
           ),
-           Container(
-              margin: EdgeInsets.only(bottom: screen.designW(16)),
-              alignment: Alignment.bottomCenter,
-             child: ChoiceButtonRed(
+          Container(
+            margin: EdgeInsets.only(bottom: screen.designW(16)),
+            alignment: Alignment.bottomCenter,
+            child: ChoiceButtonRed(
               text: '決定',
-              onPressed: () {},
-              height: 50,
-              width: 200,
+              onPressed: () {
+                print(LatLng);
+              },
+              height: 45,
+              width: 150,
             ),
-           ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:time_alchemy_app/View/Login.dart';
 import 'package:time_alchemy_app/View/Sign_Up_Page.dart';
+import 'package:time_alchemy_app/View/search.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
 import 'package:time_alchemy_app/firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +24,30 @@ void main() async {
   );
   // }
 
-  runApp(StartPage());
+  runApp(App());
+}
+
+class App extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+        debugShowCheckedModeBanner: false, //debugをけすやつ
+        title: 'Flutter app',
+        home: StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // スプラッシュ画面などに書き換えても良い
+              return const SizedBox();
+            }
+            if (snapshot.hasData) {
+              // User が null でなない、つまりサインイン済みのホーム画面へ
+              return SearchPage();
+            }
+            // User が null である、つまり未サインインのサインイン画面へ
+            return StartPage();
+          },
+        ),
+      );
 }
 
 class StartPage extends StatelessWidget {
@@ -38,7 +63,6 @@ class _StartPage extends StatelessWidget {
   _StartPage({super.key});
   @override
   Widget build(BuildContext context) {
-    debugShowCheckedModeBanner: false;//debugをけすやつ
     final screen = ScreenRef(context).watch(screenProvider);
     return Scaffold(
         backgroundColor: Colors_compornet.globalBackgroundColorwhite,

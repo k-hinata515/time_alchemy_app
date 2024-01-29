@@ -14,7 +14,8 @@ class _Search_Map_Page extends State<Search_Map_Page> {
 
   @override
   void initState() {
-    googlePlace = GooglePlace("API _KEY"); // ⬅︎GoogleMapと同じAPIキーを指定。
+    googlePlace = GooglePlace(
+        "AIzaSyA9iecZxr9RjOOcq7u79J0KeUXb9bH1FHI"); // ⬅︎GoogleMapと同じAPIキーを指定。
     super.initState();
   }
 
@@ -99,12 +100,21 @@ class _Search_Map_Page extends State<Search_Map_Page> {
                             // 取得した経度と緯度を配列に格納
                             LatLng.add(locations.first.latitude);
                             LatLng.add(locations.first.longitude);
+                            String placeName = predictions[index]
+                                .description
+                                .toString()
+                                .split(',')[4];
+                            LatLng.add(placeName); // 場所名のみを追加
                             print(LatLng);
                           });
-                          // Navigator.popで前の画面に戻るときに併せて経度と緯度を渡す。
+                          // Navigator.popで前の画面に戻るときに併せて経度と緯度と場所名を渡す。
                           Navigator.pop(
                             context,
-                            LatLng,
+                            {
+                              'placeName': LatLng[0],
+                              'latitude': LatLng[1],
+                              'longitude': LatLng[2],
+                            },
                           );
                         },
                       ),
