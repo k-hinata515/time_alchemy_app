@@ -4,6 +4,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:time_alchemy_app/View/search.dart';
+import 'package:time_alchemy_app/component/ButtonCompornent.dart';
+import 'package:time_alchemy_app/constant/screen_pod.dart';
 import 'package:time_alchemy_app/logic/flutter/search_map_b.dart';
 
 //
@@ -56,18 +58,32 @@ class _SearchMapState extends State<SearchMap> {
     )));
   }
 
-  @override
+   @override
   Widget build(BuildContext context) {
+    final screen = ScreenRef(context).watch(screenProvider);
     return Scaffold(
-      body: GoogleMap(
-        compassEnabled: false,
-        myLocationButtonEnabled: false,
-        mapType: MapType.normal,
-        initialCameraPosition: _initialCameraPosition,
-        onMapCreated: (GoogleMapController controller) {
-          // Added GoogleMapController type
-          _controller.complete(controller);
-        },
+      body: Stack(
+        children: [
+          GoogleMap(
+            compassEnabled: false,
+            myLocationButtonEnabled: false,
+            mapType: MapType.normal,
+            initialCameraPosition: _initialCameraPosition,
+            onMapCreated: (GoogleMapController controller) {
+              _controller.complete(controller);
+            },
+          ),
+           Container(
+              margin: EdgeInsets.only(bottom: screen.designW(16)),
+              alignment: Alignment.bottomCenter,
+             child: ChoiceButtonRed(
+              text: '決定',
+              onPressed: () {},
+              height: 50,
+              width: 200,
+            ),
+           ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -78,7 +94,6 @@ class _SearchMapState extends State<SearchMap> {
               },
             ),
           ).then((value) async {
-            // valueに配列に格納された経度・緯度が格納されています
             await searchLocation(value);
           });
         },
