@@ -1,8 +1,8 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:time_alchemy_app/View/Hobby_Registration.dart';
-import 'package:time_alchemy_app/View/Registered_Content.dart';
+import 'package:time_alchemy_app/View/hobby_registration.dart';
+import 'package:time_alchemy_app/View/registered_content.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
 import 'package:time_alchemy_app/component/ButtonCompornent.dart';
@@ -49,7 +49,6 @@ class _Sign_Up_Page extends State<Sign_Up_Page> {
 
   @override
   Widget build(BuildContext context) {
-    
     final screen = ScreenRef(context).watch(screenProvider); //screenpodの処理
     return Scaffold(
       resizeToAvoidBottomInset: false,
