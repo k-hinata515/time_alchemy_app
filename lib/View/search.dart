@@ -221,7 +221,7 @@ class _SearchPage extends State<SearchPage> {
                     ),
                     SizedBox(height: screen.designH(45)),
                     Container(
-                      height: screen.designH(175),
+                      height: screen.designH(180),
                       width: screen.designW(260),
                       decoration: BoxDecoration(
                         border: Border.all(
@@ -241,16 +241,12 @@ class _SearchPage extends State<SearchPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              MyTextFormField(
+                              String_Display(
                                 labelText: '次の目的地',
-                                height: 30,
+                                //ここに表示するTextを書く  ９文字以上のデータが入った場合表示の問題上強制的に...を後ろにつける処理を書いている
+                                displayText: 'ECCコンピュータ専門学校',//仮データ
+                                height: 47.5,
                                 width: 165,
-                                controller: widget.mapData?.placeName != null &&
-                                        widget.mapData!.placeName.isNotEmpty
-                                    ? TextEditingController(
-                                        text: widget.mapData!.placeName)
-                                    : destination_controller,
-                                obscuretext: false,
                               ),
                               IconButton(
                                 onPressed: () {

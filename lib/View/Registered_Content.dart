@@ -84,6 +84,8 @@ class _Registered_Content_Page extends State<Registered_Content_Page> {
                   String_Display(
                     labelText: 'ユーザネーム',
                     displayText: widget.username,
+                    height: 45,
+                    width: 300,
                   ),
                   SizedBox(
                     height: screen.designH(16),
@@ -91,6 +93,8 @@ class _Registered_Content_Page extends State<Registered_Content_Page> {
                   String_Display(
                     labelText: '電話番号またはメールアドレス',
                     displayText: widget.emailOrPhoneNumber,
+                    height: 45,
+                    width: 300,
                   ),
                   SizedBox(
                     height: screen.designH(16),
@@ -98,6 +102,8 @@ class _Registered_Content_Page extends State<Registered_Content_Page> {
                   String_Display(
                     labelText: 'パスワード',
                     displayText: widget.password,
+                    height: 45,
+                    width: 300,
                   ),
                   SizedBox(
                     height: screen.designH(16),
