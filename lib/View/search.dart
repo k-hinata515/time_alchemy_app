@@ -1,22 +1,22 @@
 import 'dart:math';
 
 import 'package:device_preview/device_preview.dart';
-import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:time_alchemy_app/View/search_map.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
 import 'package:time_alchemy_app/component/ButtonCompornent.dart';
 import 'package:time_alchemy_app/component/Dashed_Line.dart';
 import 'package:time_alchemy_app/component/IconButton.dart';
-import 'package:time_alchemy_app/component/ToggleButton.dart';
 import 'package:time_alchemy_app/component/textformfield.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
 import 'package:time_alchemy_app/logic/flutter/geolocation.dart';
-import 'package:time_alchemy_app/logic/flutter/search_map_b.dart';
+import 'package:time_alchemy_app/logic/flutter/map_class.dart';
 
 void main() => runApp(
       DevicePreview(
@@ -43,12 +43,16 @@ class Search extends StatelessWidget {
 }
 
 class SearchPage extends StatefulWidget {
+  final MapData? mapData;
+
+  SearchPage({this.mapData});
   State<StatefulWidget> createState() => _SearchPage();
 }
 
 class _SearchPage extends State<SearchPage> {
   String now_time =
       DateFormat('HH:mm').format(DateTime.now()).toString(); //現在時刻
+  String? userId;
 
   final TextEditingController destination_controller = TextEditingController();
   final TextEditingController _next_destinationController =
@@ -61,8 +65,18 @@ class _SearchPage extends State<SearchPage> {
   void initState() {
     super.initState();
     _getCurrentLocation();
-    print('緯度: $_latitude 経度: $_longitude');
+    // _getUserID();
+    //print('緯度: $_latitude 経度: $_longitude');
   }
+
+// ユーザーIDを取得する関数
+  // void _getUserID() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     userId = prefs.getString('userID');
+  //   });
+  //   print('UserID: $userId'); // ユーザーIDをコンソールに表示
+  // }
 
   // 現在地を取得する関数
   Future<void> _getCurrentLocation() async {
@@ -75,7 +89,7 @@ class _SearchPage extends State<SearchPage> {
       _latitude = position.latitude.toString();
       _longitude = position.longitude.toString();
 
-      print('緯度: $_latitude 経度: $_longitude');
+      //print('緯度: $_latitude 経度: $_longitude');
     } catch (error) {
       setState(() {
         print(error);
@@ -107,7 +121,7 @@ class _SearchPage extends State<SearchPage> {
         title: 'TimeAlchemy',
         rightText: '次へ',
         onPressedLeft: () => {},
-        onPressedRight: () => {},
+        onPressedRight: () async {},
         showRightText: false, //次へ
       ),
       body: Stack(
@@ -231,7 +245,11 @@ class _SearchPage extends State<SearchPage> {
                                 labelText: '次の目的地',
                                 height: 30,
                                 width: 165,
-                                controller: destination_controller,
+                                controller: widget.mapData?.placeName != null &&
+                                        widget.mapData!.placeName.isNotEmpty
+                                    ? TextEditingController(
+                                        text: widget.mapData!.placeName)
+                                    : destination_controller,
                                 obscuretext: false,
                               ),
                               IconButton(

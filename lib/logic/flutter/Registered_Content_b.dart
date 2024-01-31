@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:time_alchemy_app/View/search.dart';
+import 'package:time_alchemy_app/logic/flutter/saveLogin.dart';
 
 void newregistration({
   required String username,
@@ -32,6 +33,9 @@ Future<void> registerWithEmail(String username, String email, String password,
     // 登録成功時の処理
     // 登録成功したユーザーのUID
     String userId = userCredential.user!.uid;
+    // ログイン情報を保存
+    saveLoginInfo(true);
+    saveUserID(userId);
     // Firestoreにユーザー情報を保存
     await saveUserInfoToFirestore(
         userId, username, email, password, selectedTags);

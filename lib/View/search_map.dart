@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:time_alchemy_app/View/search.dart';
 import 'package:time_alchemy_app/component/ButtonCompornent.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
+import 'package:time_alchemy_app/logic/flutter/map_class.dart';
 import 'package:time_alchemy_app/logic/flutter/search_map_b.dart';
 
 //
@@ -41,6 +42,7 @@ class SearchMap extends StatefulWidget {
 }
 
 class _SearchMapState extends State<SearchMap> {
+  MapData? _mapData;
   // Changed to State<SearchMap>
   Completer<GoogleMapController> _controller =
       Completer(); // Added <GoogleMapController>
@@ -50,18 +52,24 @@ class _SearchMapState extends State<SearchMap> {
     zoom: 14.4746,
   );
 
-  Future<void> searchLocation(Map data) async {
+  Future<void> searchLocation(Map<String, dynamic> data) async {
     final GoogleMapController controller = await _controller.future;
+    final double latitude = double.parse(data['latitude'].toString());
+    final double longitude = double.parse(data['longitude'].toString());
+
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      target: LatLng(data['latitude'], data['longitude']),
+      target: LatLng(latitude, longitude),
       zoom: 15,
     )));
-    print(data['placeName']); // 場所名を取得
+    _mapData = MapData(latitude, longitude, data["placeName"]);
   }
 
   @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
+    //final List<dynamic>? place =
+    //    ModalRoute.of(context)?.settings.arguments as List<dynamic>?;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -80,7 +88,13 @@ class _SearchMapState extends State<SearchMap> {
             child: ChoiceButtonRed(
               text: '決定',
               onPressed: () {
-                print(LatLng);
+                if (_mapData != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SearchPage(mapData: _mapData)),
+                  );
+                }
               },
               height: 45,
               width: 150,

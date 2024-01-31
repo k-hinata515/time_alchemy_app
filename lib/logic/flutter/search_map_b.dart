@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_place/google_place.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:time_alchemy_app/logic/flutter/map_class.dart';
 //
 
 class Search_Map_Page extends StatefulWidget {
@@ -14,7 +15,7 @@ class _Search_Map_Page extends State<Search_Map_Page> {
 
   @override
   void initState() {
-    googlePlace = GooglePlace("API_key"); // ⬅︎GoogleMapと同じAPIキーを指定。
+    googlePlace = GooglePlace("API _KEY"); // ⬅︎GoogleMapと同じAPIキーを指定。
     super.initState();
   }
 
@@ -102,17 +103,19 @@ class _Search_Map_Page extends State<Search_Map_Page> {
                             String placeName = predictions[index]
                                 .description
                                 .toString()
-                                .split(',')[4];
+                                .split(',')
+                                .last;
                             LatLng.add(placeName); // 場所名のみを追加
                             print(LatLng);
                           });
+
                           // Navigator.popで前の画面に戻るときに併せて経度と緯度と場所名を渡す。
                           Navigator.pop(
                             context,
                             {
-                              'placeName': LatLng[0],
-                              'latitude': LatLng[1],
-                              'longitude': LatLng[2],
+                              'latitude': LatLng[0],
+                              'longitude': LatLng[1],
+                              'placeName': LatLng[2],
                             },
                           );
                         },
