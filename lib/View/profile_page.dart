@@ -47,8 +47,9 @@ class ProfileEditPage extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 75,
-                        backgroundImage: NetworkImage(
-                            'https://i.pinimg.com/736x/10/c9/44/10c944230e32a665618cb6223902fda5.jpg'),
+                        backgroundImage: AssetImage(
+                          'assets/logo_images/no_image.jpg',
+                        ),
                       ),
                       SizedBox(height: 3.0),
                       Text(
@@ -73,7 +74,7 @@ class ProfileEditPage extends StatelessWidget {
               ),
             ],
           ),
-          AppBarWhiteTextCompornent(
+          ProfileAppBarCompornent(
             title: 'プロフィール',
             rightText: '編集',
             onPressedLeft: () => {},
