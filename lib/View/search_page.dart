@@ -12,6 +12,7 @@ import 'package:time_alchemy_app/component/ButtonCompornent.dart';
 import 'package:time_alchemy_app/component/Dashed_Line.dart';
 import 'package:time_alchemy_app/component/IconButton.dart';
 import 'package:time_alchemy_app/component/ToggleButton.dart';
+import 'package:time_alchemy_app/component/menubar.dart';
 import 'package:time_alchemy_app/component/textformfield.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
@@ -275,18 +276,11 @@ class _SearchPage extends State<SearchPage> {
               ],
             ),
           ),
-          Positioned(
-            bottom: screen.designH(20), // 下方向の位置
-            right: screen.designH(20), // 右方向の位置
-            child: MapIconButton(
-              onPressed: () {
-                // MapIconButton が押されたときの処理
-                print('Map Icon Button Pressed');
-              },
-              width: screen.designW(60),
-              height: screen.designH(60),
-            ),
-          ),
+          
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: ClockMenu(),
+          )
         ],
       ),
     );
