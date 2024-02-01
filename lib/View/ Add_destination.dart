@@ -79,11 +79,11 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   ];
 
   //test(次の予定の時間)
-  DateTime _testtime = DateTime(2023, 1, 28, 19, 0, 00);
+  DateTime _testtime = DateTime(2024, 2, 2, 1, 0, 00);
 
   //test(最終目的地)
-  String _testlatiude = ' 34.7055051';
-  String _testlongitude = '135.4983028';
+  String _test_gole_latiude = '34.7051934134671';
+  String _test_gole_longitude = '135.49840696016142';
   String _test_place_name = '梅田駅';
 
   //test(旅行の場合)
@@ -135,8 +135,10 @@ class _Add_destination_Page extends State<Add_destination_Page> {
       // 現在地取得
       final position = await geolocation.determinePosition();
       // 現在地の緯度経度を取得
-      _latitude = position.latitude.toString();
-      _longitude = position.longitude.toString();
+      // _latitude = position.latitude.toString();
+      // _longitude = position.longitude.toString();
+      _latitude = "34.70647342120254";
+      _longitude = "135.50323157772246";
 
       print('緯度: $_latitude 経度: $_longitude');
     } catch (error) {
@@ -202,7 +204,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
       String arrival_time_UTC = await arrival_time.toUtc().toIso8601String();
 
       final http.Response directionsResponse = await http.get(Uri.parse(
-          'http://IP:Port/current_places_root?origin=$_latitude,$_longitude&destination=$_testlatiude,$_testlongitude&waypoints=$_waypoints_List&arrival_time=$arrival_time_UTC'));
+          'http://IP:Port/current_places_root?origin=$_latitude,$_longitude&destination=$_test_gole_latiude,$_test_gole_longitude&waypoints=$_waypoints_List&arrival_time=$arrival_time_UTC'));
 
       setState(() {
         // 取得したデータを _placesResponse に代入
@@ -464,12 +466,9 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                             itemBuilder: (BuildContext context, int index) {
                               return GestureDetector(
                                 onTap: () {
-                                  if (_placesResponse['places'][index]
-                                          ['websiteUri'] !=
-                                      null) {
+                                  if (_placesResponse['places'][index]['websiteUri'] != null) {
                                     launchUrl(
-                                        Uri.parse(_placesResponse['places']
-                                            [index]['websiteUri']),
+                                        Uri.parse(_placesResponse['places'][index]['websiteUri']),
                                         mode: LaunchMode.platformDefault,
                                         webOnlyWindowName: '_blank');
                                   } else {
@@ -532,13 +531,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                                     MainAxisAlignment.center,
                                                 children: [
                                                   Text(
-                                                    _textWrap(
-                                                        _placesResponse['places']
-                                                                    [index]
-                                                                ['displayName']
-                                                            ['text'],
-                                                        12,
-                                                        24),
+                                                    _textWrap(_placesResponse['places'][index]['displayName']['text'] , 12 , 24),
                                                     style: TextStyle(
                                                       fontSize: 15,
                                                       fontWeight:
@@ -557,49 +550,20 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                                               .textfontColorBlack,
                                                         ),
                                                       ),
-                                                      _placesResponse['places']
-                                                                      [index]
-                                                                  ['rating'] !=
-                                                              null
+                                                      _placesResponse['places'][index]['rating'] != null
                                                           ? SizedBox(
-                                                              height: screen
-                                                                  .designH(16),
+                                                              height: screen.designH(16),
                                                               child: FittedBox(
                                                                 child: Row(
                                                                   children: [
-                                                                    if (_placesResponse['places'][index]
-                                                                            [
-                                                                            'rating'] !=
-                                                                        null)
+                                                                    if (_placesResponse['places'][index]['rating'] != null)
                                                                       // 評価の数だけ星を表示
-                                                                      for (var i =
-                                                                              0;
-                                                                          i <
-                                                                              _placesResponse['places'][index]['rating']
-                                                                                  .floor();
-                                                                          i++)
-                                                                        const Icon(
-                                                                            Icons
-                                                                                .star,
-                                                                            color:
-                                                                                Colors.orange),
-                                                                    if (_placesResponse['places'][index]
-                                                                            [
-                                                                            'rating'] !=
-                                                                        null)
+                                                                      for (var i =0; i < _placesResponse['places'][index]['rating'].floor(); i++)
+                                                                        const Icon( Icons.star, color:Colors.orange ),
+                                                                    if (_placesResponse['places'][index]['rating'] != null)
                                                                       // 評価の数が5に満たない場合、星の枠を表示
-                                                                      for (var j =
-                                                                              0;
-                                                                          j <
-                                                                              5 -
-                                                                                  _placesResponse['places'][index]['rating']
-                                                                                      .floor();
-                                                                          j++)
-                                                                        const Icon(
-                                                                            Icons
-                                                                                .star_border,
-                                                                            color:
-                                                                                Colors.orange),
+                                                                      for (var j = 0; j < 5 - _placesResponse['places'][index]['rating'].floor(); j++)
+                                                                        const Icon( Icons.star_border, color:Colors.orange),
                                                                   ],
                                                                 ),
                                                               ),
@@ -627,21 +591,12 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                                 value: checkboxStates[index],
                                                 onChanged: (value) {
                                                   setState(() {
-                                                    checkboxStates[index] =
-                                                        value!;
-                                                    if (checkboxStates[index] ==
-                                                        true) {
+                                                    checkboxStates[index] = value!;
+                                                    if (checkboxStates[index] == true) {
                                                       _waypoints_List.add(
-                                                          _placesResponse['places']
-                                                                      [index][
-                                                                  'displayName']
-                                                              ['text']);
+                                                          _placesResponse['places'][index]['displayName']['text']);
                                                     } else {
-                                                      _waypoints_List.remove(
-                                                          _placesResponse['places']
-                                                                      [index][
-                                                                  'displayName']
-                                                              ['text']);
+                                                      _waypoints_List.remove( _placesResponse['places'][index]['displayName']['text']);
                                                     }
                                                     print(_waypoints_List);
                                                   });
@@ -694,8 +649,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                       // await _nearbySearchRequest();   //test
                                     });
                                   },
-                                  width: 50, //140
-                                  height: 140, //50
+                                  width: 140, //140
+                                  height: 50, //50
                                 ),
                               )
                             ],
@@ -711,7 +666,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                           //追加を押した時の処理
                           Future(() async {
                             //追加したい場所のルートをと移動時間を取得
-                            // await _directionsRequest();
+                            await _directionsRequest();
                             //出発、到着、平均滞在時刻を取得
                             time_List = await Time_Conversion().convertTime(
                                 DateTime.now(), travel_time_List, _testtime);
@@ -734,7 +689,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                             await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => Navigation(
+                                builder: (context) => Navigation_Page(
                                   Navigation_List:
                                       Navigation_List, // 経由地の名、到着、出発時刻を格納したリスト
                                   average_stay_time:
@@ -749,8 +704,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                             );
                           });
                         },
-                        width: 50, //140
-                        height: 140, //50
+                        width: 140, //140
+                        height: 50, //50
                       ),
                     )
                 ],
