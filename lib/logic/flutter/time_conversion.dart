@@ -19,7 +19,7 @@ class Time_Conversion {
     print('現在時刻（分換算）$time_now_int');
 
     //next_appointment_timeをint型に変換し分換算にする（次の予定の時間）
-    int next_appointment_time_int = next_appointment_time.hour * 60 + next_appointment_time.minute -10;
+    int next_appointment_time_int = next_appointment_time.hour * 60 + next_appointment_time.minute;
     print('次の予定の時間（分換算）$next_appointment_time_int');
 
     // travel_time（"〜時間〜分"）の値を00:00の形式に変換
