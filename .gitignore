@@ -45,5 +45,10 @@ app.*.map.json
 /ios
 /macos
 /windows
-pubspec.locks
+/linux
+pubspec.lock
 /android/app/google-services.json
+*.env
+*env.g.dart
+env.dart
+assets/json/
