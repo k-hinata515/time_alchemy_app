@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:time_alchemy_app/View/%20Add_destination.dart';
 import 'package:time_alchemy_app/View/search_map.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
@@ -17,6 +18,8 @@ import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
 import 'package:time_alchemy_app/logic/flutter/geolocation.dart';
 import 'package:time_alchemy_app/logic/flutter/map_class.dart';
+
+typedef void TimeSelectionCallback(TimeOfDay selectedTime);
 
 void main() => runApp(
       DevicePreview(
@@ -44,7 +47,6 @@ class Search extends StatelessWidget {
 
 class SearchPage extends StatefulWidget {
   final MapData? mapData;
-
   SearchPage({this.mapData});
   State<StatefulWidget> createState() => _SearchPage();
 }
@@ -55,11 +57,11 @@ class _SearchPage extends State<SearchPage> {
   String? userId;
 
   final TextEditingController destination_controller = TextEditingController();
-  final TextEditingController _next_destinationController =
-      TextEditingController();
 
   String _latitude = ''; // 緯度
   String _longitude = ''; // 経度
+
+  TimeOfDay? selectedTime;
 
   @override
   void initState() {
@@ -113,7 +115,6 @@ class _SearchPage extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    String next_destination = '';
     final screen = ScreenRef(context).watch(screenProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -244,7 +245,12 @@ class _SearchPage extends State<SearchPage> {
                               String_Display(
                                 labelText: '次の目的地',
                                 //ここに表示するTextを書く  ９文字以上のデータが入った場合表示の問題上強制的に...を後ろにつける処理を書いている
-                                displayText: 'ECCコンピュータ専門学校',//仮データ
+                                displayText: widget.mapData?.placeName !=
+                                            null &&
+                                        widget.mapData!.placeName.isNotEmpty
+                                    ? widget.mapData!
+                                        .placeName // Accessing the text property of TextEditingController
+                                    : destination_controller.text,
                                 height: 47.5,
                                 width: 165,
                               ),
@@ -269,7 +275,13 @@ class _SearchPage extends State<SearchPage> {
                           SizedBox(
                             height: screen.designH(5),
                           ),
-                          TimePickerSample(),
+                          TimePickerSample(
+                            onTimeSelected: (TimeOfDay time) {
+                              setState(() {
+                                selectedTime = time;
+                              });
+                            },
+                          ),
                         ],
                       ),
                     ),
@@ -281,7 +293,7 @@ class _SearchPage extends State<SearchPage> {
                       width: 250,
                       text: '検索',
                       onPressed: () {
-                        print(_next_destinationController.text);
+                        _navigateToAddDestinationPage();
                       },
                     ),
                   ],
@@ -305,10 +317,35 @@ class _SearchPage extends State<SearchPage> {
       ),
     );
   }
+
+  void _navigateToAddDestinationPage() {
+    DateTime? selectedDateTime;
+    if (selectedTime != null) {
+      final now = DateTime.now();
+      selectedDateTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        selectedTime!.hour,
+        selectedTime!.minute,
+      );
+    }
+    print(selectedDateTime);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Add_destination_Page(
+          mapData: widget.mapData,
+          selectedTime: selectedDateTime,
+        ),
+      ),
+    );
+  }
 }
 
 class TimePickerSample extends StatefulWidget {
-  TimePickerSample({Key? key}) : super(key: key);
+  final TimeSelectionCallback onTimeSelected;
+  TimePickerSample({Key? key, required this.onTimeSelected}) : super(key: key);
 
   @override
   _TimePickerSampleState createState() => _TimePickerSampleState();
@@ -383,6 +420,8 @@ class _TimePickerSampleState extends State<TimePickerSample> {
     if (newTime != null) {
       // 選択された時間を状態にセットして、画面を再描画
       setState(() => selectedTime = newTime);
+      // 追加：親ウィジェットのコールバック関数を呼び出す
+      widget.onTimeSelected(newTime);
     } else {
       // キャンセルされた場合は何もせずに処理を終了
       return;
