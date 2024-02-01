@@ -877,8 +877,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                     // await _nearbySearchRequest();   //test
                                   });
                                 },
-                                width: 140,
-                                height: 50,
+                                width: 50,
+                                height: 140,
                               ),
                             )
                           ],
