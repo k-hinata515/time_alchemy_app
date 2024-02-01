@@ -176,10 +176,14 @@ class List_Display extends StatelessWidget {
 class String_Display extends StatelessWidget {
   final String labelText;
   final String displayText;
+  final double height;
+  final double width;
 
   String_Display({
     required this.labelText,
     required this.displayText,
+    required this.height,
+    required this.width
   });
 
   @override
@@ -191,14 +195,14 @@ class String_Display extends StatelessWidget {
         Text(
           labelText,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: screen.designW(12),
             color: Colors_compornet.textfontcolorocher,
           ),
         ),
         SizedBox(height: screen.designH(2)),
         Container(
-          height: screen.designH(45),
-          width: screen.designW(300),
+          height: screen.designH(height),
+          width: screen.designW(width),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(40),
             border: Border.all(
@@ -211,9 +215,13 @@ class String_Display extends StatelessWidget {
           child: Align(
             alignment: Alignment.center,
             child: Text(
-              displayText,
+              displayText.length > 9
+                  ? displayText.substring(0, 9) + '...' // 9文字以上の場合は...を追加
+                  : displayText,
               style: TextStyle(
+                fontSize: screen.designW(10.5),
                 color: Colors_compornet.textfontColorBlack,
+                fontWeight: FontWeight.bold
               ),
             ),
           ),
