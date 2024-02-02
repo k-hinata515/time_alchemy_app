@@ -17,9 +17,10 @@ class Time_Conversion {
     // 現在時刻をint型に変換し分換算にする
     int time_now_int = time_now.hour * 60 + time_now.minute;
     print('現在時刻（分換算）$time_now_int');
+    
 
     //next_appointment_timeをint型に変換し分換算にする（次の予定の時間）
-    int next_appointment_time_int = next_appointment_time.hour * 60 + next_appointment_time.minute;
+    int next_appointment_time_int = next_appointment_time.hour * 60 + next_appointment_time.minute -10;
     print('次の予定の時間（分換算）$next_appointment_time_int');
 
     // travel_time（"〜時間〜分"）の値を00:00の形式に変換
@@ -94,15 +95,21 @@ class Time_Conversion {
       });
     }
 
+    time_List.add({
+      'arrival_time': arrival_time[arrival_time.length-1],
+      'departure_time': null,
+      'average_stay_time': "${average_stay_time_double.toStringAsFixed(0)}分",
+    });
+
     //average_stay_time_doubleを○時間○分形式に変換
-    int hour = (average_stay_time_double / 60).truncate();
-    int minute = (average_stay_time_double % 60).truncate();
-    average_stay_time = (hour == 0 ? "" : hour.toString().padLeft(2, '0') + "時間") + minute.toString().padLeft(2, '0') + "分";
+    // int hour = (average_stay_time_double / 60).truncate();
+    // int minute = (average_stay_time_double % 60).truncate();
+    // average_stay_time = (hour == 0 ? "" : hour.toString().padLeft(2, '0') + "時間") + minute.toString().padLeft(2, '0') + "分";
 
     
     print('到着$arrival_time');
     print('出発$departure_time');
-    print('平均滞在時間$average_stay_time');
+    // print('平均滞在時間$average_stay_time');
     
     print(time_List);
     return time_List;
