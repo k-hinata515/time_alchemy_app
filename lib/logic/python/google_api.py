@@ -20,7 +20,7 @@ app = Flask(__name__)
 #.envファイルからAPIキーを取得
 load_dotenv()
 # APIキーの設定
-PLACES_API_KEY = os.environ['PLACES_API_KEY']
+PLACES_API_KEY = os.environ['PLACES_API_NEW_KEY']
 DIRECTIONS_API_KEY = os.environ['DIRECTIONS_API_KEY']
 
 #タイプを格納する配列
@@ -74,6 +74,10 @@ def nearbysearch_places():
         print('Places API Error:', response.status_code)
         print(response.text)
         return jsonify({'error': '取得に失敗しました'})
+    
+    #jsonフォルダがなければ作成
+    if not os.path.isdir('../../../assets/json'):
+        os.mkdir('../../../assets/json')
 
     # レスポンスをjsonファイルとしてassetsのjsonフォルダに保存  
     with open('../../../assets/json/nearbysearch.json', 'w' , encoding='utf-8') as f:
@@ -129,6 +133,10 @@ def textsearch_places():
         print('Places API Error:', response.status_code)
         print(response.text)
         return jsonify({'error': '取得に失敗しました'})
+    
+    #jsonフォルダがなければ作成
+    if not os.path.isdir('../../../assets/json'):
+        os.mkdir('../../../assets/json')
 
     # レスポンスをjsonファイルとしてassetsのjsonフォルダに保存
     with open('../../../assets/json/textsearch.json', 'w' , encoding='utf-8') as f:
@@ -198,6 +206,10 @@ def places_root():
         print(' Directions API Error:', response.status_code)
         print(response.text)
         return jsonify({'error': '取得に失敗しました'})
+    
+    #jsonフォルダがなければ作成
+    if not os.path.isdir('../../../assets/json'):
+        os.mkdir('../../../assets/json')
     
     # レスポンスをjsonファイルとしてassetsのjsonフォルダに保存
     with open('../../../assets/json/root.json', 'w' , encoding='utf-8') as f:
