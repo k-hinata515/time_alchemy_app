@@ -243,7 +243,8 @@ class _Navigation_Page extends State<Navigation_Page> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
-                                              '$label',
+                                              //7文字以上の場合...をつけて省略
+                                              '$label'.length > 7 ? '$label'.substring(0,7) + '...' :'$label',
                                               style: TextStyle(
                                                 color: Colors_compornet
                                                     .globalBackgroundColorRed,
@@ -252,8 +253,6 @@ class _Navigation_Page extends State<Navigation_Page> {
                                                     : screen.designW(20),
                                                 fontWeight: FontWeight.bold,
                                               ),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 1, // オーバーフローした場合の動作を指定
                                             ),
                                             // アイコンとテキストの間隔
                                             Icon(
