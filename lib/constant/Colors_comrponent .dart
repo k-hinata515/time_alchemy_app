@@ -19,8 +19,7 @@ class Colors_compornet {
       Color(0xFFD4C9C9); //PickerCompornent.dartのドロップダウンリストに使われている？
   static const selectedtagdefault =
       Color(0xFFD9D9D9); //Hobby_Registration.dartでの選択されていない時のタグに使用
-  static const narrow_down =
-      Color(0xFF654E48); //Add destination.dartでの絞り込みボタンに使用
+  static const narrow_down = Color(0xFF654E48); //refine_search.dartでの絞り込みボタンに使用
   static const navigation_icon =
       Color(0xFFEED8D2); //search.dartのNavigation iconで使用
   static const textfontColorBlack = Color(0xFf333333); //textの基本的な黒に使用
