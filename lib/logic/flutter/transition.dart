@@ -3,7 +3,7 @@ import 'package:time_alchemy_app/View/googlemap.dart';
 import 'package:time_alchemy_app/View/profile_edit_page.dart';
 import 'package:time_alchemy_app/View/search.dart';
 import 'package:time_alchemy_app/View/%20Add_destination.dart';
-import 'package:time_alchemy_app/View/setting_page.dart';
+import 'package:time_alchemy_app/View/settung_page.dart';
 
 //ホーム画面
 class SearchPageTransition {
@@ -23,7 +23,7 @@ class ProfileEditPageTransition {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => ProfileEditPage(),
+        builder: (context) => Profile_Edit_Page(),
       ),
     );
   }

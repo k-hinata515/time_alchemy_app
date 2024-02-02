@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:time_alchemy_app/View/profile_page.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
@@ -22,17 +25,54 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ProfileEditPage(),
+      home: Profile_Edit_Page(),
     );
   }
 }
 
-class ProfileEditPage extends StatefulWidget {
+class Profile_Edit_Page extends StatefulWidget {
   @override
   _ProfileEditPageState createState() => _ProfileEditPageState();
 }
 
-class _ProfileEditPageState extends State<ProfileEditPage> {
+class _ProfileEditPageState extends State<Profile_Edit_Page> {
+  late String userId = '';
+  late String userName = '';
+  late List<String> hobbyList = []; // データ型をList<String>に変更
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserData();
+    //_getUserID();
+  }
+
+  // ユーザーデータを取得する関数
+  void _getUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userId = prefs.getString('userID') ?? '';
+    });
+    print('UserID: $userId');
+
+    try {
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      Map<String, dynamic> userData =
+          userSnapshot.data() as Map<String, dynamic>;
+      setState(() {
+        userName = userData['user']['user_name'];
+        hobbyList = List<String>.from(userData['hobby_user']['hobby_List']);
+      });
+    } catch (e) {
+      print('Error: $e');
+      // エラーが発生した場合の適切な処理をここに追加する
+    }
+  }
+
   File? _image;
   final picker = ImagePicker();
 
@@ -62,7 +102,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     final TextEditingController IDController = TextEditingController();
 
     return Scaffold(
-      backgroundColor: Colors_compornet.globalBackgroundColorwhite,
+      backgroundColor: const Color.fromRGBO(242, 233, 226, 1),
       appBar: AppBarBrackTextButtonCompornent(
         //appBar
         leftText: 'キャンセル',
@@ -70,7 +110,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         rightText: '完了',
         //TODO: appBarの遷移先書く
         //キャンセルボタン
-        onPressedLeft: () => {},
+        onPressedLeft: () => {
+          // "戻る" ボタンが押されたときの処理
+          Navigator.pop(context)
+        },
         //完了ボタン
         onPressedRight: () => {},
       ),
@@ -112,7 +155,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             //名前
             NameRow(
               label: '名前',
-              value: 'tanaso',
+              value: userName,
               widthSize: 0.15,
               controller: nameController,
               onEditingComplete: (text) {
@@ -132,7 +175,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             //ユーザーＩＤ
             NameRow(
               label: 'ユーザー名',
-              value: 'tanaso',
+              value: userId,
               widthSize: 0.15,
               controller: IDController,
               onEditingComplete: (text) {
@@ -142,7 +185,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             ),
             BorderLine(),
             //趣味表示
-            HobbyDisplay(),
+            HobbyDisplay(hobbyList: hobbyList),
             Align(
               alignment: Alignment.bottomRight,
               child: Container(
@@ -255,20 +298,13 @@ class _NameRowState extends State<NameRow> {
 
 // 趣味表示
 class HobbyDisplay extends StatefulWidget {
+  final List<String> hobbyList; // 変更: hobbyListをフィールドとして追加
+  HobbyDisplay({required this.hobbyList}); // 変更: コンストラクターでhobbyListを受け取る
   @override
   _HobbyDisplayState createState() => _HobbyDisplayState();
 }
 
 class _HobbyDisplayState extends State<HobbyDisplay> {
-  List<String> textContents = [
-    "ゲーム",
-    "太鼓の達人",
-    "パソコン",
-    "ああああ",
-    "携帯ゲーム",
-    "aaaaaaaaaaaa",
-  ];
-
   @override
   Widget build(BuildContext context) {
     final screen = MediaQuery.of(context).size;
@@ -300,7 +336,9 @@ class _HobbyDisplayState extends State<HobbyDisplay> {
                 spacing: screen.width * 0.015,
                 runSpacing: screen.height * 0.01,
                 children: [
-                  for (int i = 0; i < textContents.length; i++)
+                  for (int i = 0;
+                      i < widget.hobbyList.length;
+                      i++) // Change textContents to widget.hobbyList
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
@@ -319,7 +357,8 @@ class _HobbyDisplayState extends State<HobbyDisplay> {
                           GestureDetector(
                             onTap: () {
                               setState(() {
-                                textContents.removeAt(i);
+                                widget.hobbyList.removeAt(
+                                    i); // Change textContents to widget.hobbyList
                               });
                             },
                             child: const Icon(
@@ -332,7 +371,8 @@ class _HobbyDisplayState extends State<HobbyDisplay> {
                             width: 5,
                           ),
                           Text(
-                            textContents[i],
+                            widget.hobbyList[
+                                i], // Change textContents to widget.hobbyList
                             style: const TextStyle(
                               fontSize: 16,
                               color: Colors_compornet.textfontColorBlack,
