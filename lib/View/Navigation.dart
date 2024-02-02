@@ -16,7 +16,6 @@ void main() => runApp(
         builder: (context) => Navigation(), // MyAppを直接指定
       ),
     );
-
 class Navigation extends StatelessWidget {
   Navigation({Key? key});
 
@@ -38,10 +37,7 @@ class Navigation extends StatelessWidget {
 class Navigation_Page extends StatefulWidget {
   final List<Map<String, String?>>? Navigation_List;
   final String? average_stay_time;
-  final String? next_appointment_place;
-  final String? next_appointment_time;
-
-  Navigation_Page({Key? key , this.Navigation_List , this.average_stay_time , this.next_appointment_place , this.next_appointment_time}) : super(key: key);
+  Navigation_Page({Key? key , this.Navigation_List , this.average_stay_time }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _Navigation_Page();
@@ -58,8 +54,6 @@ class _Navigation_Page extends State<Navigation_Page> {
     super.initState();
     print(widget.Navigation_List);
     print(widget.average_stay_time);
-    print(widget.next_appointment_place);
-    print(widget.next_appointment_time);
   }
 
   // 現在の時刻を更新するメソッド
@@ -249,7 +243,8 @@ class _Navigation_Page extends State<Navigation_Page> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
-                                              '$label',
+                                              //7文字以上の場合...をつけて省略
+                                              '$label'.length > 7 ? '$label'.substring(0,7) + '...' :'$label',
                                               style: TextStyle(
                                                 color: Colors_compornet
                                                     .globalBackgroundColorRed,
@@ -258,8 +253,6 @@ class _Navigation_Page extends State<Navigation_Page> {
                                                     : screen.designW(20),
                                                 fontWeight: FontWeight.bold,
                                               ),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 1, // オーバーフローした場合の動作を指定
                                             ),
                                             // アイコンとテキストの間隔
                                             Icon(
@@ -280,12 +273,11 @@ class _Navigation_Page extends State<Navigation_Page> {
                                             //ここにsearch.dartにページ遷移するコード
                                           }else{
                                             //ここにAdd destination.dartにページ遷移するコードを書く
-
                                           }
                                         }, 
                                         icon:Icon(Icons.location_on),
                                       ),
-                                      if(_average_stay_time!=null)
+                                      if(departureTime != null)
                                       Align(
                                         alignment: Alignment.centerRight,
                                         child: Container(

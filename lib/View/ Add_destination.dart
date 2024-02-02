@@ -79,7 +79,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   ];
 
   //test(次の予定の時間)
-  DateTime _testtime = DateTime(2024, 2, 2, 1, 0, 00);
+  DateTime _testtime = DateTime(2024, 2, 2, 12, 0, 00);
 
   //test(最終目的地)
   String _test_gole_latiude = '34.7051934134671';
@@ -198,6 +198,9 @@ class _Add_destination_Page extends State<Add_destination_Page> {
     try {
       //到着時間を設定
       DateTime now = DateTime.now();
+      //次の予定の到着時間をUTCに変換
+      // String arrival_time_UTC = await widget.selectedTime!.toUtc().toIso8601String();
+      //test
       DateTime arrival_time =
           await DateTime(now.year, now.month, now.day, 13, 0, 0).toUtc();
       //UTCに変換
@@ -668,21 +671,23 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                             //追加したい場所のルートをと移動時間を取得
                             await _directionsRequest();
                             //出発、到着、平均滞在時刻を取得
-                            time_List = await Time_Conversion().convertTime(
-                                DateTime.now(), travel_time_List, _testtime);
+                            time_List = await Time_Conversion().convertTime( DateTime.now(), travel_time_List, _testtime);
 
                             // Navigation_Listに経由地の名、到着、出発時刻を格納
-                            for (int i = 0; i <= time_List.length - 1; i++) {
-                              Navigation_List.add({
-                                'name': _waypoints_List[i],
-                                'arrival_time': time_List[i]['arrival_time'],
-                                'departure_time': time_List[i]
-                                    ['departure_time'],
-                              });
+                            for (int i = 0; i <= time_List.length - 1 ; i++) {
                               if (i == time_List.length - 1) {
-                                _average_stay_time = time_List[i]
-                                        ['average_stay_time']
-                                    .toString();
+                                Navigation_List.add({
+                                  'name': _test_place_name,
+                                  'arrival_time': time_List[i]['arrival_time'],
+                                  'departure_time': time_List[i]['departure_time'],
+                                });
+                                _average_stay_time = time_List[i]['average_stay_time'].toString();
+                              }else{
+                                Navigation_List.add({
+                                  'name': _waypoints_List[i],
+                                  'arrival_time': time_List[i]['arrival_time'],
+                                  'departure_time': time_List[i]['departure_time'],
+                                });
                               }
                             }
                             // Navigation_Pageに遷移
@@ -694,11 +699,6 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                       Navigation_List, // 経由地の名、到着、出発時刻を格納したリスト
                                   average_stay_time:
                                       _average_stay_time, // 平均滞在時間
-                                  next_appointment_place:
-                                      _test_place_name, //test 次の予定の場所
-                                  next_appointment_time: _testtime.minute < 10
-                                      ? "${_testtime.hour}:0${_testtime.minute}"
-                                      : "${_testtime.hour}:${_testtime.minute}", //test 次の予定の時間
                                 ),
                               ),
                             );

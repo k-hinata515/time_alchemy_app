@@ -1,8 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:time_alchemy_app/View/profile_edit_page.dart';
+import 'package:time_alchemy_app/View/search.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
+import 'package:time_alchemy_app/constant/Colors_comrponent.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
 
 void main() => runApp(
@@ -13,7 +18,7 @@ void main() => runApp(
     );
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +29,61 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class ProfileEditPage extends StatelessWidget {
+class ProfileEditPage extends StatefulWidget {
+  @override
+  _ProfileEditPageState createState() => _ProfileEditPageState();
+}
+
+class _ProfileEditPageState extends State<ProfileEditPage> {
+  late String userId = '';
+  late String userName = '';
+  late List<String> hobbyList = []; // データ型をList<String>に変更
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserData();
+    //_getUserID();
+  }
+
+  // ユーザーIDを取得する関数
+  // void _getUserID() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     userId = prefs.getString('userID') ?? ''; // Handle null case
+  //   });
+  //   print('UserID: $userId'); // ユーザーIDをコンソールに表示
+  // }
+
+  // ユーザーデータを取得する関数
+  void _getUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userId = prefs.getString('userID') ?? '';
+    });
+    print('UserID: $userId');
+
+    try {
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      Map<String, dynamic> userData =
+          userSnapshot.data() as Map<String, dynamic>;
+      setState(() {
+        userName = userData['user']['user_name'];
+        hobbyList = List<String>.from(userData['hobby_user']['hobby_List']);
+      });
+
+      print(userName);
+      print(hobbyList);
+    } catch (e) {
+      print('Error: $e');
+      // エラーが発生した場合の適切な処理をここに追加する
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
@@ -34,7 +93,7 @@ class ProfileEditPage extends StatelessWidget {
       body: Stack(
         children: [
           AppBackground(),
-          HobbyDisplay(),
+          HobbyDisplay(hobbyList: hobbyList),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -53,7 +112,7 @@ class ProfileEditPage extends StatelessWidget {
                       ),
                       SizedBox(height: 3.0),
                       Text(
-                        'tanaso',
+                        userName,
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -62,7 +121,7 @@ class ProfileEditPage extends StatelessWidget {
                       ),
                       SizedBox(height: 2.0), // 追加の余白
                       Text(
-                        'tana.2220029', // 追加のテキスト
+                        userId,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors_compornet.textfontColorWhite,
@@ -74,11 +133,21 @@ class ProfileEditPage extends StatelessWidget {
               ),
             ],
           ),
-          AppBarWhiteTextCompornent(
+          ProfileAppBarCompornent(
             title: 'プロフィール',
             rightText: '編集',
-            onPressedLeft: () => {},
-            onPressedRight: () => {},
+            onPressedLeft: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SearchPage()),
+              )
+            },
+            onPressedRight: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Profile_Edit_Page()),
+              )
+            },
           ),
         ],
       ),
@@ -86,7 +155,7 @@ class ProfileEditPage extends StatelessWidget {
   }
 }
 
-//茶色背景
+// 茶色背景
 class AppBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -114,11 +183,14 @@ class AppBackground extends StatelessWidget {
   }
 }
 
-//趣味表示
+// 趣味表示
 class HobbyDisplay extends StatelessWidget {
+  final List<String> hobbyList; // 変更: hobbyListをフィールドとして追加
+  HobbyDisplay({required this.hobbyList}); // 変更: コンストラクターでhobbyListを受け取る
+
   @override
   Widget build(BuildContext context) {
-    final textContents = ["ゲーム", "太鼓の達人", "パソコン"];
+    final textContents = hobbyList;
 
     // 各要素の前に「・」を追加
     final formattedContents = textContents.map((text) => '・ $text').toList();
