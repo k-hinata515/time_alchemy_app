@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:time_alchemy_app/View/%20Add_destination.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
+import 'package:time_alchemy_app/logic/flutter/transition.dart';
 
 class ClockMenu extends StatefulWidget {
   @override
@@ -22,43 +24,36 @@ class _ClockMenu extends State<ClockMenu> {
       child: Stack(
         children: <Widget>[
           Positioned(
-            bottom: screen.designH(10),
-            right: screen.designW(20),
-            child: SizedBox(
-              height: screen.designH(45),
-              width: screen.designW(45),
-              child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    drawShape = !drawShape;
-                  });
-                }, child: Image(
+            bottom: screen.designH(20),
+            right: screen.designW(10),
+           child: InkWell(
+            onTap: () {
+              setState(() {
+                drawShape = !drawShape;
+              });
+            },
+            child: Container(
+              
+              height: screen.designH(64),
+              width: screen.designW(64),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  width: 2,
+                  color: Colors.black,
+                ),
+                color: Colors_compornet.textfontColorWhite, // 背景色を変更
+              ),
+              child: Center(
+                child: Image(
                   image: AssetImage('logo_images/icon.png'),
-                ),
-                 style: ElevatedButton.styleFrom(
-                primary: Colors_compornet.textfontColorWhite,
-                shape: CircleBorder(
-                  side: BorderSide(
-                    width: 1,
-                    color: Colors.black,
-                  ),
+                  width: screen.designW(200),
+                  height: screen.designH(200),
                 ),
               ),
-                // style: ElevatedButton.styleFrom(
-                //   primary: Color.fromARGB(255, 194, 195, 185),
-                //   shape: CircleBorder(
-                //     side: BorderSide(
-                //       width: 4,
-                //       color: Colors.black,
-                //     ),
-                //   ),
-                // ).merge(ButtonStyle(
-                //   minimumSize: MaterialStateProperty.all(Size(20, 20)),
-                // )),
-                // child: Image.asset('logo_images/icon.png'),
-              ),
-            )
-            
+            ),
+          ),
+
           ),
 
           // カスタムペイント1
@@ -111,6 +106,9 @@ class _ClockMenu extends State<ClockMenu> {
                 visible: drawShape,
                 child: HoverButton(
                   buttonIcon: Icons.settings,
+                  ontap: (){
+                    SettingPageTransition.navigate(context);
+                  },
                 )),
           ),
           //検索ボタン
@@ -121,6 +119,9 @@ class _ClockMenu extends State<ClockMenu> {
                 visible: drawShape,
                 child: HoverButton(
                   buttonIcon: Icons.search,
+                  ontap: (){
+                    Add_destination_PageTransition.navigate(context);
+                  }
                 )),
           ),
           //ホームボタン
@@ -131,6 +132,9 @@ class _ClockMenu extends State<ClockMenu> {
                 visible: drawShape,
                 child: HoverButton(
                   buttonIcon: Icons.home,
+                  ontap: (){
+                    SearchPageTransition.navigate(context);
+                  },
                 )),
           ),
           //プロフィールボタン
@@ -141,6 +145,9 @@ class _ClockMenu extends State<ClockMenu> {
                 visible: drawShape,
                 child: HoverButton(
                   buttonIcon: Icons.person,
+                  ontap: (){
+                    ProfileEditPageTransition.navigate(context);
+                  },
                 )),
           ),
           //多分マップボタン
@@ -151,6 +158,9 @@ class _ClockMenu extends State<ClockMenu> {
               visible: drawShape,
               child: HoverButton(
                 buttonIcon: Icons.room,
+                ontap: (){
+                  MapScreenTransition.navigate(context);
+                },
               ),
             ),
           ),
@@ -162,7 +172,9 @@ class _ClockMenu extends State<ClockMenu> {
 
 class HoverButton extends StatefulWidget {
   final IconData buttonIcon;
-  HoverButton({required this.buttonIcon});
+  final GestureTapCallback ontap;
+  HoverButton({required this.buttonIcon
+  ,required this.ontap});
   @override
   _HoverButton createState() => _HoverButton();
 }
@@ -180,9 +192,8 @@ class _HoverButton extends State<HoverButton> {
         isHovered = false;
       }),
       child: GestureDetector(
-        onTap: () {
-          print('押されました');
-        },
+        onTap:widget.ontap,
+        
         child: AnimatedContainer(
           duration: Duration(milliseconds: 100),
           width: isHovered ? 60.0 : 35.0,

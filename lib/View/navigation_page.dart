@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
 import 'package:time_alchemy_app/component/Dashed_Line.dart';
+import 'package:time_alchemy_app/component/menubar.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
 import 'package:intl/intl.dart';
@@ -111,6 +112,7 @@ class _Navigation_Page extends State<Navigation_Page> {
       body: Stack(
         children: [
           BackgroundWidget(),
+          
           Padding(
             padding: EdgeInsets.only(top: screen.designH(120)),
             child: Container(
@@ -335,8 +337,9 @@ class _Navigation_Page extends State<Navigation_Page> {
                                             child: Column(
                                               children: [
                                                 SizedBox(
-                                                  height: screen.designH(3),
+                                                  height: screen.designH(4),
                                                 ),
+                                                
                                                 Text(
                                                   '滞在時間',
                                                   style: TextStyle(
@@ -372,22 +375,10 @@ class _Navigation_Page extends State<Navigation_Page> {
               ),
             ),
           ),
-          // Stack(
-          //   alignment: Alignment.topLeft,
-          //   children: [
-          //     //時系列線
-
-          //     Align(
-          //       alignment: Alignment(-0.5,-01),
-          //       child: Dashed_Line(
-          //         height: double.infinity,
-          //         width: screen.designW(4), // Dashed_Line の幅を変更
-          //       ),
-          //     ),
-          //     // ↓アイコンと〇図形
-
-          //   ],
-          // ),
+        Align(
+            alignment: Alignment.bottomRight,
+            child: ClockMenu(),
+          ),
         ],
       ),
     );

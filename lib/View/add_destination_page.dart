@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'package:time_alchemy_app/View/Navigation.dart';
 import 'package:time_alchemy_app/View/refine_search.dart';
+import 'package:time_alchemy_app/component/menubar.dart';
 import 'package:time_alchemy_app/logic/flutter/geolocation.dart';
 import 'package:time_alchemy_app/logic/flutter/map_class.dart';
 import 'package:time_alchemy_app/logic/flutter/time_conversion.dart';
@@ -752,6 +753,10 @@ class _Add_destination_Page extends State<Add_destination_Page> {
               ),
             ),
             FilterClass(),
+            Align(
+            alignment: Alignment.bottomRight,
+            child: ClockMenu(),
+            ),
           ],
         ),
       ),

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:time_alchemy_app/component/menubar.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
 import 'package:time_alchemy_app/logic/flutter/googlemap_b.dart';
@@ -232,10 +233,18 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
       ),
         ],
       ),
+       Align(
+  alignment: Alignment.bottomLeft,
+  child: Padding(
+    padding: EdgeInsets.only(right: screen.designH(45.0) ), // 上方向のパディングを追加
+    child: ClockMenu(),
+  ),
+),
+
+
     ],
   ),
 );
 
   }
 }
-

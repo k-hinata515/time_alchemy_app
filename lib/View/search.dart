@@ -6,13 +6,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:time_alchemy_app/View/%20Add_destination.dart';
+
+import 'package:time_alchemy_app/View/add_destination_page.dart';
 import 'package:time_alchemy_app/View/search_map.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
 import 'package:time_alchemy_app/component/ButtonCompornent.dart';
 import 'package:time_alchemy_app/component/Dashed_Line.dart';
 import 'package:time_alchemy_app/component/IconButton.dart';
+import 'package:time_alchemy_app/component/menubar.dart';
 import 'package:time_alchemy_app/component/textformfield.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
@@ -313,6 +315,10 @@ class _SearchPage extends State<SearchPage> {
               height: screen.designH(60),
             ),
           ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: ClockMenu(),
+          )
         ],
       ),
     );
