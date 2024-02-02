@@ -354,3 +354,82 @@ class AppBarBrackTextButtonCompornent extends StatelessWidget
     );
   }
 }
+
+// 背景白色の時のappber(左backIcon)
+class ProfileAppBarCompornent extends StatelessWidget
+    implements PreferredSizeWidget {
+  final String title; //Appbarテキスト
+  final String rightText; // 右テキスト
+  final GestureTapCallback onPressedLeft; //画面遷移したい画面のタグ
+  final GestureTapCallback onPressedRight;
+  final bool showLeftIcon; // テキストとアイコンを表示するかどうかのフラグ
+  final bool showRightText;
+
+  @override
+  final Size preferredSize;
+
+  ProfileAppBarCompornent({
+    required this.title,
+    required this.rightText,
+    required this.onPressedLeft,
+    required this.onPressedRight,
+    this.showLeftIcon = true, // デフォルトは表示
+    this.showRightText = true,
+  }) : preferredSize = Size.fromHeight(kToolbarHeight + 5); // AppBarの高さを指定
+
+  Widget build(BuildContext context) {
+    return AppBar(
+      elevation: 0, // 背景透明
+      backgroundColor: Colors.transparent,
+      leading: showLeftIcon
+          ? IconButton(
+              // 戻るアイコン
+              icon: const Icon(Icons.arrow_back_ios_new),
+              color: Colors_compornet.textfontColorWhite,
+              onPressed: onPressedLeft,
+            )
+          : null, // アイコン非表示
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title.split('\n')[0], // 改行コードで分割し、最初の行を表示
+            style: const TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1,
+              color: Colors_compornet.textfontColorWhite,
+            ),
+          ),
+          if (title.split('\n').length > 1)
+            Text(
+              title.split('\n')[1], // 2行目があれば表示
+              style: const TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+                color: Colors_compornet.textfontColorWhite,
+              ),
+            ),
+        ],
+      ),
+      actions: showRightText
+          ? [
+              TextButton(
+                onPressed: onPressedRight,
+                child: Text(
+                  rightText,
+                  style: const TextStyle(
+                    color: Colors_compornet.textfontColorWhite,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+            ]
+          : null,
+      shape: const Border(
+          bottom: BorderSide(
+              color: Colors_compornet.borderColorGray, width: 1)), // 下にボーダー線
+    );
+  }
+}
