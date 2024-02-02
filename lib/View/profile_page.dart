@@ -74,7 +74,7 @@ class ProfileEditPage extends StatelessWidget {
               ),
             ],
           ),
-          ProfileAppBarCompornent(
+          AppBarWhiteTextCompornent(
             title: 'プロフィール',
             rightText: '編集',
             onPressedLeft: () => {},

@@ -13,17 +13,26 @@ import 'package:intl/intl.dart';
 void main() => runApp(
       DevicePreview(
         enabled: !kReleaseMode,
-        builder: (context) => Navigation(), // MyAppを直接指定
+        builder: (context) => Navigation(
+          Navigation_List: [],
+          average_stay_time: '',
+          next_appointment_place: '',
+          next_appointment_time: '',
+        ), // MyAppを直接指定
       ),
     );
 
 class Navigation extends StatelessWidget {
-  Navigation({Key? key});
+  Navigation(
+      {Key? key,
+      required List<Map<String, String?>> Navigation_List,
+      required String average_stay_time,
+      required String next_appointment_place,
+      required String next_appointment_time});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      
       debugShowCheckedModeBanner: false,
       useInheritedMediaQuery: true,
       locale: DevicePreview.locale(context),
@@ -36,31 +45,15 @@ class Navigation extends StatelessWidget {
 }
 
 class Navigation_Page extends StatefulWidget {
-  final List<Map<String, String?>>? Navigation_List;
-  final String? average_stay_time;
-  final String? next_appointment_place;
-  final String? next_appointment_time;
-
-  Navigation_Page({Key? key , this.Navigation_List , this.average_stay_time , this.next_appointment_place , this.next_appointment_time}) : super(key: key);
+  Navigation_Page({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _Navigation_Page();
 }
 
 class _Navigation_Page extends State<Navigation_Page> {
-
   String now_time =
       DateFormat('HH:mm').format(DateTime.now()).toString(); //現在時刻
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    print(widget.Navigation_List);
-    print(widget.average_stay_time);
-    print(widget.next_appointment_place);
-    print(widget.next_appointment_time);
-  }
 
   // 現在の時刻を更新するメソッド
   void updateCurrentTime() {
@@ -68,6 +61,40 @@ class _Navigation_Page extends State<Navigation_Page> {
       now_time = DateFormat('HH:mm').format(DateTime.now());
     });
   }
+
+  //テストでーた
+  final List<Map<String, String?>> destination = [
+    {
+      'label': '大阪駅',
+      'arrival_time': '11:45',
+      'departure_time': '15:00',
+      'staying time': '15',
+    },
+    {
+      'label': '福島駅',
+      'arrival_time': '11:53',
+      'departure_time': '11:55',
+      'staying time': '2',
+    },
+    {
+      'label': '西九条駅',
+      'arrival_time': '11:58',
+      'departure_time': '12:04',
+      'staying time': '6'
+    },
+    {
+      'label': 'ユニバーサルシティ駅',
+      'arrival_time': '12:09',
+      'departure_time': '12:11',
+      'staying time': '2'
+    },
+    {
+      'label': 'ユニバーサルスタジオジャパン',
+      'arrival_time': '12:16',
+      'departure_time': null,
+      'staying time': null
+    },
+  ];
   @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
@@ -112,7 +139,9 @@ class _Navigation_Page extends State<Navigation_Page> {
                                 fontSize: screen.designH(16),
                                 fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(width: screen.designW(8),),
+                          SizedBox(
+                            width: screen.designW(8),
+                          ),
                           Icon(
                             Icons.directions_run,
                             size: screen.designW(45),
@@ -173,17 +202,18 @@ class _Navigation_Page extends State<Navigation_Page> {
                     ListView.builder(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
-                        itemCount: widget.Navigation_List!.length,
+                        itemCount: destination.length,
                         itemBuilder: (BuildContext context, int index) {
-                          final Map<String, String?> _NavigationDate =
-                              widget.Navigation_List![index];
-                          final String label = _NavigationDate['name'] ?? '';
+                          final Map<String, String?> destinationData =
+                              destination[index];
+                          final String label = destinationData['label'] ?? '';
                           final String? arrivalTime =
-                              _NavigationDate['arrival_time'];
+                              destinationData['arrival_time'];
                           final String? departureTime =
-                              _NavigationDate['departure_time'];
-                          final String? _average_stay_time = widget.average_stay_time;
-                              
+                              destinationData['departure_time'];
+                          final String? stayingtime =
+                              destinationData['staying time'];
+
                           return Column(
                             children: [
                               SizedBox(
@@ -231,9 +261,11 @@ class _Navigation_Page extends State<Navigation_Page> {
                                                         FontWeight.bold),
                                               ),
                                           ]),
-                                          SizedBox(width: screen.designW(48),),
-                                        ElevatedButton(
-                                          onPressed: () {
+                                      SizedBox(
+                                        width: screen.designW(48),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
                                           // 現在地を押された時の処理
                                         },
                                         style: ElevatedButton.styleFrom(
@@ -272,62 +304,69 @@ class _Navigation_Page extends State<Navigation_Page> {
                                         ),
                                       ),
                                       IconButton(
-                                        color: Colors_compornet.globalBackgroundColorRed,
+                                        color: Colors_compornet
+                                            .globalBackgroundColorRed,
                                         iconSize: screen.designH(30),
-                                        onPressed: () { 
+                                        onPressed: () {
                                           //ここでsearch.dartにページ遷移するかAdd destination.dartに遷移する処理を書く
-                                          if(departureTime ==null){
+                                          if (departureTime == null) {
                                             //ここにsearch.dartにページ遷移するコード
-                                          }else{
+                                          } else {
                                             //ここにAdd destination.dartにページ遷移するコードを書く
-
                                           }
-                                        }, 
-                                        icon:Icon(Icons.location_on),
+                                        },
+                                        icon: Icon(Icons.location_on),
                                       ),
-                                      if(_average_stay_time!=null)
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: Container(
-                                          alignment: Alignment.center,
-                                          height: screen.designH(50),
-                                          width: screen.designW(50),
-                                          decoration:  BoxDecoration(
-                                            color: Colors_compornet.textfontColorWhite,
-                                            shape: BoxShape.circle,
-                                            border: Border.all(color: Colors_compornet.globalBackgroundColorRed),
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              SizedBox(height: screen.designH(3),),
-                                              Text(
-                                                '滞在時間',
-                                                style: TextStyle(
-                                                    fontSize: screen.designW(7),
-                                                    fontWeight: FontWeight.bold
+                                      if (stayingtime != null)
+                                        Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            height: screen.designH(50),
+                                            width: screen.designW(50),
+                                            decoration: BoxDecoration(
+                                              color: Colors_compornet
+                                                  .textfontColorWhite,
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                  color: Colors_compornet
+                                                      .globalBackgroundColorRed),
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                SizedBox(
+                                                  height: screen.designH(3),
                                                 ),
-                                              ),
-                                              SizedBox(height: screen.designH(1),),
-                                              Text(
-                                                '$_average_stay_time',
-                                                style: TextStyle(
-                                                  color: Colors_compornet.staytime,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: screen.designW(12),
-
+                                                Text(
+                                                  '滞在時間',
+                                                  style: TextStyle(
+                                                      fontSize:
+                                                          screen.designW(7),
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
-                                              )
-                                            ],
+                                                SizedBox(
+                                                  height: screen.designH(1),
+                                                ),
+                                                Text(
+                                                  '$stayingtime分',
+                                                  style: TextStyle(
+                                                    color: Colors_compornet
+                                                        .staytime,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize:
+                                                        screen.designW(12),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      )
+                                        )
                                     ],
-                                  )
-                                ),
+                                  )),
                             ],
                           );
-                        }
-                      ),
+                        }),
                   ],
                 ),
               ),
@@ -346,6 +385,7 @@ class _Navigation_Page extends State<Navigation_Page> {
           //       ),
           //     ),
           //     // ↓アイコンと〇図形
+
           //   ],
           // ),
         ],

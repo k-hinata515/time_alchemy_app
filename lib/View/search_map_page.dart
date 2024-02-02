@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
-import 'package:time_alchemy_app/View/search.dart';
+import 'package:time_alchemy_app/View/search_page.dart';
 import 'package:time_alchemy_app/component/ButtonCompornent.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
-import 'package:time_alchemy_app/logic/flutter/map_class.dart';
 import 'package:time_alchemy_app/logic/flutter/search_map_b.dart';
 
 //
@@ -42,7 +41,6 @@ class SearchMap extends StatefulWidget {
 }
 
 class _SearchMapState extends State<SearchMap> {
-  MapData? _mapData;
   // Changed to State<SearchMap>
   Completer<GoogleMapController> _controller =
       Completer(); // Added <GoogleMapController>
@@ -52,24 +50,18 @@ class _SearchMapState extends State<SearchMap> {
     zoom: 14.4746,
   );
 
-  Future<void> searchLocation(Map<String, dynamic> data) async {
+  Future<void> searchLocation(Map data) async {
     final GoogleMapController controller = await _controller.future;
-    final double latitude = double.parse(data['latitude'].toString());
-    final double longitude = double.parse(data['longitude'].toString());
-
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      target: LatLng(latitude, longitude),
+      target: LatLng(data['latitude'], data['longitude']),
       zoom: 15,
     )));
-    _mapData = MapData(latitude, longitude, data["placeName"]);
+    print(data['placeName']); // 場所名を取得
   }
 
   @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
-    //final List<dynamic>? place =
-    //    ModalRoute.of(context)?.settings.arguments as List<dynamic>?;
-
     return Scaffold(
       body: Stack(
         children: [
@@ -88,13 +80,7 @@ class _SearchMapState extends State<SearchMap> {
             child: ChoiceButtonRed(
               text: '決定',
               onPressed: () {
-                if (_mapData != null) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SearchPage(mapData: _mapData)),
-                  );
-                }
+                print(LatLng);
               },
               height: 45,
               width: 150,

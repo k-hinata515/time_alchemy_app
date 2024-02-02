@@ -22,7 +22,7 @@ class Registered_Content extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,//デバックけすやつ
+      debugShowCheckedModeBanner: false, //デバックけすやつ
       useInheritedMediaQuery: true,
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
