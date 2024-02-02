@@ -232,148 +232,156 @@ class _FilterClassState extends State<FilterClass> {
   Widget build(BuildContext context) {
     final screen = MediaQuery.of(context).size;
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          //メニュー表示
-          GestureDetector(
-            onTap: closeMenu,
-            child: Container(
-              color: isMenuOpen
-                  ? Colors.black.withOpacity(0.5)
-                  : Colors.transparent,
+    return Stack(
+      children: [
+        //メニュー表示
+        GestureDetector(
+          onTap: closeMenu,
+          child: isMenuOpen
+              ? Container(color: Colors.black.withOpacity(0.5))
+              : Container(), //空のcontainer返してなにもない状態にする
+        ),
+
+        AnimatedPositioned(
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          top: screen.width * 0.25,
+          bottom: 0,
+          right: isMenuOpen ? 0 : -screen.width,
+          child: Container(
+            width: screen.width * 0.77,
+            decoration: BoxDecoration(
+              color: Colors_compornet.globalBackgroundColorwhite,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(70.0),
+                bottomLeft: Radius.circular(70.0),
+              ),
             ),
-          ),
-          AnimatedPositioned(
-            duration: Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            top: screen.width * 0.25,
-            bottom: 0,
-            right: isMenuOpen ? 0 : -300,
-            child: Container(
-              width: screen.width * 0.77,
-              decoration: BoxDecoration(
-                color: Colors_compornet.globalBackgroundColorwhite,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(70.0),
-                  bottomLeft: Radius.circular(70.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: screen.height * 0.02,
                 ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: screen.height * 0.02,
+                Text(
+                  '絞り込み',
+                  style: TextStyle(
+                    fontSize: 16,
                   ),
-                  Text(
-                    '絞り込み',
-                    style: TextStyle(
-                      fontSize: 16,
+                ),
+                SizedBox(
+                  height: screen.height * 0.02,
+                ),
+                Divider(
+                  color: Colors_compornet.borderColorGray,
+                  thickness: 1.0,
+                ),
+                FilterButton(
+                  label: '屋内or屋外',
+                  selectedFilter: selectedFilterInOrOut,
+                  noSelected: noSelected,
+                  onTap: showFilterInOrOut,
+                ),
+                BorderLine(),
+                FilterButton(
+                  label: '移動手段',
+                  selectedFilter: selectedFilterTransportation,
+                  noSelected: noSelected,
+                  onTap: showFilterTransportation,
+                ),
+                BorderLine(),
+                FilterButton(
+                  label: '移動',
+                  selectedFilter: selectedFilterDistance,
+                  noSelected: noSelected,
+                  onTap: movingRange,
+                ),
+                BorderLine(),
+                showSelectedFilterRating(),
+                BorderLine(),
+                SizedBox(
+                  height: screen.height * 0.02,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  // キャンセルボタン
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors_compornet.textfontColorWhite,
+                        onPrimary: Colors_compornet.globalBackgroundColorRed,
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(15.0), // 角を丸くする半径を指定
+                        ),
+                      ),
+                      child: Text('キャンセル'),
+                      onPressed: () {
+                        //メニュー閉じる
+                        closeMenu();
+                      },
                     ),
-                  ),
-                  SizedBox(
-                    height: screen.height * 0.02,
-                  ),
-                  Divider(
-                    color: Colors_compornet.borderColorGray,
-                    thickness: 1.0,
-                  ),
-                  FilterButton(
-                    label: '屋内or屋外',
-                    selectedFilter: selectedFilterInOrOut,
-                    noSelected: noSelected,
-                    onTap: showFilterInOrOut,
-                  ),
-                  BorderLine(),
-                  FilterButton(
-                    label: '移動手段',
-                    selectedFilter: selectedFilterTransportation,
-                    noSelected: noSelected,
-                    onTap: showFilterTransportation,
-                  ),
-                  BorderLine(),
-                  FilterButton(
-                    label: '移動',
-                    selectedFilter: selectedFilterDistance,
-                    noSelected: noSelected,
-                    onTap: movingRange,
-                  ),
-                  BorderLine(),
-                  showSelectedFilterRating(),
-                  BorderLine(),
-                  SizedBox(
-                    height: screen.height * 0.02,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    // キャンセルボタン
-                    children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors_compornet.textfontColorWhite,
-                          onPrimary: Colors_compornet.globalBackgroundColorRed,
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(15.0), // 角を丸くする半径を指定
-                          ),
+                    //完了ボタン
+                    ElevatedButton(
+                      onPressed: () {
+                        //TODO: 絞り込み適用
+                        //屋内or屋外 選択値表示
+                        print('Applied filter 1: $selectedFilterInOrOut');
+                        //移動手段 選択値表示
+                        print(
+                            'Applied filter 2: $selectedFilterTransportation');
+                        //移動範囲 選択値表示
+                        print(
+                            'Selected MovingDistance: $selectedFilterDistance');
+                        //評価 選択値表示
+                        print('Selected Rating: $selectedFilterRating');
+                        closeMenu();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors_compornet.globalBackgroundColorRed,
+                        onPrimary: Colors_compornet.textfontColorWhite,
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(15.0), // 角を丸くする半径を指定
                         ),
-                        child: Text('キャンセル'),
-                        onPressed: () {
-                          //メニュー閉じる
-                          closeMenu();
-                        },
                       ),
-                      //完了ボタン
-                      ElevatedButton(
-                        onPressed: () {
-                          //TODO: 絞り込み適用
-                          //屋内or屋外 選択値表示
-                          print('Applied filter 1: $selectedFilterInOrOut');
-                          //移動手段 選択値表示
-                          print(
-                              'Applied filter 2: $selectedFilterTransportation');
-                          //移動範囲 選択値表示
-                          print(
-                              'Selected MovingDistance: $selectedFilterDistance');
-                          //評価 選択値表示
-                          print('Selected Rating: $selectedFilterRating');
-                          closeMenu();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors_compornet.globalBackgroundColorRed,
-                          onPrimary: Colors_compornet.textfontColorWhite,
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(15.0), // 角を丸くする半径を指定
-                          ),
-                        ),
-                        child: Text('完了'),
-                      ),
-                    ],
-                  ),
-                ],
+                      child: Text('完了'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(
+            top: screen.height * 0.004,
+            left: screen.width * 0.02,
+          ),
+          child: ElevatedButton.icon(
+            onPressed: toggleMenu,
+            icon: Icon(
+              Icons.reorder,
+              size: 12,
+            ),
+            label: Text(
+              '絞り込み',
+              style: TextStyle(fontSize: 12),
+            ),
+            style: ElevatedButton.styleFrom(
+              textStyle: TextStyle(fontSize: 12),
+              backgroundColor: isMenuOpen
+                  ? Colors_compornet.narrow_down.withOpacity(0.5)
+                  : Colors_compornet.narrow_down,
+              side: BorderSide(
+                  color: Colors_compornet.globalBackgroundColorwhite),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
           ),
-          Positioned(
-            top: 60,
-            left: 200,
-            child: GestureDetector(
-              onTap: toggleMenu,
-              child: isMenuOpen
-                  ? SizedBox.shrink()
-                  : Row(
-                      children: [
-                        Text(
-                          '絞り込み',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
