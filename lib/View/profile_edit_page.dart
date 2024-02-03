@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:time_alchemy_app/View/profile_page.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
+import 'package:time_alchemy_app/component/menubar.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
 import 'package:time_alchemy_app/screen_pod.dart';
@@ -117,114 +118,122 @@ class _ProfileEditPageState extends State<Profile_Edit_Page> {
         //完了ボタン
         onPressedRight: () => {},
       ),
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // 写真表示領域をタップしたときに写真を選ぶ
-            GestureDetector(
-              onTap: _selectImage,
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: SizedBox(
-                  width: screen.designH(100),
-                  height: screen.designH(100),
-                  child: _image == null
-                      ? Center(
-                          child: ClipOval(
-                            child: Image.asset(
-                              'assets/logo_images/no_image.jpg', // 画像ファイルのパス
-                              width: screen.designH(100),
-                              height: screen.designH(100),
-                              fit: BoxFit.cover,
+      body: Stack(
+        children: [
+          Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // 写真表示領域をタップしたときに写真を選ぶ
+                GestureDetector(
+                  onTap: _selectImage,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: SizedBox(
+                      width: screen.designH(100),
+                      height: screen.designH(100),
+                      child: _image == null
+                          ? Center(
+                              child: ClipOval(
+                                child: Image.asset(
+                                  'assets/logo_images/no_image.jpg', // 画像ファイルのパス
+                                  width: screen.designH(100),
+                                  height: screen.designH(100),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            )
+                          : ClipOval(
+                              child: Image.file(
+                                _image!,
+                                width: screen.designH(100),
+                                height: screen.designH(100),
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
-                        )
-                      : ClipOval(
-                          child: Image.file(
-                            _image!,
-                            width: screen.designH(100),
-                            height: screen.designH(100),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                ),
-              ),
-            ),
-            BorderLine(),
-            //名前
-            NameRow(
-              label: '名前',
-              value: userName,
-              widthSize: 0.15,
-              controller: nameController,
-              onEditingComplete: (text) {
-                // ここで編集が完了したときの処理を行う
-                print('Name edited: $text');
-              },
-            ),
-            SizedBox(
-              height: screen.designH(10),
-            ),
-            ShortBorderLine(
-              width: screen.designW(308),
-            ),
-            SizedBox(
-              height: screen.designH(10),
-            ),
-            //ユーザーＩＤ
-            NameRow(
-              label: 'ユーザー名',
-              value: userId,
-              widthSize: 0.15,
-              controller: IDController,
-              onEditingComplete: (text) {
-                // ここで編集が完了したときの処理を行う
-                print('Name edited: $text');
-              },
-            ),
-            BorderLine(),
-            //趣味表示
-            HobbyDisplay(hobbyList: hobbyList),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Container(
-                margin: const EdgeInsets.only(right: 17.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5.0), // 丸い角を指定
-                  color: Colors_compornet.globalBackgroundColorRed,
-                ),
-                child: TextButton(
-                  //TODO: 追加ボタン遷移先
-                  onPressed: () => (),
-                  child: const Text(
-                    '追加',
-                    style:
-                        TextStyle(color: Colors_compornet.textfontColorWhite),
+                    ),
                   ),
                 ),
-              ),
-            ),
+                BorderLine(),
+                //名前
+                NameRow(
+                  label: '名前',
+                  value: userName,
+                  widthSize: 0.15,
+                  controller: nameController,
+                  onEditingComplete: (text) {
+                    // ここで編集が完了したときの処理を行う
+                    print('Name edited: $text');
+                  },
+                ),
+                SizedBox(
+                  height: screen.designH(10),
+                ),
+                ShortBorderLine(
+                  width: screen.designW(308),
+                ),
+                SizedBox(
+                  height: screen.designH(10),
+                ),
+                //ユーザーＩＤ
+                NameRow(
+                  label: 'ユーザー名',
+                  value: userId,
+                  widthSize: 0.15,
+                  controller: IDController,
+                  onEditingComplete: (text) {
+                    // ここで編集が完了したときの処理を行う
+                    print('Name edited: $text');
+                  },
+                ),
+                BorderLine(),
+                //趣味表示
+                HobbyDisplay(hobbyList: hobbyList),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 17.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5.0), // 丸い角を指定
+                      color: Colors_compornet.globalBackgroundColorRed,
+                    ),
+                    child: TextButton(
+                      //TODO: 追加ボタン遷移先
+                      onPressed: () => (),
+                      child: const Text(
+                        '追加',
+                        style:
+                            TextStyle(color: Colors_compornet.textfontColorWhite),
+                      ),
+                    ),
+                  ),
+                ),
 
-            BorderLine(),
-            // 個人情報の設定ボタン
-            Align(
-              alignment: Alignment.centerLeft, // 左詰めに配置
-              child: TextButton(
-                //TODO: 個人情報の設定ボタン遷移先
-                onPressed: () => (),
-                child: const Text(
-                  '個人情報の設定',
-                  style: TextStyle(
-                    color: Colors_compornet.globalBackgroundColorRed,
-                    fontSize: 14.0, // 適切なフォントサイズに調整
+                BorderLine(),
+                // 個人情報の設定ボタン
+                Align(
+                  alignment: Alignment.centerLeft, // 左詰めに配置
+                  child: TextButton(
+                    //TODO: 個人情報の設定ボタン遷移先
+                    onPressed: () => (),
+                    child: const Text(
+                      '個人情報の設定',
+                      style: TextStyle(
+                        color: Colors_compornet.globalBackgroundColorRed,
+                        fontSize: 14.0, // 適切なフォントサイズに調整
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: ClockMenu(),
+          )
+        ],
+      )
     );
   }
 }

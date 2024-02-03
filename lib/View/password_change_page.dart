@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/ButtonCompornent.dart';
+import 'package:time_alchemy_app/component/menubar.dart';
 import 'package:time_alchemy_app/component/textformfield.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/screen_pod.dart';
@@ -59,59 +60,67 @@ class _PasswordChangePageState extends State<aPasswordChangePage> {
         onPressedLeft: () => {},
         onPressedRight: () => {},
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: screen.height * 0.15,
-            ),
-            // 旧パスワード入力フィールド
-            PasswordFormField(
-              TextLabel: '現在のパスワード',
-              controller: oldpassword,
-              obscureText: false,
-              
-            ),
-            SizedBox(
-              height: screen.height * 0.02,
-            ),
-            // 新しいパスワード入力フィールド
-            PasswordFormField(
-              TextLabel: '新しいパスワード',
-              controller: newpassword,
-              obscureText: false,
-              
-            ),
-            SizedBox(
-              height: screen.height * 0.02,
-            ),
+      body: Stack(
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: screen.height * 0.15,
+                ),
+                // 旧パスワード入力フィールド
+                PasswordFormField(
+                  TextLabel: '現在のパスワード',
+                  controller: oldpassword,
+                  obscureText: false,
+                  
+                ),
+                SizedBox(
+                  height: screen.height * 0.02,
+                ),
+                // 新しいパスワード入力フィールド
+                PasswordFormField(
+                  TextLabel: '新しいパスワード',
+                  controller: newpassword,
+                  obscureText: false,
+                  
+                ),
+                SizedBox(
+                  height: screen.height * 0.02,
+                ),
 
-            // 確認用パスワード入力フィールド
-            PasswordFormField(
-              TextLabel: '確認パスワード',
-              controller: confirmPassword,
-              obscureText: false,
+                // 確認用パスワード入力フィールド
+                PasswordFormField(
+                  TextLabel: '確認パスワード',
+                  controller: confirmPassword,
+                  obscureText: false,
 
+                ),
+                SizedBox(
+                  height: screen.height * 0.05,
+                ),
+                // 送信ボタン
+                ChoiceButtonRed(
+                  text: '変更',
+                  onPressed: () {
+                    _oldPassword = oldpassword.text;
+                    _newPassword = newpassword.text;
+                    _confirmPassword = confirmPassword.text;
+                    changePassword();
+                  },
+                  height: 0.01,
+                  width: 0.05,
+                ),
+              ],
             ),
-            SizedBox(
-              height: screen.height * 0.05,
-            ),
-            // 送信ボタン
-            ChoiceButtonRed(
-              text: '変更',
-              onPressed: () {
-                _oldPassword = oldpassword.text;
-                _newPassword = newpassword.text;
-                _confirmPassword = confirmPassword.text;
-                changePassword();
-              },
-              height: 0.01,
-              width: 0.05,
-            ),
-          ],
-        ),
-      ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: ClockMenu(),
+          )
+        ],
+      )
     );
   }
 

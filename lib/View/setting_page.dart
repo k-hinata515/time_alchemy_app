@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
+import 'package:time_alchemy_app/component/menubar.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'dart:math' as math;
 
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       builder: DevicePreview.appBuilder,
       home: SettingPage(),
     );
@@ -39,31 +41,39 @@ class SettingPage extends StatelessWidget {
           // TODO: 遷移先の処理を追加
         },
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // メールアドレス変更
-          LinkButton(
-            title: 'メールアドレス変更',
-            onPressedPage: () => (), //TODO: 遷移先の処理を追加
+          Column(
+            children: [
+              // メールアドレス変更
+              LinkButton(
+                title: 'メールアドレス変更',
+                onPressedPage: () => (), //TODO: 遷移先の処理を追加
+              ),
+              BorderLine(),
+              // 個人情報の設定
+              LinkButton(
+                title: '個人情報の設定',
+                onPressedPage: () => (), //TODO: 遷移先の処理を追加
+              ),
+              BorderLine(),
+              // 非表示
+              LinkButton(
+                title: '非表示',
+                onPressedPage: () => (), //TODO: 遷移先の処理を追加
+              ),
+              BorderLine(),
+              // ログアウト
+              LogoutDialog(),
+              BorderLine(),
+            ],
           ),
-          BorderLine(),
-          // 個人情報の設定
-          LinkButton(
-            title: '個人情報の設定',
-            onPressedPage: () => (), //TODO: 遷移先の処理を追加
-          ),
-          BorderLine(),
-          // 非表示
-          LinkButton(
-            title: '非表示',
-            onPressedPage: () => (), //TODO: 遷移先の処理を追加
-          ),
-          BorderLine(),
-          // ログアウト
-          LogoutDialog(),
-          BorderLine(),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: ClockMenu(),
+          )
         ],
-      ),
+      )
     );
   }
 }

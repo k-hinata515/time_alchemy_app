@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:time_alchemy_app/View/profile_edit_page.dart';
 import 'package:time_alchemy_app/View/search.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
+import 'package:time_alchemy_app/component/menubar.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       builder: DevicePreview.appBuilder,
       home: ProfileEditPage(),
     );
@@ -149,6 +151,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               )
             },
           ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: ClockMenu(),
+          )
         ],
       ),
     );

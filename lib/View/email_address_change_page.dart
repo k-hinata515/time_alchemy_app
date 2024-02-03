@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/ButtonCompornent.dart';
+import 'package:time_alchemy_app/component/menubar.dart';
 import 'package:time_alchemy_app/component/textformfield.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/screen_pod.dart';
@@ -44,51 +45,59 @@ class EmailAddressChangePage extends StatelessWidget {
         onPressedLeft: () => {},
         onPressedRight: () => {},
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: screen.height * 0.15,
-            ),
-            MyTextFormField(
-              labelText: '現在のメールアドレス',
-              height: 40,
-              width:300,
-              controller: _currentpasswordcontroller,
-              obscuretext: false,
-            ),
+      body: Stack(
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: screen.height * 0.15,
+                ),
+                MyTextFormField(
+                  labelText: '現在のメールアドレス',
+                  height: 40,
+                  width:300,
+                  controller: _currentpasswordcontroller,
+                  obscuretext: false,
+                ),
 
-            SizedBox(
-              height: screen.height * 0.02,
+                SizedBox(
+                  height: screen.height * 0.02,
+                ),
+                MyTextFormField(
+                  labelText: '変更したいメールアドレス',
+                  height: 40,
+                  width: 300,
+                  controller: _nextpasswordcontroller,
+                  obscuretext: false, //パスワードを
+                ),
+                SizedBox(
+                  height: screen.height * 0.15,
+                ),
+                // 送信ボタン
+                ChoiceButtonRed(
+                  text: '変更',
+                  onPressed: () {
+                    //TODO: メールアドレス変更処理を実行する
+                    currentPassword = _currentpasswordcontroller.text;
+                    nextPassword =_nextpasswordcontroller.text;
+                    //テスト
+                    print(currentPassword);
+                    print(nextPassword);
+                  },
+                  height: 45,
+                  width: 120,
+                ),
+              ],
             ),
-            MyTextFormField(
-              labelText: '変更したいメールアドレス',
-              height: 40,
-              width: 300,
-              controller: _nextpasswordcontroller,
-              obscuretext: false, //パスワードを
-            ),
-            SizedBox(
-              height: screen.height * 0.15,
-            ),
-            // 送信ボタン
-            ChoiceButtonRed(
-              text: '変更',
-              onPressed: () {
-                //TODO: メールアドレス変更処理を実行する
-                currentPassword = _currentpasswordcontroller.text;
-                nextPassword =_nextpasswordcontroller.text;
-                 //テスト
-                print(currentPassword);
-                print(nextPassword);
-              },
-              height: 100,
-              width: 10,
-            ),
-          ],
-        ),
-      ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: ClockMenu(),
+          )
+        ],
+      )
     );
   }
   
