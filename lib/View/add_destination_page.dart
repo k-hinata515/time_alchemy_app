@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:http/http.dart' as http;
 import 'package:time_alchemy_app/View/Navigation.dart';
 import 'package:time_alchemy_app/View/refine_search.dart';
@@ -55,24 +56,27 @@ class _Add_destination_Page extends State<Add_destination_Page> {
       TextEditingController(); // 検索テキストフィールドのコントローラー
   // final API_KEY = Env.key; // APIキー(画像取得用)
 
+  String _latitude = ''; // 緯度を格納する変数
+  String _longitude = ''; // 経度を格納する変数
+  String _average_stay_time = ''; // 平均滞在時間を格納する変数
+
   final List<Map<String, String?>> Navigation_List = []; //Navigation_Pageに渡すリスト
   List<Map<String, String?>> time_List = []; // 出発、到着、平均滞在時刻を格納するリスト
 
   Map<String, dynamic> _placesResponse = {}; // Places APIのレスポンスデータを格納するリスト
   Map<String, dynamic> _rootResponse = {}; // Directions APIのレスポンスデータを格納するリスト
 
-  String _latitude = ''; // 緯度を格納する変数
-  String _longitude = ''; // 経度を格納する変数
-  String _average_stay_time = ''; // 平均滞在時間を格納する変数
+  List<List<double>> _waypoints_location_List = []; // 経由地の緯度経度を格納するリスト
 
   List<String> travel_time_List = []; //移動時間を格納するリスト
   List<String> _waypoints_List = []; // 経由地を格納するリスト
+  List<String> _hobbyList = []; // openAIにリクエストする趣味を格納するリスト
+  List<String> _hobby_tag = []; // 絞り込みタグを格納するリスト
 
   List<bool> checkboxStates = []; // 各要素のチェックボックスの状態を管理するリスト
   bool _isHobby = false; // おすすめか趣味かを判定するフラグ
   bool _isNearbySearch = false; // リクエストが完了したかどうかを判定するフラグ
-  // bool _isTextSearch = false;    // リクエスト完了したかどうかを判定するフラグ
-  bool _isRequestOpenAI = false; // openAIにリクエストするかどうかを判定するフラグ
+  bool _isRequestOpenAI = false; // openAIにリクエストしたかどうかを判定するフラグ
 
   final List<String> _recommend_tag = [
     'レストラン',
@@ -80,23 +84,23 @@ class _Add_destination_Page extends State<Add_destination_Page> {
     'ラーメン',
   ];
 
-  //test(次の予定の時間)
+  //TODOtest(次の予定の時間)
   DateTime _testtime = DateTime(2024, 2, 2, 12, 0, 00);
 
-  //test(最終目的地)
+  //TODOtest(最終目的地)
   String _test_gole_latiude = '34.7051934134671';
   String _test_gole_longitude = '135.49840696016142';
   String _test_place_name = '梅田駅';
 
-  //test(旅行の場合)
-  final List<String> _hobby_tag = [
+  //TODOtest(旅行の場合)
+  final List<String> _test_hobby_tag = [
     '周辺の観光名所',
     'お土産におすすめのお店',
     '食べ歩きにおすすめ',
     '温泉地'
   ];
 
-  // //test(ファッションの場合)
+  // //TODOtest(ファッションの場合)
   // final List<String> _hobby_tag = [
   //   '洋服店',
   //   '靴屋',
@@ -104,7 +108,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   //   'アクセサリー店'
   // ];
 
-  // //test(スポーツとバー巡りの場合)
+  // //TODOtest(スポーツとバー巡りの場合)
   // final List<String> _hobby_tag = [
   //   'スポーツバー',
   //   'スポーツにおすすめなレジャー施設',
@@ -115,8 +119,6 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   @override
   void initState() {
     super.initState();
-    print(widget.mapData);
-    print(widget.selectedTime);
     // 初回時の現在地を取得
     // Future(() async {
     //   try{
@@ -128,6 +130,33 @@ class _Add_destination_Page extends State<Add_destination_Page> {
     //   }
     // });
   }
+
+   // ユーザーデータを取得する関数
+  // void _getUserData() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     userId = prefs.getString('userID') ?? '';
+  //   });
+  //   print('UserID: $userId');
+
+  //   try {
+  //     DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+  //         .collection('users')
+  //         .doc(userId)
+  //         .get();
+
+  //     Map<String, dynamic> userData =
+  //         userSnapshot.data() as Map<String, dynamic>;
+  //     setState(() {
+  //       _hobbyList = List<String>.from(userData['hobby_user']['hobby_List']);
+  //     });
+
+  //     print(_hobbyList);
+  //   } catch (e) {
+  //     print('Error: $e');
+  //     // エラーが発生した場合の適切な処理をここに追加する
+  //   }
+  // }
 
   // 現在地を取得する関数
   Future<void> _getCurrentLocation() async {
@@ -162,7 +191,12 @@ class _Add_destination_Page extends State<Add_destination_Page> {
         _placesResponse = json.decode(placesResponse.body);
         checkboxStates = List<bool>.filled(
             _placesResponse['places'].length, false); // チェックボックスの状態を初期化
+        // _isNearbySearchをtrueに設定
         _isNearbySearch = true;
+        // _isOpenAIをfalseに設定
+        if(_isRequestOpenAI == true){
+          _isRequestOpenAI = false;
+        }
       });
     } catch (error) {
       setState(() {
@@ -184,8 +218,6 @@ class _Add_destination_Page extends State<Add_destination_Page> {
         _placesResponse = json.decode(placesResponse.body);
         checkboxStates = List<bool>.filled(
             _placesResponse['places'].length, false); // チェックボックスの状態を初期化
-        // _isTextSearchをfalseに設定
-        // _isTextSearch = true;
       });
     } catch (error) {
       setState(() {
@@ -202,14 +234,21 @@ class _Add_destination_Page extends State<Add_destination_Page> {
       DateTime now = DateTime.now();
       //次の予定の到着時間をUTCに変換
       // String arrival_time_UTC = await widget.selectedTime!.toUtc().toIso8601String();
-      //test
+      
+      //TODO:test
       DateTime arrival_time =
           await DateTime(now.year, now.month, now.day, 13, 0, 0).toUtc();
-      //UTCに変換
       String arrival_time_UTC = await arrival_time.toUtc().toIso8601String();
 
+      // Directions API にリクエスト
+      // final http.Response directionsResponse = await http.get(Uri.parse(
+      //     'http://IP:Port/current_places_root?origin=$_latitude,$_longitude&destination=${widget.mapData!.latitude},${widget.mapData!.longitude}&waypoints=$_waypoints_List&arrival_time=$arrival_time_UTC'));
+
+      //TODO:test
       final http.Response directionsResponse = await http.get(Uri.parse(
           'http://IP:Port/current_places_root?origin=$_latitude,$_longitude&destination=$_test_gole_latiude,$_test_gole_longitude&waypoints=$_waypoints_List&arrival_time=$arrival_time_UTC'));
+
+
 
       setState(() {
         // 取得したデータを _placesResponse に代入
@@ -224,6 +263,30 @@ class _Add_destination_Page extends State<Add_destination_Page> {
       setState(() {
         print(error);
         _rootResponse = {};
+      });
+    }
+  }
+
+  //OpenAI APIにリクエストするための関数
+  Future<void> _openAIRequest() async {
+    try {
+      // OpenAI API にリクエスト
+      final http.Response openAIResponse = await http.get(Uri.parse(
+          'http://IP:Port/current_openAI?hobby=$_hobbyList'));
+      //ResponseStrにリクエスト結果を格納
+      String ResponseStr = json.decode(openAIResponse.body);
+      //ResponseStrをMap型に変換
+      Map<String, dynamic> ResponseMap = json.decode(ResponseStr);
+      
+      setState(() {
+        // 取得したデータを _hobby_tag に代入
+        _hobby_tag = List<String>.from(ResponseMap['hobby_places']);
+        // _isRequestOpenAIをtrueに設定
+        _isRequestOpenAI = true;
+      });
+    } catch (error) {
+      setState(() {
+        print(error);
       });
     }
   }
@@ -272,6 +335,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
               child: Row(
                 children: [
                   InkWell(
+                    //おすすめを押した時の処理
                     onTap: () {
                       setState(() {
                         _isRequestOpenAI = false;
@@ -311,15 +375,14 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                     ),
                   ),
                   InkWell(
+                    //趣味を押した時の処理
                     onTap: () {
                       setState(() {
                         _isRequestOpenAI = true;
                         _isHobby = true;
                         Future(() async {
                           await _getCurrentLocation();
-                          // TODO:AI側へのリクエスト関数
-                          await _getCurrentLocation();
-                          await _textSearchRequest(_hobby_tag[0]); //test
+                          // await _openAIRequest();
                         });
                       });
                     },
@@ -379,7 +442,6 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                     //   height: screen.designH(30),
                     //   child: FilterClass(),
                     // ),
-
                     isIphone
                         ? SizedBox(width: screen.designW(50))
                         : SizedBox.shrink(),
@@ -407,37 +469,37 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                         ? _hobby_tag.length
                         : _recommend_tag.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final String narrow_down_tag = _isRequestOpenAI == true
-                          ? _hobby_tag[index]
+                      final String _narrow_down_tag = _isRequestOpenAI == true
+                          ? _test_hobby_tag[index]
                           : _recommend_tag[index];
                       return GestureDetector(
                         onTap: () {
-                          _textSearchRequest(narrow_down_tag);
+                          _textSearchRequest(_narrow_down_tag);
                         },
                         child: Container(
                           margin: EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             color: Colors_compornet.textfontcolorocher,
-                            borderRadius: BorderRadius.all(Radius.circular(25)),
+                            borderRadius: const BorderRadius.all(Radius.circular(25)),
                             border: Border.all(
                               width: screen.designW(5),
                               color: Colors.transparent,
                             ),
                           ),
+                          alignment: Alignment.center,
                           child: Center(
                               child: FittedBox(
                             fit: BoxFit.fitWidth,
                             child: Text(
-                              '#$narrow_down_tag',
-                              style: TextStyle(
+                              '#$_narrow_down_tag',
+                              style: const TextStyle(
                                 color:
                                     Colors_compornet.globalBackgroundColorwhite,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
                             ),
-                          )),
-                          alignment: Alignment.center, // テキストを中央に配置
+                          )), // テキストを中央に配置
                         ),
                       );
                     },
@@ -485,7 +547,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                         color: Colors_compornet
                                             .globalBackgroundColorwhite
                                             .withOpacity(0.7),
-                                        boxShadow: [
+                                        boxShadow: const [
                                           BoxShadow(
                                             color: Colors.black26,
                                             spreadRadius: 0.5,
@@ -527,13 +589,9 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                                 children: [
                                                   Text(
                                                     _textWrap(
-                                                        _placesResponse['places']
-                                                                    [index]
-                                                                ['displayName']
-                                                            ['text'],
-                                                        12,
-                                                        24),
-                                                    style: TextStyle(
+                                                        _placesResponse['places'][index]['displayName']['text'],12,24
+                                                    ),
+                                                    style: const TextStyle(
                                                       fontSize: 15,
                                                       fontWeight:
                                                           FontWeight.bold,
@@ -543,7 +601,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                                   ),
                                                   Row(
                                                     children: [
-                                                      Text(
+                                                      const Text(
                                                         '評価:',
                                                         style: TextStyle(
                                                           fontSize: 15,
@@ -551,54 +609,26 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                                               .textfontColorBlack,
                                                         ),
                                                       ),
-                                                      _placesResponse['places']
-                                                                      [index]
-                                                                  ['rating'] !=
-                                                              null
+                                                      _placesResponse['places'][index]['rating'] != null
                                                           ? SizedBox(
                                                               height: screen
                                                                   .designH(16),
                                                               child: FittedBox(
                                                                 child: Row(
                                                                   children: [
-                                                                    if (_placesResponse['places'][index]
-                                                                            [
-                                                                            'rating'] !=
-                                                                        null)
+                                                                    if (_placesResponse['places'][index]['rating'] !=null)
                                                                       // 評価の数だけ星を表示
-                                                                      for (var i =
-                                                                              0;
-                                                                          i <
-                                                                              _placesResponse['places'][index]['rating']
-                                                                                  .floor();
-                                                                          i++)
-                                                                        const Icon(
-                                                                            Icons
-                                                                                .star,
-                                                                            color:
-                                                                                Colors.orange),
-                                                                    if (_placesResponse['places'][index]
-                                                                            [
-                                                                            'rating'] !=
-                                                                        null)
+                                                                      for (var i = 0; i < _placesResponse['places'][index]['rating'].floor(); i++)
+                                                                        const Icon(Icons.star, color:Colors.orange),
+                                                                    if (_placesResponse['places'][index]['rating'] != null)
                                                                       // 評価の数が5に満たない場合、星の枠を表示
-                                                                      for (var j =
-                                                                              0;
-                                                                          j <
-                                                                              5 -
-                                                                                  _placesResponse['places'][index]['rating']
-                                                                                      .floor();
-                                                                          j++)
-                                                                        const Icon(
-                                                                            Icons
-                                                                                .star_border,
-                                                                            color:
-                                                                                Colors.orange),
+                                                                      for (var j = 0; j < 5 - _placesResponse['places'][index]['rating'].floor(); j++)
+                                                                        const Icon( Icons.star_border, color:Colors.orange),
                                                                   ],
                                                                 ),
                                                               ),
                                                             )
-                                                          : Text(
+                                                          : const Text(
                                                               'なし',
                                                               style: TextStyle(
                                                                 fontSize: 12,
@@ -621,22 +651,25 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                                 value: checkboxStates[index],
                                                 onChanged: (value) {
                                                   setState(() {
-                                                    checkboxStates[index] =
-                                                        value!;
-                                                    if (checkboxStates[index] ==
-                                                        true) {
-                                                      _waypoints_List.add(
-                                                          _placesResponse['places']
-                                                                      [index][
-                                                                  'displayName']
-                                                              ['text']);
+                                                    checkboxStates[index] = value!;
+                                                    if (checkboxStates[index] == true) {
+                                                      //選択した場所の名前を格納
+                                                      _waypoints_List.add( _placesResponse['places'][index]['displayName']['text']);
+                                                      //選択した場所の緯度経度を格納
+                                                      _waypoints_location_List.add([
+                                                        _placesResponse['places'][index]['location']['latitude'],
+                                                        _placesResponse['places'][index]['location']['longitude']
+                                                      ]);
+                                                      print(_waypoints_location_List);
                                                     } else {
-                                                      _waypoints_List.remove(
-                                                          _placesResponse['places']
-                                                                      [index][
-                                                                  'displayName']
-                                                              ['text']);
+                                                      // 削除する場所のインデックスを取得
+                                                      int removeIndex = _waypoints_List.indexOf(_placesResponse['places'][index]['displayName']['text']);
+                                                      // 場所の名前を削除
+                                                      _waypoints_List.removeAt(removeIndex);
+                                                      // 場所の緯度経度を削除
+                                                      _waypoints_location_List.removeAt(removeIndex);
                                                     }
+                                                    print(_waypoints_location_List);
                                                     print(_waypoints_List);
                                                   });
                                                 },
@@ -658,8 +691,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                           child: Column(
                             children: [
                               SizedBox(height: screen.designH(200)),
-                              Text(
-                                'データがありません',
+                              const Text(
+                                '検索結果がありません',
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -667,7 +700,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                 ),
                               ),
                               SizedBox(height: screen.designH(16)),
-                              Text(
+                              const Text(
                                 '検索条件を変更してください',
                                 style: TextStyle(
                                   fontSize: 15,
@@ -682,10 +715,11 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                 child: ChoiceButtonRed(
                                   text: '更新',
                                   onPressed: () {
-                                    //追加を押した時の処理
+                                    //更新を押した時の処理
                                     Future(() async {
-                                      await _getCurrentLocation(); //test
-                                      // await _nearbySearchRequest();   //test
+                                      //TODO:test
+                                      // await _getCurrentLocation(); 
+                                      // await _nearbySearchRequest();
                                     });
                                   },
                                   width: 140, //140
@@ -709,7 +743,6 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                             //出発、到着、平均滞在時刻を取得
                             time_List = await Time_Conversion().convertTime(
                                 DateTime.now(), travel_time_List, _testtime);
-
                             // Navigation_Listに経由地の名、到着、出発時刻を格納
                             for (int i = 0; i <= time_List.length - 1; i++) {
                               if (i == time_List.length - 1) {
@@ -726,8 +759,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                 Navigation_List.add({
                                   'name': _waypoints_List[i],
                                   'arrival_time': time_List[i]['arrival_time'],
-                                  'departure_time': time_List[i]
-                                      ['departure_time'],
+                                  'departure_time': time_List[i]['departure_time'],
                                 });
                               }
                             }
@@ -738,6 +770,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                 builder: (context) => Navigation_Page(
                                   Navigation_List:
                                       Navigation_List, // 経由地の名、到着、出発時刻を格納したリスト
+                                  waypoints_location_List:
+                                      _waypoints_location_List, // 経由地の緯度経度を格納したリスト
                                   average_stay_time:
                                       _average_stay_time, // 平均滞在時間
                                 ),
