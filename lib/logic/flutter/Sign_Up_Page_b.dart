@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:time_alchemy_app/View/Hobby_Registration.dart'; // SelectedHobby.dartのパスに合わせて修正
+import 'package:time_alchemy_app/View/hobby_registration_page.dart'; // SelectedHobby.dartのパスに合わせて修正
 
 void validateAndNavigate(BuildContext context, String username,
     String emailOrPhoneNumber, String password) {

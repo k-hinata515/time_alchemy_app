@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:time_alchemy_app/View/Registered_Content.dart';
-
 import 'package:flutter/material.dart';
+import 'package:time_alchemy_app/View/registered_content_page.dart';
 
 Future<List<String>> getHobbyIds() async {
   // コレクションhobbyを参照する

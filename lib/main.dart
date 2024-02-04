@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:time_alchemy_app/View/Login.dart';
 import 'package:time_alchemy_app/View/Sign_Up_Page.dart';
+import 'package:time_alchemy_app/View/login_page.dart';
+import 'package:time_alchemy_app/View/profile_page.dart';
 import 'package:time_alchemy_app/View/search.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';

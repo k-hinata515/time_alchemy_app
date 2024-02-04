@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:time_alchemy_app/View/add_destination_page.dart';
 import 'package:time_alchemy_app/View/googlemap.dart';
 import 'package:time_alchemy_app/View/profile_edit_page.dart';
 import 'package:time_alchemy_app/View/search.dart';
-import 'package:time_alchemy_app/View/%20Add_destination.dart';
-import 'package:time_alchemy_app/View/settung_page.dart';
+import 'package:time_alchemy_app/View/setting_page.dart';
 
 //ホーム画面
 class SearchPageTransition {
