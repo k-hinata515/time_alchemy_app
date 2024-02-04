@@ -46,7 +46,7 @@ class _ClockMenu extends State<ClockMenu> {
               ),
               child: Center(
                 child: Image(
-                  image: AssetImage('logo_images/icon.png'),
+                  image: AssetImage('assets/logo_images/icon.png'),
                   width: screen.designW(200),
                   height: screen.designH(200),
                 ),
@@ -86,7 +86,7 @@ class _ClockMenu extends State<ClockMenu> {
               right: 30,
               child: Visibility(
                 visible: drawShape,
-                child: Image.asset('logo_images/longhand.png'),
+                child: Image.asset('assets/logo_images/longhand.png'),
               )),
           //短針
           Positioned(
@@ -95,7 +95,7 @@ class _ClockMenu extends State<ClockMenu> {
               child: Visibility(
                 visible: drawShape,
                 child: Image.asset(
-                  'logo_images/hourhand.png',
+                  'assets/logo_images/hourhand.png',
                 ),
               )),
           //設定ボタン
@@ -212,6 +212,7 @@ class _HoverButton extends State<HoverButton> {
                 child: Icon(
                   widget.buttonIcon,
                   size: isHovered ? 45.0 : 27.0,
+                  color: Colors_compornet.navibar_icon,
                 )),
           ),
         ),
