@@ -1,11 +1,6 @@
-#pip install python-dotenv
-#pip install flask
-#pip install requests
-
-# pythonProjectフォルダに移動
-# export FLASK_APP=google_api.py で環境変数を設定
-# echo $FLASK_APPで環境変数が設定されているか確認
-# flask run でサーバーを起動(例--host=0.0.0.0 --port=5000でホストとポートを指定)
+# cd lib/logic/pythonでディレクトリ移動
+# app.run(host='', port=)(例--host=0.0.0.0 --port=5000でホストとポートを指定)
+# python google_api.pyでサーバーを起動 
 
 from flask import Flask, jsonify, request
 from dotenv import load_dotenv
@@ -77,7 +72,7 @@ def nearbysearch_places():
     
     #jsonフォルダがなければ作成
     if not os.path.isdir('../../../assets/json'):
-        os.mkdir('../../../assets/json')
+        os.makedirs('../../../assets/json')
 
     # レスポンスをjsonファイルとしてassetsのjsonフォルダに保存  
     with open('../../../assets/json/nearbysearch.json', 'w' , encoding='utf-8') as f:
@@ -136,7 +131,7 @@ def textsearch_places():
     
     #jsonフォルダがなければ作成
     if not os.path.isdir('../../../assets/json'):
-        os.mkdir('../../../assets/json')
+        os.makedirs('../../../assets/json')
 
     # レスポンスをjsonファイルとしてassetsのjsonフォルダに保存
     with open('../../../assets/json/textsearch.json', 'w' , encoding='utf-8') as f:
@@ -209,7 +204,7 @@ def places_root():
     
     #jsonフォルダがなければ作成
     if not os.path.isdir('../../../assets/json'):
-        os.mkdir('../../../assets/json')
+        os.makedirs('../../../assets/json')
     
     # レスポンスをjsonファイルとしてassetsのjsonフォルダに保存
     with open('../../../assets/json/root.json', 'w' , encoding='utf-8') as f:
