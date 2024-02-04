@@ -40,7 +40,8 @@ class Navigation_Page extends StatefulWidget {
   final List<Map<String, String?>>? Navigation_List;
   final List<List<double>>? waypoints_location_List;
   final String? average_stay_time;
-  Navigation_Page({Key? key , this.Navigation_List , this.average_stay_time, this.waypoints_location_List }) : super(key: key);
+  final List<String>? photo_name_List;
+  Navigation_Page({Key? key , this.Navigation_List , this.average_stay_time, this.waypoints_location_List, this.photo_name_List }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _Navigation_Page();

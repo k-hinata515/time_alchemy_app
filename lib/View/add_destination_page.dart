@@ -72,6 +72,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   List<String> _waypoints_List = []; // 経由地を格納するリスト
   List<String> _hobbyList = []; // openAIにリクエストする趣味を格納するリスト
   List<String> _hobby_tag = []; // 絞り込みタグを格納するリスト
+  List<String> _photo_name_List = [];  //URLを格納するリスト
 
   List<bool> checkboxStates = []; // 各要素のチェックボックスの状態を管理するリスト
   bool _isHobby = false; // おすすめか趣味かを判定するフラグ
@@ -660,7 +661,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                                         _placesResponse['places'][index]['location']['latitude'],
                                                         _placesResponse['places'][index]['location']['longitude']
                                                       ]);
-                                                      print(_waypoints_location_List);
+                                                      //選択した場所のURLを格納
+                                                      _photo_name_List.add(_placesResponse['places'][index]['photos'][0]['name']);
                                                     } else {
                                                       // 削除する場所のインデックスを取得
                                                       int removeIndex = _waypoints_List.indexOf(_placesResponse['places'][index]['displayName']['text']);
@@ -668,9 +670,9 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                                       _waypoints_List.removeAt(removeIndex);
                                                       // 場所の緯度経度を削除
                                                       _waypoints_location_List.removeAt(removeIndex);
+                                                      // 場所のURLを削除
+                                                      _photo_name_List.removeAt(removeIndex);
                                                     }
-                                                    print(_waypoints_location_List);
-                                                    print(_waypoints_List);
                                                   });
                                                 },
                                               ),
@@ -768,12 +770,10 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => Navigation_Page(
-                                  Navigation_List:
-                                      Navigation_List, // 経由地の名、到着、出発時刻を格納したリスト
-                                  waypoints_location_List:
-                                      _waypoints_location_List, // 経由地の緯度経度を格納したリスト
-                                  average_stay_time:
-                                      _average_stay_time, // 平均滞在時間
+                                  Navigation_List: Navigation_List, // 経由地の名、到着、出発時刻を格納したリスト
+                                  waypoints_location_List:  _waypoints_location_List, // 経由地の緯度経度を格納したリスト
+                                  average_stay_time: _average_stay_time, // 平均滞在時間
+                                  photo_name_List: _photo_name_List, //URLを格納したリスト
                                 ),
                               ),
                             );
