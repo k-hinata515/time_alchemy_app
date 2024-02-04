@@ -1,8 +1,10 @@
 import 'dart:math';
-
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:time_alchemy_app/View/add_destination_page.dart';
+import 'package:time_alchemy_app/View/googlemap.dart';
+import 'package:time_alchemy_app/View/search.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
 import 'package:time_alchemy_app/component/Dashed_Line.dart';
@@ -16,13 +18,13 @@ void main() => runApp(
         builder: (context) => Navigation(), // MyAppを直接指定
       ),
     );
+
 class Navigation extends StatelessWidget {
   Navigation({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      
       debugShowCheckedModeBanner: false,
       useInheritedMediaQuery: true,
       locale: DevicePreview.locale(context),
@@ -37,14 +39,14 @@ class Navigation extends StatelessWidget {
 class Navigation_Page extends StatefulWidget {
   final List<Map<String, String?>>? Navigation_List;
   final String? average_stay_time;
-  Navigation_Page({Key? key , this.Navigation_List , this.average_stay_time }) : super(key: key);
+  Navigation_Page({Key? key, this.Navigation_List, this.average_stay_time})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _Navigation_Page();
 }
 
 class _Navigation_Page extends State<Navigation_Page> {
-
   String now_time =
       DateFormat('HH:mm').format(DateTime.now()).toString(); //現在時刻
 
@@ -62,6 +64,7 @@ class _Navigation_Page extends State<Navigation_Page> {
       now_time = DateFormat('HH:mm').format(DateTime.now());
     });
   }
+
   @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
@@ -71,7 +74,12 @@ class _Navigation_Page extends State<Navigation_Page> {
       appBar: AppBarWhiteTextCompornent(
         title: 'TimeAlchemy',
         rightText: '次へ',
-        onPressedLeft: () => {},
+        onPressedLeft: () => {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SearchPage()),
+          )
+        },
         onPressedRight: () => {},
         showRightText: false, //右の
       ),
@@ -106,7 +114,9 @@ class _Navigation_Page extends State<Navigation_Page> {
                                 fontSize: screen.designH(16),
                                 fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(width: screen.designW(8),),
+                          SizedBox(
+                            width: screen.designW(8),
+                          ),
                           Icon(
                             Icons.directions_run,
                             size: screen.designW(45),
@@ -176,8 +186,9 @@ class _Navigation_Page extends State<Navigation_Page> {
                               _NavigationDate['arrival_time'];
                           final String? departureTime =
                               _NavigationDate['departure_time'];
-                          final String? _average_stay_time = widget.average_stay_time;
-                              
+                          final String? _average_stay_time =
+                              widget.average_stay_time;
+
                           return Column(
                             children: [
                               SizedBox(
@@ -225,10 +236,30 @@ class _Navigation_Page extends State<Navigation_Page> {
                                                         FontWeight.bold),
                                               ),
                                           ]),
-                                          SizedBox(width: screen.designW(48),),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                          // 現在地を押された時の処理
+                                      SizedBox(
+                                        width: screen.designW(48),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          //選択された場所が押された時
+                                          //ここでsearch.dartにページ遷移するかAdd destination.dartに遷移する処理を書く
+                                          if (departureTime == null) {
+                                            //ここにsearch.dartにページ遷移するコード
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      SearchPage()),
+                                            );
+                                          } else {
+                                            //ここにAdd destination.dartにページ遷移するコードを書く
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      Add_destination_Page()),
+                                            );
+                                          }
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor:
@@ -244,7 +275,10 @@ class _Navigation_Page extends State<Navigation_Page> {
                                           children: [
                                             Text(
                                               //7文字以上の場合...をつけて省略
-                                              '$label'.length > 7 ? '$label'.substring(0,7) + '...' :'$label',
+                                              '$label'.length > 7
+                                                  ? '$label'.substring(0, 7) +
+                                                      '...'
+                                                  : '$label',
                                               style: TextStyle(
                                                 color: Colors_compornet
                                                     .globalBackgroundColorRed,
@@ -265,61 +299,70 @@ class _Navigation_Page extends State<Navigation_Page> {
                                         ),
                                       ),
                                       IconButton(
-                                        color: Colors_compornet.globalBackgroundColorRed,
+                                        color: Colors_compornet
+                                            .globalBackgroundColorRed,
                                         iconSize: screen.designH(30),
-                                        onPressed: () { 
-                                          //ここでsearch.dartにページ遷移するかAdd destination.dartに遷移する処理を書く
-                                          if(departureTime ==null){
-                                            //ここにsearch.dartにページ遷移するコード
-                                          }else{
-                                            //ここにAdd destination.dartにページ遷移するコードを書く
-                                          }
-                                        }, 
-                                        icon:Icon(Icons.location_on),
+                                        onPressed: () {
+                                          //マップボタンが押されたとき
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    MapScreen()),
+                                          );
+                                        },
+                                        icon: Icon(Icons.location_on),
                                       ),
-                                      if(departureTime != null)
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: Container(
-                                          alignment: Alignment.center,
-                                          height: screen.designH(50),
-                                          width: screen.designW(50),
-                                          decoration:  BoxDecoration(
-                                            color: Colors_compornet.textfontColorWhite,
-                                            shape: BoxShape.circle,
-                                            border: Border.all(color: Colors_compornet.globalBackgroundColorRed),
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              SizedBox(height: screen.designH(3),),
-                                              Text(
-                                                '滞在時間',
-                                                style: TextStyle(
-                                                    fontSize: screen.designW(7),
-                                                    fontWeight: FontWeight.bold
+                                      if (departureTime != null)
+                                        Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            height: screen.designH(50),
+                                            width: screen.designW(50),
+                                            decoration: BoxDecoration(
+                                              color: Colors_compornet
+                                                  .textfontColorWhite,
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                  color: Colors_compornet
+                                                      .globalBackgroundColorRed),
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                SizedBox(
+                                                  height: screen.designH(3),
                                                 ),
-                                              ),
-                                              SizedBox(height: screen.designH(1),),
-                                              Text(
-                                                '$_average_stay_time',
-                                                style: TextStyle(
-                                                  color: Colors_compornet.staytime,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: screen.designW(12),
-
+                                                Text(
+                                                  '滞在時間',
+                                                  style: TextStyle(
+                                                      fontSize:
+                                                          screen.designW(7),
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
-                                              )
-                                            ],
+                                                SizedBox(
+                                                  height: screen.designH(1),
+                                                ),
+                                                Text(
+                                                  '$_average_stay_time',
+                                                  style: TextStyle(
+                                                    color: Colors_compornet
+                                                        .staytime,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize:
+                                                        screen.designW(12),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      )
+                                        )
                                     ],
-                                  )
-                                ),
+                                  )),
                             ],
                           );
-                        }
-                      ),
+                        }),
                   ],
                 ),
               ),
@@ -345,4 +388,3 @@ class _Navigation_Page extends State<Navigation_Page> {
     );
   }
 }
-//add

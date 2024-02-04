@@ -7,20 +7,20 @@ import 'package:time_alchemy_app/component/menubar.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
 import 'package:time_alchemy_app/logic/flutter/googlemap_b.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 void main() => runApp(
       DevicePreview(
-        enabled: !kReleaseMode,
-        builder: (context) => MyApp()), // Wrap your app
-    
-);
+          enabled: !kReleaseMode,
+          builder: (context) => MyApp()), // Wrap your app
+    );
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
@@ -65,21 +65,21 @@ class GoogleMapWidget extends StatefulWidget {
 
 class GoogleMapWidgetState extends State<GoogleMapWidget> {
   late GoogleMapController _controller;
+  Set<Marker> markers = {}; // Define markers set
   final data = [
-    'assets/logo_images/ECCcanpas.png',
-    'assets/logo_images/daisensou.png',
-    'assets/logo_images/osakastation.png',
-    'assets/logo_images/rinkutownstation.png',
-    'assets/logo_images/mcdnald.png'
+    // 'assets/logo_images/ECCcanpas.png',
+    // 'assets/logo_images/daisensou.png',
+    // 'assets/logo_images/osakastation.png',
+    // 'assets/logo_images/rinkutownstation.png',
+    // 'assets/logo_images/mcdnald.png'
   ];
-  final label = [
-    
-    'ECCコンピュータ専門学校',
-    'ラーメン大戦争',
-    '大阪駅',
-    'りんくうタウン駅',
-    'マクドナルド'
-  ];
+  final label = ['ECCコンピュータ専門学校', 'ラーメン大戦争', '大阪駅', 'りんくうタウン駅', 'マクドナルド'];
+
+  double next_latitude = 34.97999101480096;
+  double next_longitude = 135.9002419833888;
+
+  late PolylinePoints _polylinePoints;
+  Map<PolylineId, Polyline> polylines = {};
 
   // Googleマップの初期カメラ位置を現在位置に設定
   CameraPosition get _initialCameraPosition {
@@ -102,7 +102,10 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
   @override
   void initState() {
     super.initState();
-    // 現在の位置を連続的に更新するための位置ストリームをセットアップ
+    // _polylinePointsを先に初期化
+    _polylinePoints = PolylinePoints();
+    addMarkers(); // マーカーを追加
+    // 他の初期化コードはそのまま
     LocationStream.getPositionStream(
       const LocationSettings(
         accuracy: LocationAccuracy.high,
@@ -122,129 +125,196 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
   @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
+
     return Scaffold(
       backgroundColor: Colors_compornet.globalBackgroundColorRed,
-  body: Stack(
-    children: [
-      GoogleMap(
-        // Googleマップのプロパティを構成
-        mapType: MapType.normal,
-        initialCameraPosition: _initialCameraPosition,
-        myLocationEnabled: true,
-        onMapCreated: (GoogleMapController controller) {
-          _controller = controller;
-        },
-      ),
-      Column(
+      body: Stack(
         children: [
-          Container(
-            height: screen.designH(40),
-            width: double.infinity,
-            color: Colors_compornet.globalBackgroundColorRed,
+          GoogleMap(
+            // Googleマップのプロパティを構成
+            mapType: MapType.normal,
+            initialCameraPosition: _initialCameraPosition,
+            myLocationEnabled: true,
+            onMapCreated: (GoogleMapController controller) {
+              _controller = controller;
+              // マーカーを追加
+              addMarkers();
+            },
+            polylines: Set<Polyline>.of(polylines.values),
           ),
-          Container(
-        height: screen.designH(95),
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors_compornet.globalBackgroundColorwhite,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10),
-            topRight: Radius.circular(10),
-          ),
-        ),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
+          Column(
             children: [
-              SizedBox(width:screen.designW(4)),
               Container(
-                height: screen.designH(45),
-                width: screen.designW(75),
+                height: screen.designH(40),
+                width: double.infinity,
+                color: Colors_compornet.globalBackgroundColorRed,
+              ),
+              Container(
+                height: screen.designH(95),
+                width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors_compornet.globalBackgroundColorRed,
-                  
+                  color: Colors_compornet.globalBackgroundColorwhite,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                  ),
                 ),
-                child: Center(
-                  child: Text(
-                    '現在地',
-                    style: TextStyle(
-                      color: Colors_compornet.globalBackgroundColorwhite,
-                      fontSize: screen.designW(15)
-                    ),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      SizedBox(width: screen.designW(4)),
+                      Container(
+                        height: screen.designH(45),
+                        width: screen.designW(75),
+                        decoration: BoxDecoration(
+                          color: Colors_compornet.globalBackgroundColorRed,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '現在地',
+                            style: TextStyle(
+                                color:
+                                    Colors_compornet.globalBackgroundColorwhite,
+                                fontSize: screen.designW(15)),
+                          ),
+                        ),
+                      ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: data.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                            margin: EdgeInsets.only(left: 8),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  height: screen.designH(3),
+                                  width: screen.designW(70),
+                                  color:
+                                      Colors_compornet.globalBackgroundColorRed,
+                                ),
+                                Icon(
+                                  Icons.arrow_forward_ios,
+                                  color:
+                                      Colors_compornet.globalBackgroundColorRed,
+                                ),
+                                Container(
+                                    child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: screen.designW(60),
+                                      height: screen.designH(50),
+                                      child: FittedBox(
+                                        fit: BoxFit.contain,
+                                        child: Image.asset(
+                                          data[index],
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      label[index],
+                                      style: TextStyle(
+                                        color:
+                                            Colors_compornet.textfontcolorocher,
+                                        fontSize: label[index].length > 7
+                                            ? screen.designH(8)
+                                            : screen.designH(12),
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                )),
+                                SizedBox(
+                                  width: screen.designW(8),
+                                )
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),
-              ListView.builder(
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemCount: data.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    margin: EdgeInsets.only(left: 8),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          height: screen.designH(3),
-                          width: screen.designW(70),
-                          color: Colors_compornet.globalBackgroundColorRed,
-                        ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors_compornet.globalBackgroundColorRed,
-                        ),
-                        Container(
-                          child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: screen.designW(60),
-                              height: screen.designH(50),
-                              child: FittedBox(
-                                fit:BoxFit.contain ,
-                              child: Image.asset(
-                                data[index],
-                              ),
-                            ),
-                            ),
-                            
-                        Text(
-                          label[index],
-                          style: TextStyle(
-                            color: Colors_compornet.textfontcolorocher,
-                            fontSize: label[index].length > 7
-                                ? screen.designH(8)
-                                : screen.designH(12),
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                          ],
-                        )
-                        ),
-                        SizedBox(width: screen.designW(8),)
-                      ],
-                    ),
-                  );
-                },
-              ),
             ],
           ),
-        ),
-      ),
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding:
+                  EdgeInsets.only(right: screen.designH(45.0)), // 上方向のパディングを追加
+              child: ClockMenu(),
+            ),
+          ),
         ],
       ),
-       Align(
-  alignment: Alignment.bottomLeft,
-  child: Padding(
-    padding: EdgeInsets.only(right: screen.designH(45.0) ), // 上方向のパディングを追加
-    child: ClockMenu(),
-  ),
-),
+    );
+  }
 
+  // マーカーを追加する関数
+  void addMarkers() {
+    // 現在地のマーカーを追加（青いマーカー）
+    markers.add(
+      Marker(
+        markerId: MarkerId('currentPosition'),
+        position: LatLng(
+          currentPosition?.latitude ?? 0.0,
+          currentPosition?.longitude ?? 0.0,
+        ),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      ),
+    );
 
-    ],
-  ),
-);
+    // 指定の緯度と経度の場所にマーカーを追加（赤いマーカー）
+    markers.add(
+      Marker(
+        markerId: MarkerId('nextPosition'),
+        position: LatLng(
+          next_latitude,
+          next_longitude,
+        ),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      ),
+    );
 
+    setState(() {}); // Stateを更新してマーカーを反映させる
+    drawRoute(); // マーカーを基準にルートの追加
+  }
+
+  void drawRoute() async {
+    List<LatLng> polylineCoordinates = [];
+    PolylineResult result = await _polylinePoints.getRouteBetweenCoordinates(
+      'API_key', // ここにGoogle Maps Directions APIのAPIキーを入れてください。
+      PointLatLng(
+        currentPosition?.latitude ?? 0.0,
+        currentPosition?.longitude ?? 0.0,
+      ),
+      PointLatLng(
+        next_latitude,
+        next_longitude,
+      ),
+      travelMode: TravelMode.driving,
+    );
+
+    if (result.points.isNotEmpty) {
+      result.points.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+    }
+
+    PolylineId id = PolylineId('route');
+    Polyline polyline = Polyline(
+      polylineId: id,
+      color: Colors.blue,
+      points: polylineCoordinates,
+      width: 3,
+    );
+    setState(() {
+      polylines[id] = polyline;
+    });
   }
 }
