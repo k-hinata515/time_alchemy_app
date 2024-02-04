@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:time_alchemy_app/View/%20Add_destination.dart';
+
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
 import 'package:time_alchemy_app/logic/flutter/transition.dart';
@@ -64,7 +64,7 @@ class _ClockMenu extends State<ClockMenu> {
                   painter: drawShape
                       ? Painter(
                           radius: 140.0,
-                          color: Color.fromRGBO(120, 89, 79, 1),
+                          color: Colors_compornet.globalBackgroundColorRed,
                         )
                       : null)),
 

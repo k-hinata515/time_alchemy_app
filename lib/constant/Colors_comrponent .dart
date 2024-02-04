@@ -25,4 +25,5 @@ class Colors_compornet {
   static const textfontColorBlack = Color(0xFf333333); //textの基本的な黒に使用
   static const textfontColorWhite = Color(0xFFFCFBFF); //textの基本的な白に使用
   static const staytime = Color(0xFF24889E);
+  static const navibar_icon = Color(0xFFBD9F97);
 }
