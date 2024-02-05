@@ -1,5 +1,5 @@
 # cd lib/logic/pythonでディレクトリ移動
-# app.run(host='', port=)(例--host=0.0.0.0 --port=5000でホストとポートを指定)
+# app.run(host='', port=)関数に(例--host=0.0.0.0 --port=5000)ホストとポートを指定
 # python google_api.pyでサーバーを起動 
 
 from flask import Flask, jsonify, request
@@ -15,12 +15,10 @@ app = Flask(__name__)
 #.envファイルからAPIキーを取得
 load_dotenv()
 # APIキーの設定
-PLACES_API_KEY = os.environ['PLACES_API_NEW_KEY']
-DIRECTIONS_API_KEY = os.environ['DIRECTIONS_API_KEY']
+GOOGLE_MAP_API_KEY = os.environ['GOOGLE_MAP_API_KEY']
 
 #タイプを格納する配列
 default_type = ['cafe','restaurant']
-
 
 # ルートにアクセスしたときの処理
 # 自分の現在地の周辺の場所を取得する関数（Nearby Search）
@@ -57,7 +55,7 @@ def nearbysearch_places():
     # へッダー情報
     headers = {
         "Content-Type": "application/json",
-        "X-Goog-Api-Key": PLACES_API_KEY,
+        "X-Goog-Api-Key": GOOGLE_MAP_API_KEY,
         "X-Goog-FieldMask": "places.location,places.id,places.displayName.text,places.types,places.primaryType,places.rating,places.photos.name,places.name,places.websiteUri"
     }
 
@@ -116,7 +114,7 @@ def textsearch_places():
     # へッダー情報
     headers = {
         "Content-Type": "application/json",
-        "X-Goog-Api-Key": PLACES_API_KEY,
+        "X-Goog-Api-Key":GOOGLE_MAP_API_KEY,
         "X-Goog-FieldMask": "places.name,places.location,places.id,places.displayName.text,places.types,places.primaryType,places.rating,places.photos.name,places.websiteUri"
     }
 
@@ -190,7 +188,7 @@ def places_root():
         # "region" : 'jp',  # 地域
         "optimize_waypoints" : True,  # 経由地の最適化
         "travel_mode" : 'WALKING',    # 交通手段
-        "key" : DIRECTIONS_API_KEY   # APIキー
+        "key" : GOOGLE_MAP_API_KEY   # APIキー
     }
 
     # リクエストを送信してレスポンスのJSONを取得
