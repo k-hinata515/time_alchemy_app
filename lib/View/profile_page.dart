@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:time_alchemy_app/View/profile_edit_page.dart';
-import 'package:time_alchemy_app/View/search.dart';
+import 'package:time_alchemy_app/View/search_page.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/menubar.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
@@ -168,15 +168,16 @@ class AppBackground extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraint) {
       final height = constraint.maxHeight;
       final width = constraint.maxWidth;
+      final screen = MediaQuery.of(context).size;
 
       return Stack(
         children: <Widget>[
           Positioned(
             top: -height * 0.4,
-            left: -height * 0.05,
+            left: -width * 0.15,
             child: Container(
-              height: height + 70,
-              width: width + 70,
+              height: height + screen.height * 0.1,
+              width: width + screen.width * 0.3,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors_compornet.globalBackgroundColorRed.withOpacity(1),
