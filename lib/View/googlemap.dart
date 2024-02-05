@@ -331,7 +331,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
     for (int i = 0; i < allCoordinates.length - 1; i++) {
       List<LatLng> polylineCoordinates = [];
       PolylineResult result = await _polylinePoints.getRouteBetweenCoordinates(
-        'AIzaSyA9iecZxr9RjOOcq7u79J0KeUXb9bH1FHI',
+        'my_api_key',
         PointLatLng(
           allCoordinates[i].latitude,
           allCoordinates[i].longitude,
