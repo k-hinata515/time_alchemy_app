@@ -1,23 +1,27 @@
 import 'dart:math';
 
 import 'package:device_preview/device_preview.dart';
-import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:time_alchemy_app/View/add_destination_page.dart';
 import 'package:time_alchemy_app/View/search_map_page.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
 import 'package:time_alchemy_app/component/ButtonCompornent.dart';
 import 'package:time_alchemy_app/component/Dashed_Line.dart';
 import 'package:time_alchemy_app/component/IconButton.dart';
-import 'package:time_alchemy_app/component/ToggleButton.dart';
 import 'package:time_alchemy_app/component/menubar.dart';
 import 'package:time_alchemy_app/component/textformfield.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
 import 'package:time_alchemy_app/logic/flutter/geolocation.dart';
-import 'package:time_alchemy_app/logic/flutter/search_map_b.dart';
+import 'package:time_alchemy_app/logic/flutter/map_class.dart';
+
+typedef void TimeSelectionCallback(TimeOfDay selectedTime);
 
 void main() => runApp(
       DevicePreview(
@@ -44,26 +48,39 @@ class Search extends StatelessWidget {
 }
 
 class SearchPage extends StatefulWidget {
+  final MapData? mapData;
+  SearchPage({this.mapData});
   State<StatefulWidget> createState() => _SearchPage();
 }
 
 class _SearchPage extends State<SearchPage> {
   String now_time =
       DateFormat('HH:mm').format(DateTime.now()).toString(); //現在時刻
+  String? userId;
 
   final TextEditingController destination_controller = TextEditingController();
-  final TextEditingController _next_destinationController =
-      TextEditingController();
 
   String _latitude = ''; // 緯度
   String _longitude = ''; // 経度
+
+  TimeOfDay? selectedTime;
 
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
-    print('緯度: $_latitude 経度: $_longitude');
+    // _getUserID();
+    //print('緯度: $_latitude 経度: $_longitude');
   }
+
+// ユーザーIDを取得する関数
+  // void _getUserID() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     userId = prefs.getString('userID');
+  //   });
+  //   print('UserID: $userId'); // ユーザーIDをコンソールに表示
+  // }
 
   // 現在地を取得する関数
   Future<void> _getCurrentLocation() async {
@@ -76,7 +93,7 @@ class _SearchPage extends State<SearchPage> {
       _latitude = position.latitude.toString();
       _longitude = position.longitude.toString();
 
-      print('緯度: $_latitude 経度: $_longitude');
+      //print('緯度: $_latitude 経度: $_longitude');
     } catch (error) {
       setState(() {
         print(error);
@@ -100,7 +117,6 @@ class _SearchPage extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    String next_destination = '';
     final screen = ScreenRef(context).watch(screenProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -108,7 +124,7 @@ class _SearchPage extends State<SearchPage> {
         title: 'TimeAlchemy',
         rightText: '次へ',
         onPressedLeft: () => {},
-        onPressedRight: () => {},
+        onPressedRight: () async {},
         showRightText: false, //次へ
       ),
       body: Stack(
@@ -208,7 +224,7 @@ class _SearchPage extends State<SearchPage> {
                     ),
                     SizedBox(height: screen.designH(45)),
                     Container(
-                      height: screen.designH(175),
+                      height: screen.designH(180),
                       width: screen.designW(260),
                       decoration: BoxDecoration(
                         border: Border.all(
@@ -228,12 +244,17 @@ class _SearchPage extends State<SearchPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              MyTextFormField(
+                              String_Display(
                                 labelText: '次の目的地',
-                                height: 30,
+                                //ここに表示するTextを書く  ９文字以上のデータが入った場合表示の問題上強制的に...を後ろにつける処理を書いている
+                                displayText: widget.mapData?.placeName !=
+                                            null &&
+                                        widget.mapData!.placeName.isNotEmpty
+                                    ? widget.mapData!
+                                        .placeName // Accessing the text property of TextEditingController
+                                    : destination_controller.text,
+                                height: 47.5,
                                 width: 165,
-                                controller: destination_controller,
-                                obscuretext: false,
                               ),
                               IconButton(
                                 onPressed: () {
@@ -256,7 +277,13 @@ class _SearchPage extends State<SearchPage> {
                           SizedBox(
                             height: screen.designH(5),
                           ),
-                          TimePickerSample(),
+                          TimePickerSample(
+                            onTimeSelected: (TimeOfDay time) {
+                              setState(() {
+                                selectedTime = time;
+                              });
+                            },
+                          ),
                         ],
                       ),
                     ),
@@ -268,7 +295,7 @@ class _SearchPage extends State<SearchPage> {
                       width: 250,
                       text: '検索',
                       onPressed: () {
-                        print(_next_destinationController.text);
+                        _navigateToAddDestinationPage();
                       },
                     ),
                   ],
@@ -276,7 +303,18 @@ class _SearchPage extends State<SearchPage> {
               ],
             ),
           ),
-          
+          Positioned(
+            bottom: screen.designH(20), // 下方向の位置
+            right: screen.designH(20), // 右方向の位置
+            child: MapIconButton(
+              onPressed: () {
+                // MapIconButton が押されたときの処理
+                print('Map Icon Button Pressed');
+              },
+              width: screen.designW(60),
+              height: screen.designH(60),
+            ),
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: ClockMenu(),
@@ -285,10 +323,35 @@ class _SearchPage extends State<SearchPage> {
       ),
     );
   }
+
+  void _navigateToAddDestinationPage() {
+    DateTime? selectedDateTime;
+    if (selectedTime != null) {
+      final now = DateTime.now();
+      selectedDateTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        selectedTime!.hour,
+        selectedTime!.minute,
+      );
+    }
+    print(selectedDateTime);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Add_destination_Page(
+          mapData: widget.mapData,
+          selectedTime: selectedDateTime,
+        ),
+      ),
+    );
+  }
 }
 
 class TimePickerSample extends StatefulWidget {
-  TimePickerSample({Key? key}) : super(key: key);
+  final TimeSelectionCallback onTimeSelected;
+  TimePickerSample({Key? key, required this.onTimeSelected}) : super(key: key);
 
   @override
   _TimePickerSampleState createState() => _TimePickerSampleState();
@@ -363,6 +426,8 @@ class _TimePickerSampleState extends State<TimePickerSample> {
     if (newTime != null) {
       // 選択された時間を状態にセットして、画面を再描画
       setState(() => selectedTime = newTime);
+      // 追加：親ウィジェットのコールバック関数を呼び出す
+      widget.onTimeSelected(newTime);
     } else {
       // キャンセルされた場合は何もせずに処理を終了
       return;
