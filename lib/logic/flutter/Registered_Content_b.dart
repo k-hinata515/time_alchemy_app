@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:time_alchemy_app/View/search.dart';
+import 'package:time_alchemy_app/View/search_page.dart';
 
 void newregistration({
   required String username,

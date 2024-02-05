@@ -107,7 +107,7 @@ class _SearchMapState extends State<SearchMap> {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) {
-                return Search();
+                return Search_Map_Page();
               },
             ),
           ).then((value) async {
