@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +34,10 @@ class MyApp extends StatelessWidget {
 
 // Googleマップを含むメイン画面のウィジェット
 class MapScreen extends StatelessWidget {
-  const MapScreen({Key? key}) : super(key: key);
+  final List<Map<String, String?>>? navigationList;
+  final List<List<double>>? waypointsLocationList;
+  const MapScreen({Key? key, this.navigationList, this.waypointsLocationList})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +51,10 @@ class MapScreen extends StatelessWidget {
         } else {
           // 位置データが利用可能になったらGoogleマップを表示
           Position? initialPosition = snapshot.data;
-          return GoogleMapWidget(initialPosition: initialPosition);
+          return GoogleMapWidget(
+              initialPosition: initialPosition,
+              navigationList: navigationList,
+              waypointsLocationList: waypointsLocationList);
         }
       },
     );
@@ -56,8 +64,15 @@ class MapScreen extends StatelessWidget {
 // Googleマップのためのウィジェット
 class GoogleMapWidget extends StatefulWidget {
   final Position? initialPosition;
+  final List<Map<String, String?>>? navigationList;
+  final List<List<double>>? waypointsLocationList;
 
-  const GoogleMapWidget({Key? key, this.initialPosition}) : super(key: key);
+  const GoogleMapWidget(
+      {Key? key,
+      this.initialPosition,
+      this.navigationList,
+      this.waypointsLocationList})
+      : super(key: key);
 
   @override
   State<GoogleMapWidget> createState() => GoogleMapWidgetState(initialPosition);
@@ -75,8 +90,23 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
   ];
   final label = ['ECCコンピュータ専門学校', 'ラーメン大戦争', '大阪駅', 'りんくうタウン駅', 'マクドナルド'];
 
-  double next_latitude = 34.97999101480096;
-  double next_longitude = 135.9002419833888;
+  List<double> get nextLatitudes {
+    if (widget.waypointsLocationList != null) {
+      return widget.waypointsLocationList!
+          .map<double>((waypoint) => waypoint[0])
+          .toList();
+    }
+    return [];
+  }
+
+  List<double> get nextLongitudes {
+    if (widget.waypointsLocationList != null) {
+      return widget.waypointsLocationList!
+          .map<double>((waypoint) => waypoint[1])
+          .toList();
+    }
+    return [];
+  }
 
   late PolylinePoints _polylinePoints;
   Map<PolylineId, Polyline> polylines = {};
@@ -125,6 +155,10 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
   @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
+    print("nextLatitudes");
+    print(nextLatitudes);
+    print("nextLongitudes");
+    print(nextLongitudes);
 
     return Scaffold(
       backgroundColor: Colors_compornet.globalBackgroundColorRed,
@@ -255,9 +289,8 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
     );
   }
 
-  // マーカーを追加する関数
   void addMarkers() {
-    // 現在地のマーカーを追加（青いマーカー）
+    markers.clear();
     markers.add(
       Marker(
         markerId: MarkerId('currentPosition'),
@@ -269,52 +302,64 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
       ),
     );
 
-    // 指定の緯度と経度の場所にマーカーを追加（赤いマーカー）
-    markers.add(
-      Marker(
-        markerId: MarkerId('nextPosition'),
-        position: LatLng(
-          next_latitude,
-          next_longitude,
+    for (int i = 0; i < nextLatitudes.length; i++) {
+      markers.add(
+        Marker(
+          markerId: MarkerId('nextPosition_$i'),
+          position: LatLng(
+            nextLatitudes[i],
+            nextLongitudes[i],
+          ),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
         ),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-      ),
-    );
-
-    setState(() {}); // Stateを更新してマーカーを反映させる
-    drawRoute(); // マーカーを基準にルートの追加
-  }
-
-  void drawRoute() async {
-    List<LatLng> polylineCoordinates = [];
-    PolylineResult result = await _polylinePoints.getRouteBetweenCoordinates(
-      'API_key', // ここにGoogle Maps Directions APIのAPIキーを入れてください。
-      PointLatLng(
-        currentPosition?.latitude ?? 0.0,
-        currentPosition?.longitude ?? 0.0,
-      ),
-      PointLatLng(
-        next_latitude,
-        next_longitude,
-      ),
-      travelMode: TravelMode.driving,
-    );
-
-    if (result.points.isNotEmpty) {
-      result.points.forEach((PointLatLng point) {
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      });
+      );
     }
 
-    PolylineId id = PolylineId('route');
-    Polyline polyline = Polyline(
-      polylineId: id,
-      color: Colors.blue,
-      points: polylineCoordinates,
-      width: 3,
-    );
-    setState(() {
-      polylines[id] = polyline;
-    });
+    setState(() {});
+    drawRoutes();
+  }
+
+  void drawRoutes() async {
+    polylines.clear();
+    final random = Random();
+    List<LatLng> allCoordinates = [
+      LatLng(currentPosition!.latitude, currentPosition!.longitude),
+      for (int i = 0; i < nextLatitudes.length; i++)
+        LatLng(nextLatitudes[i], nextLongitudes[i]),
+    ];
+
+    for (int i = 0; i < allCoordinates.length - 1; i++) {
+      List<LatLng> polylineCoordinates = [];
+      PolylineResult result = await _polylinePoints.getRouteBetweenCoordinates(
+        'AIzaSyA9iecZxr9RjOOcq7u79J0KeUXb9bH1FHI',
+        PointLatLng(
+          allCoordinates[i].latitude,
+          allCoordinates[i].longitude,
+        ),
+        PointLatLng(
+          allCoordinates[i + 1].latitude,
+          allCoordinates[i + 1].longitude,
+        ),
+        travelMode: TravelMode.driving,
+      );
+
+      if (result.points.isNotEmpty) {
+        result.points.forEach((PointLatLng point) {
+          polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+        });
+      }
+
+      PolylineId id = PolylineId('route_$i');
+      Polyline polyline = Polyline(
+        polylineId: id,
+        color: Color.fromARGB(255, random.nextInt(256), random.nextInt(256),
+            random.nextInt(256)), // Random color
+        points: polylineCoordinates,
+        width: 3,
+      );
+      setState(() {
+        polylines[id] = polyline;
+      });
+    }
   }
 }
