@@ -231,7 +231,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   // Directions APIにリクエストするための関数
   Future<void> _directionsRequest() async {
     try {
-      //到着時間を設定
+      //現在時刻を取得
       DateTime now = DateTime.now();
       //次の予定の到着時間をUTCに変換
       // String arrival_time_UTC = await widget.selectedTime!.toUtc().toIso8601String();
@@ -740,6 +740,11 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                         onPressed: () {
                           //追加を押した時の処理
                           Future(() async {
+                            //次の到着座標を追加の緯度経度を格納
+                            _waypoints_location_List.add([
+                              widget.mapData!.latitude,
+                              widget.mapData!.longitude
+                            ]);
                             //追加したい場所のルートをと移動時間を取得
                             await _directionsRequest();
                             //出発、到着、平均滞在時刻を取得
@@ -773,7 +778,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                   Navigation_List: Navigation_List, // 経由地の名、到着、出発時刻を格納したリスト
                                   waypoints_location_List:  _waypoints_location_List, // 経由地の緯度経度を格納したリスト
                                   average_stay_time: _average_stay_time, // 平均滞在時間
-                                  photo_name_List: _photo_name_List, //URLを格納したリスト
+                                  photo_name_List: _photo_name_List, //photo_nameを格納したリスト
                                 ),
                               ),
                             );
