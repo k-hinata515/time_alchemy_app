@@ -8,8 +8,7 @@ import 'package:time_alchemy_app/logic/flutter/map_class.dart';
 import 'package:time_alchemy_app/logic/flutter/time_conversion.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'dart:convert';
-// import '../env/env.dart';
+import '../env/env.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +17,7 @@ import 'package:time_alchemy_app/component/ButtonCompornent.dart';
 import 'package:time_alchemy_app/component/textformfield.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
+import 'package:time_alchemy_app/logic/flutter/request_api.dart';
 
 void main() => runApp(
       DevicePreview(
@@ -54,7 +54,7 @@ class Add_destination_Page extends StatefulWidget {
 class _Add_destination_Page extends State<Add_destination_Page> {
   final TextEditingController searchtextfieldcontroller =
       TextEditingController(); // 検索テキストフィールドのコントローラー
-  // final API_KEY = Env.key; // APIキー(画像取得用)
+  final API_KEY = Env.key; // APIキー(画像取得用)
 
   String _latitude = ''; // 緯度を格納する変数
   String _longitude = ''; // 経度を格納する変数
@@ -62,15 +62,12 @@ class _Add_destination_Page extends State<Add_destination_Page> {
 
   final List<Map<String, String?>> Navigation_List = []; //Navigation_Pageに渡すリスト
   List<Map<String, String?>> time_List = []; // 出発、到着、平均滞在時刻を格納するリスト
-
   Map<String, dynamic> _placesResponse = {}; // Places APIのレスポンスデータを格納するリスト
-  Map<String, dynamic> _rootResponse = {}; // Directions APIのレスポンスデータを格納するリスト
-
+  Map<String, dynamic> _openAI_placesResponse = {}; // OpenAIのレスポンスを検索したデータを格納するリスト
   List<List<double>> _waypoints_location_List = []; // 経由地の緯度経度を格納するリスト
 
   List<String> travel_time_List = []; //移動時間を格納するリスト
   List<String> _waypoints_List = []; // 経由地を格納するリスト
-  List<String> _hobbyList = []; // openAIにリクエストする趣味を格納するリスト
   List<String> _hobby_tag = []; // 絞り込みタグを格納するリスト
   List<String> _photo_name_List = [];  //URLを格納するリスト
 
@@ -85,79 +82,24 @@ class _Add_destination_Page extends State<Add_destination_Page> {
     'ラーメン',
   ];
 
-  //TODOtest(次の予定の時間)
-  DateTime _testtime = DateTime(2024, 2, 2, 12, 0, 00);
-
-  //TODOtest(最終目的地)
-  String _test_gole_latiude = '34.7051934134671';
-  String _test_gole_longitude = '135.49840696016142';
-  String _test_place_name = '梅田駅';
-
-  //TODOtest(旅行の場合)
-  final List<String> _test_hobby_tag = [
-    '周辺の観光名所',
-    'お土産におすすめのお店',
-    '食べ歩きにおすすめ',
-    '温泉地'
-  ];
-
-  // //TODOtest(ファッションの場合)
-  // final List<String> _hobby_tag = [
-  //   '洋服店',
-  //   '靴屋',
-  //   '古着',
-  //   'アクセサリー店'
-  // ];
-
-  // //TODOtest(スポーツとバー巡りの場合)
-  // final List<String> _hobby_tag = [
-  //   'スポーツバー',
-  //   'スポーツにおすすめなレジャー施設',
-  //   'お酒の種類が豊富なバー',
-  //   'スポーツ用品店'
-  // ];
-
   @override
   void initState() {
     super.initState();
+    print(API_KEY);
     // 初回時の現在地を取得
-    // Future(() async {
-    //   try{
-    //     await _getCurrentLocation();
-    //     await _nearbySearchRequest();
-    //     checkboxStates = await List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
-    //   }catch(e){
-    //       print('検索データがないよ:$e');
-    //   }
-    // });
+    Future(() async {
+      try{
+        await _getCurrentLocation();
+        _placesResponse = await Request_API().nearbySearchRequest(_latitude, _longitude);
+        setState(() {
+          checkboxStates = List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
+          _isNearbySearch = true;
+        });
+      }catch(e){
+          print('検索データがないよ:$e');
+      }
+    });
   }
-
-   // ユーザーデータを取得する関数
-  // void _getUserData() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     userId = prefs.getString('userID') ?? '';
-  //   });
-  //   print('UserID: $userId');
-
-  //   try {
-  //     DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-  //         .collection('users')
-  //         .doc(userId)
-  //         .get();
-
-  //     Map<String, dynamic> userData =
-  //         userSnapshot.data() as Map<String, dynamic>;
-  //     setState(() {
-  //       _hobbyList = List<String>.from(userData['hobby_user']['hobby_List']);
-  //     });
-
-  //     print(_hobbyList);
-  //   } catch (e) {
-  //     print('Error: $e');
-  //     // エラーが発生した場合の適切な処理をここに追加する
-  //   }
-  // }
 
   // 現在地を取得する関数
   Future<void> _getCurrentLocation() async {
@@ -167,124 +109,10 @@ class _Add_destination_Page extends State<Add_destination_Page> {
       // 現在地取得
       final position = await geolocation.determinePosition();
       // 現在地の緯度経度を取得
-      // _latitude = position.latitude.toString();
-      // _longitude = position.longitude.toString();
-      _latitude = "34.70647342120254";
-      _longitude = "135.50323157772246";
+      _latitude = position.latitude.toString();
+      _longitude = position.longitude.toString();
 
       print('緯度: $_latitude 経度: $_longitude');
-    } catch (error) {
-      setState(() {
-        print(error);
-      });
-    }
-  }
-
-  // Places API (nearbySearch)にリクエストするための関数
-  Future<void> _nearbySearchRequest() async {
-    try {
-      // Places API (nearbySearch) にリクエスト
-      final http.Response placesResponse = await http.get(Uri.parse(
-          'http://IP:Port/current_nearbysearch?latitude=$_latitude&longitude=$_longitude'));
-
-      setState(() {
-        // 取得したデータを _placesResponse に代入
-        _placesResponse = json.decode(placesResponse.body);
-        checkboxStates = List<bool>.filled(
-            _placesResponse['places'].length, false); // チェックボックスの状態を初期化
-        // _isNearbySearchをtrueに設定
-        _isNearbySearch = true;
-        // _isOpenAIをfalseに設定
-        if(_isRequestOpenAI == true){
-          _isRequestOpenAI = false;
-        }
-      });
-    } catch (error) {
-      setState(() {
-        print(error);
-        _placesResponse = {};
-      });
-    }
-  }
-
-  // Places API (textSearch)にリクエストするための関数
-  Future<void> _textSearchRequest(String text) async {
-    try {
-      // Places API (textSearch) にリクエスト
-      final http.Response placesResponse = await http.get(Uri.parse(
-          'http://IP:Port/current_textsearch?textQuery=$text&latitude=$_latitude&longitude=$_longitude'));
-
-      setState(() {
-        // 取得したデータを _placesResponse に代入
-        _placesResponse = json.decode(placesResponse.body);
-        checkboxStates = List<bool>.filled(
-            _placesResponse['places'].length, false); // チェックボックスの状態を初期化
-      });
-    } catch (error) {
-      setState(() {
-        print(error);
-        _placesResponse = {};
-      });
-    }
-  }
-
-  // Directions APIにリクエストするための関数
-  Future<void> _directionsRequest() async {
-    try {
-      //現在時刻を取得
-      DateTime now = DateTime.now();
-      //次の予定の到着時間をUTCに変換
-      // String arrival_time_UTC = await widget.selectedTime!.toUtc().toIso8601String();
-      
-      //TODO:test
-      DateTime arrival_time =
-          await DateTime(now.year, now.month, now.day, 13, 0, 0).toUtc();
-      String arrival_time_UTC = await arrival_time.toUtc().toIso8601String();
-
-      // Directions API にリクエスト
-      // final http.Response directionsResponse = await http.get(Uri.parse(
-      //     'http://IP:Port/current_places_root?origin=$_latitude,$_longitude&destination=${widget.mapData!.latitude},${widget.mapData!.longitude}&waypoints=$_waypoints_List&arrival_time=$arrival_time_UTC'));
-
-      //TODO:test
-      final http.Response directionsResponse = await http.get(Uri.parse(
-          'http://IP:Port/current_places_root?origin=$_latitude,$_longitude&destination=$_test_gole_latiude,$_test_gole_longitude&waypoints=$_waypoints_List&arrival_time=$arrival_time_UTC'));
-
-
-
-      setState(() {
-        // 取得したデータを _placesResponse に代入
-        _rootResponse = json.decode(directionsResponse.body);
-      });
-      // 取得した移動時間をtimeに格納
-      for (int i = 0; i < _rootResponse['routes'][0]['legs'].length; i++) {
-        travel_time_List
-            .add(_rootResponse['routes'][0]['legs'][i]['duration']['text']);
-      }
-    } catch (error) {
-      setState(() {
-        print(error);
-        _rootResponse = {};
-      });
-    }
-  }
-
-  //OpenAI APIにリクエストするための関数
-  Future<void> _openAIRequest() async {
-    try {
-      // OpenAI API にリクエスト
-      final http.Response openAIResponse = await http.get(Uri.parse(
-          'http://IP:Port/current_openAI?hobby=$_hobbyList'));
-      //ResponseStrにリクエスト結果を格納
-      String ResponseStr = json.decode(openAIResponse.body);
-      //ResponseStrをMap型に変換
-      Map<String, dynamic> ResponseMap = json.decode(ResponseStr);
-      
-      setState(() {
-        // 取得したデータを _hobby_tag に代入
-        _hobby_tag = List<String>.from(ResponseMap['hobby_places']);
-        // _isRequestOpenAIをtrueに設定
-        _isRequestOpenAI = true;
-      });
     } catch (error) {
       setState(() {
         print(error);
@@ -343,7 +171,15 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                         _isHobby = false;
                         Future(() async {
                           await _getCurrentLocation();
-                          await _nearbySearchRequest();
+                          // await _nearbySearchRequest();
+                          _placesResponse = await Request_API().nearbySearchRequest(_latitude, _longitude);
+                          setState(() {
+                            checkboxStates = List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
+                            _isNearbySearch = true;
+                            if(_isRequestOpenAI == true){
+                              _isRequestOpenAI = false;
+                            }
+                          });
                         });
                       });
                     },
@@ -369,8 +205,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
                               color: _isHobby == false
-                                  ? Colors_compornet.globalBackgroundColorRed
-                                  : Colors_compornet.textfontcolorocher),
+                                ? Colors_compornet.globalBackgroundColorRed
+                                : Colors_compornet.textfontcolorocher),
                         ),
                       ),
                     ),
@@ -378,13 +214,14 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                   InkWell(
                     //趣味を押した時の処理
                     onTap: () {
-                      setState(() {
-                        _isRequestOpenAI = true;
-                        _isHobby = true;
-                        Future(() async {
-                          await _getCurrentLocation();
-                          // await _openAIRequest();
+                      Future(() async {
+                        await _getCurrentLocation();
+                        _hobby_tag = await Request_API().openAIRequest();
+                        setState(() {
+                          _isRequestOpenAI = true;
+                          _isHobby = true;
                         });
+                        _placesResponse = await Request_API().textSearchRequest(_hobby_tag[0], _latitude, _longitude);
                       });
                     },
                     child: Container(
@@ -392,13 +229,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                       height: screen.designH(40),
                       decoration: BoxDecoration(
                         border: _isHobby == true
-                            ? Border.all(
-                                color:
-                                    Colors_compornet.globalBackgroundColorRed)
-                            : Border.all(
-                                color: Colors_compornet
-                                    .globalBackgroundColorwhite
-                                    .withOpacity(0)),
+                            ? Border.all(color:Colors_compornet.globalBackgroundColorRed)
+                            : Border.all(color: Colors_compornet.globalBackgroundColorwhite.withOpacity(0)),
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Align(
@@ -409,8 +241,9 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
                               color: _isHobby == true
-                                  ? Colors_compornet.globalBackgroundColorRed
-                                  : Colors_compornet.textfontcolorocher),
+                                ? Colors_compornet.globalBackgroundColorRed
+                                : Colors_compornet.textfontcolorocher
+                          ),
                         ),
                       ),
                     ),
@@ -453,9 +286,12 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                       height: screen.designH(30),
                       width: screen.designW(200),
                       controller: searchtextfieldcontroller,
-                      onEditingComplete: (text) {
+                      onEditingComplete: (text) async{
                         if (text.isNotEmpty) {
-                          _textSearchRequest(text);
+                          _placesResponse = await Request_API().textSearchRequest(text, _latitude, _longitude);
+                          setState(() {
+                            checkboxStates = List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
+                          });
                         }
                       },
                     ),
@@ -471,11 +307,14 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                         : _recommend_tag.length,
                     itemBuilder: (BuildContext context, int index) {
                       final String _narrow_down_tag = _isRequestOpenAI == true
-                          ? _test_hobby_tag[index]
+                          ? _hobby_tag[index]
                           : _recommend_tag[index];
                       return GestureDetector(
-                        onTap: () {
-                          _textSearchRequest(_narrow_down_tag);
+                        onTap: () async{
+                          _placesResponse = await Request_API().textSearchRequest(_narrow_down_tag, _latitude, _longitude);
+                          setState(() {
+                            checkboxStates = List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
+                          });
                         },
                         child: Container(
                           margin: EdgeInsets.all(8),
@@ -494,8 +333,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                             child: Text(
                               '#$_narrow_down_tag',
                               style: const TextStyle(
-                                color:
-                                    Colors_compornet.globalBackgroundColorwhite,
+                                color:Colors_compornet.globalBackgroundColorwhite,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
@@ -521,14 +359,11 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                             itemBuilder: (BuildContext context, int index) {
                               return GestureDetector(
                                 onTap: () {
-                                  if (_placesResponse['places'][index]
-                                          ['websiteUri'] !=
-                                      null) {
+                                  if (_placesResponse['places'][index]['websiteUri'] != null) {
                                     launchUrl(
-                                        Uri.parse(_placesResponse['places']
-                                            [index]['websiteUri']),
-                                        mode: LaunchMode.platformDefault,
-                                        webOnlyWindowName: '_blank');
+                                      Uri.parse(_placesResponse['places'][index]['websiteUri']),
+                                      mode: LaunchMode.platformDefault,
+                                      webOnlyWindowName: '_blank');
                                   } else {
                                     Fluttertoast.showToast(
                                       msg: 'URLが存在しません',
@@ -545,9 +380,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                       height: screen.designH(90),
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(10),
-                                        color: Colors_compornet
-                                            .globalBackgroundColorwhite
-                                            .withOpacity(0.7),
+                                        color: Colors_compornet.globalBackgroundColorwhite.withOpacity(0.7),
                                         boxShadow: const [
                                           BoxShadow(
                                             color: Colors.black26,
@@ -566,27 +399,25 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                               SizedBox(
                                                 width: screen.designW(85),
                                                 height: screen.designH(75),
-                                                // child: FittedBox(
-                                                //   child: _placesResponse['places'][index]['photos'] != null
-                                                //       ? Image.network(
-                                                //           "https://places.googleapis.com/v1/${_placesResponse['places'][index]['photos'][0]['name']}/media?key=$API_KEY&max_height_px=150&max_width_px=150",
-                                                //           fit: BoxFit.cover,
-                                                //           width: screen.designW(85),
-                                                //           height: screen.designH(75),
-                                                //         )
-                                                //       : Icon(
-                                                //           Icons.no_photography,
-                                                //           color: Colors_compornet.textfontColorBlack,
-                                                //         ),
-                                                // ),
+                                                child: FittedBox(
+                                                  child: _placesResponse['places'][index]['photos'] != null
+                                                      ? Image.network(
+                                                          "https://places.googleapis.com/v1/${_placesResponse['places'][index]['photos'][0]['name']}/media?key=$API_KEY&max_height_px=150&max_width_px=150",
+                                                          fit: BoxFit.cover,
+                                                          width: screen.designW(85),
+                                                          height: screen.designH(75),
+                                                        )
+                                                      : const Icon(
+                                                          Icons.no_photography,
+                                                          color: Colors_compornet.textfontColorBlack,
+                                                        ),
+                                                ),
                                               ),
                                               SizedBox(
                                                   width: screen.designW(16)),
                                               Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:CrossAxisAlignment.start,
+                                                mainAxisAlignment:MainAxisAlignment.center,
                                                 children: [
                                                   Text(
                                                     _textWrap(
@@ -594,10 +425,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                                     ),
                                                     style: const TextStyle(
                                                       fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors_compornet
-                                                          .textfontColorBlack,
+                                                      fontWeight:FontWeight.bold,
+                                                      color: Colors_compornet.textfontColorBlack,
                                                     ),
                                                   ),
                                                   Row(
@@ -606,14 +435,12 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                                         '評価:',
                                                         style: TextStyle(
                                                           fontSize: 15,
-                                                          color: Colors_compornet
-                                                              .textfontColorBlack,
+                                                          color: Colors_compornet.textfontColorBlack,
                                                         ),
                                                       ),
                                                       _placesResponse['places'][index]['rating'] != null
                                                           ? SizedBox(
-                                                              height: screen
-                                                                  .designH(16),
+                                                              height: screen.designH(16),
                                                               child: FittedBox(
                                                                 child: Row(
                                                                   children: [
@@ -633,8 +460,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                                               'なし',
                                                               style: TextStyle(
                                                                 fontSize: 12,
-                                                                color: Colors_compornet
-                                                                    .textfontColorBlack,
+                                                                color: Colors_compornet.textfontColorBlack,
                                                               ),
                                                             ),
                                                     ],
@@ -720,8 +546,12 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                     //更新を押した時の処理
                                     Future(() async {
                                       //TODO:test
-                                      // await _getCurrentLocation(); 
-                                      // await _nearbySearchRequest();
+                                      await _getCurrentLocation(); 
+                                      _placesResponse = await Request_API().nearbySearchRequest(_latitude, _longitude);
+                                      setState(() {
+                                        checkboxStates = List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
+                                        _isNearbySearch = true;
+                                      });
                                     });
                                   },
                                   width: 140, //140
@@ -737,27 +567,37 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                       alignment: Alignment.bottomCenter,
                       child: ChoiceButtonRed(
                         text: '追加',
-                        onPressed: () {
+                        onPressed: () async{
                           //追加を押した時の処理
-                          Future(() async {
+                          await Future(() async {
                             //次の到着座標を追加の緯度経度を格納
                             _waypoints_location_List.add([
                               widget.mapData!.latitude,
                               widget.mapData!.longitude
                             ]);
                             //追加したい場所のルートをと移動時間を取得
-                            await _directionsRequest();
+                            travel_time_List = await Request_API().directionsRequest(
+                                _latitude, 
+                                _longitude, 
+                                widget.mapData!.latitude.toString(), 
+                                widget.mapData!.longitude.toString(), 
+                                _waypoints_List, 
+                                widget.selectedTime!
+                            );
+                            //TODO:travel_time_Listが取得できるまで待機 (test)
+                            while (travel_time_List.isEmpty) {
+                              await Future.delayed(const Duration(milliseconds: 100));
+                            }
                             //出発、到着、平均滞在時刻を取得
                             time_List = await Time_Conversion().convertTime(
-                                DateTime.now(), travel_time_List, _testtime);
+                                DateTime.now(), travel_time_List, widget.selectedTime!);
                             // Navigation_Listに経由地の名、到着、出発時刻を格納
                             for (int i = 0; i <= time_List.length - 1; i++) {
                               if (i == time_List.length - 1) {
                                 Navigation_List.add({
-                                  'name': _test_place_name,
+                                  'name': widget.mapData!.placeName,
                                   'arrival_time': time_List[i]['arrival_time'],
-                                  'departure_time': time_List[i]
-                                      ['departure_time'],
+                                  'departure_time': time_List[i]['departure_time'],
                                 });
                                 _average_stay_time = time_List[i]
                                         ['average_stay_time']
@@ -775,10 +615,12 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => Navigation_Page(
-                                  Navigation_List: Navigation_List, // 経由地の名、到着、出発時刻を格納したリスト
+                                  Navigation_List: Navigation_List, // 場所名、到着、出発時刻を格納したリスト
                                   waypoints_location_List:  _waypoints_location_List, // 経由地の緯度経度を格納したリスト
                                   average_stay_time: _average_stay_time, // 平均滞在時間
                                   photo_name_List: _photo_name_List, //photo_nameを格納したリスト
+                                  selected_Time: widget.selectedTime, // 次の予定の時間
+                                  map_date: widget.mapData, // 次の予定の場所のデータ（名前、座標）
                                 ),
                               ),
                             );
@@ -793,8 +635,8 @@ class _Add_destination_Page extends State<Add_destination_Page> {
             ),
             FilterClass(),
             Align(
-            alignment: Alignment.bottomRight,
-            child: ClockMenu(),
+              alignment: Alignment.bottomRight,
+              child: ClockMenu(),
             ),
           ],
         ),
