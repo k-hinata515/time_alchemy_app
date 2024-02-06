@@ -12,7 +12,9 @@ import 'package:time_alchemy_app/component/Dashed_Line.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
 import 'package:intl/intl.dart';
+import 'package:time_alchemy_app/logic/flutter/geolocation.dart';
 import 'package:time_alchemy_app/logic/flutter/map_class.dart';
+import 'package:time_alchemy_app/logic/flutter/request_api.dart';
 
 void main() => runApp(
       DevicePreview(
@@ -39,13 +41,12 @@ class Navigation extends StatelessWidget {
 }
 
 class Navigation_Page extends StatefulWidget {
-  final List<Map<String, String?>>? Navigation_List;
+  List<Map<String, String?>>? Navigation_List;
   final List<List<double>>? waypoints_location_List;
-  final String? average_stay_time;
   final List<String>? photo_name_List;
   final MapData? map_date;
   final DateTime? selected_Time;
-  Navigation_Page({Key? key , this.Navigation_List , this.average_stay_time, this.waypoints_location_List, this.photo_name_List, this.selected_Time, this.map_date }) : super(key: key);
+  Navigation_Page({Key? key , this.Navigation_List , this.waypoints_location_List, this.photo_name_List, this.selected_Time, this.map_date }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _Navigation_Page();
@@ -55,16 +56,38 @@ class _Navigation_Page extends State<Navigation_Page> {
   String now_time =
       DateFormat('HH:mm').format(DateTime.now()).toString(); //現在時刻
 
+  List<Map<String, String?>>? update_navigation_list = []; //更新したNavigation_Listを格納する変数
+
+  String _latitude = ''; // 現在地の緯度
+  String _longitude = ''; // 現在地の経度
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    print(widget.Navigation_List);
-    print(widget.average_stay_time);
   }
 
+    // 現在地を取得する関数
+  Future<void> _getCurrentLocation() async {
+    try {
+      // Geolocationインスタンス作成
+      final geolocation = Geolocation();
+      // 現在地取得
+      final position = await geolocation.determinePosition();
+      // 現在地の緯度経度を取得
+      _latitude = position.latitude.toString();
+      _longitude = position.longitude.toString();
+
+    } catch (error) {
+      setState(() {
+        print(error);
+      });
+    }
+  }
+
+
   // 現在の時刻を更新するメソッド
-  void updateCurrentTime() {
+  Future<void> updateCurrentTime() async{
     setState(() {
       now_time = DateFormat('HH:mm').format(DateTime.now());
     });
@@ -129,9 +152,23 @@ class _Navigation_Page extends State<Navigation_Page> {
 
                           //ボタンだった場合の処理
                           ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async{
                               //現在地を押された時の処理
-                              updateCurrentTime(); // 現在の時刻を更新
+                              await _getCurrentLocation(); // 現在地の取得
+                              await updateCurrentTime(); // 現在の時刻を更新
+                              widget.Navigation_List!.removeLast();
+                              //widget.Navigation_Listの値を更新
+                              update_navigation_list = await Request_API().directionsRequest(
+                                _latitude, 
+                                _longitude, 
+                                widget.map_date!, 
+                                widget.Navigation_List!.map((e) => e['name']!).toList(),
+                                widget.selected_Time!
+                              );
+                              setState(() {
+                                widget.Navigation_List = update_navigation_list;
+                              });
+                              print('更新した中身:${widget.Navigation_List}');
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent, // 背景色を透明にする
@@ -192,7 +229,7 @@ class _Navigation_Page extends State<Navigation_Page> {
                           final String? departureTime =
                               _NavigationDate['departure_time'];
                           final String? _average_stay_time =
-                              widget.average_stay_time;
+                              _NavigationDate['average_stay_time'];
 
                           return Column(
                             children: [
