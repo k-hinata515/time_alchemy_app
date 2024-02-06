@@ -1,11 +1,8 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:http/http.dart' as http;
 import 'package:time_alchemy_app/View/Navigation.dart';
 import 'package:time_alchemy_app/View/refine_search.dart';
 import 'package:time_alchemy_app/component/menubar.dart';
 import 'package:time_alchemy_app/logic/flutter/geolocation.dart';
 import 'package:time_alchemy_app/logic/flutter/map_class.dart';
-import 'package:time_alchemy_app/logic/flutter/time_conversion.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../env/env.dart';
@@ -60,13 +57,11 @@ class _Add_destination_Page extends State<Add_destination_Page> {
   String _longitude = ''; // 経度を格納する変数
   String _average_stay_time = ''; // 平均滞在時間を格納する変数
 
-  final List<Map<String, String?>> Navigation_List = []; //Navigation_Pageに渡すリスト
+  List<Map<String, String?>> Navigation_List = []; //Navigation_Pageに渡すリスト
   List<Map<String, String?>> time_List = []; // 出発、到着、平均滞在時刻を格納するリスト
   Map<String, dynamic> _placesResponse = {}; // Places APIのレスポンスデータを格納するリスト
-  Map<String, dynamic> _openAI_placesResponse = {}; // OpenAIのレスポンスを検索したデータを格納するリスト
   List<List<double>> _waypoints_location_List = []; // 経由地の緯度経度を格納するリスト
 
-  List<String> travel_time_List = []; //移動時間を格納するリスト
   List<String> _waypoints_List = []; // 経由地を格納するリスト
   List<String> _hobby_tag = []; // 絞り込みタグを格納するリスト
   List<String> _photo_name_List = [];  //URLを格納するリスト
@@ -189,12 +184,9 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                       decoration: BoxDecoration(
                         border: _isHobby == false
                             ? Border.all(
-                                color:
-                                    Colors_compornet.globalBackgroundColorRed)
+                                color:Colors_compornet.globalBackgroundColorRed)
                             : Border.all(
-                                color: Colors_compornet
-                                    .globalBackgroundColorwhite
-                                    .withOpacity(0)),
+                                color: Colors_compornet.globalBackgroundColorwhite.withOpacity(0)),
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Align(
@@ -217,11 +209,12 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                       Future(() async {
                         await _getCurrentLocation();
                         _hobby_tag = await Request_API().openAIRequest();
-                        setState(() {
                           _isRequestOpenAI = true;
                           _isHobby = true;
-                        });
                         _placesResponse = await Request_API().textSearchRequest(_hobby_tag[0], _latitude, _longitude);
+                        setState(() {
+                          checkboxStates = List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
+                        });
                       });
                     },
                     child: Container(
@@ -351,7 +344,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
               child: Column(
                 children: [
                   //データがある時の処理
-                  _isNearbySearch == true && _placesResponse.isNotEmpty
+                  _isNearbySearch == true || _isRequestOpenAI == true && _placesResponse.isNotEmpty
                       ? Container(
                           height: screen.designH(500), // 仮の高さ。必要に応じて調整してください。
                           child: ListView.builder(
@@ -395,7 +388,7 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                           Row(
                                             children: [
                                               SizedBox(
-                                                  width: screen.designW(16)),
+                                                width: screen.designW(16)),
                                               SizedBox(
                                                 width: screen.designW(85),
                                                 height: screen.designH(75),
@@ -516,100 +509,68 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                         )
                       //データがない時の処理
                       : Center(
-                          child: Column(
-                            children: [
-                              SizedBox(height: screen.designH(200)),
-                              const Text(
-                                '検索結果がありません',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors_compornet.textfontColorBlack,
-                                ),
+                        child: Column(
+                          children: [
+                            SizedBox(height: screen.designH(200)),
+                            const Text(
+                              '検索結果がありません',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors_compornet.textfontColorBlack,
                               ),
-                              SizedBox(height: screen.designH(16)),
-                              const Text(
-                                '検索条件を変更してください',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors_compornet.textfontColorBlack,
-                                ),
+                            ),
+                            SizedBox(height: screen.designH(16)),
+                            const Text(
+                              '検索条件を変更してください',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors_compornet.textfontColorBlack,
                               ),
-                              SizedBox(
-                                height: screen.designH(16),
-                              ),
-                              Align(
-                                alignment: Alignment.bottomCenter,
-                                child: ChoiceButtonRed(
-                                  text: '更新',
-                                  onPressed: () {
-                                    //更新を押した時の処理
-                                    Future(() async {
-                                      //TODO:test
-                                      await _getCurrentLocation(); 
+                            ),
+                            SizedBox(
+                              height: screen.designH(16),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: ChoiceButtonRed(
+                                text: '更新',
+                                onPressed: () {
+                                  //更新を押した時の処理
+                                  Future(() async {
+                                    await _getCurrentLocation(); 
+                                    if(_isHobby == true){
+                                      _placesResponse = await Request_API().textSearchRequest(_hobby_tag[0], _latitude, _longitude);
+                                    }else{
                                       _placesResponse = await Request_API().nearbySearchRequest(_latitude, _longitude);
-                                      setState(() {
-                                        checkboxStates = List<bool>.filled(_placesResponse['places'].length, false); // チェックボックスの状態を初期化
-                                        _isNearbySearch = true;
-                                      });
-                                    });
-                                  },
-                                  width: 140, //140
-                                  height: 50, //50
-                                ),
-                              )
-                            ],
-                          ),
+                                    }
+                                  });
+                                },
+                                width: 140, //140
+                                height: 50, //50
+                              ),
+                            )
+                          ],
                         ),
+                      ),
                   SizedBox(height: screen.designH(16)),
                   if (_placesResponse.isNotEmpty)
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: ChoiceButtonRed(
                         text: '追加',
-                        onPressed: () async{
+                        onPressed: () {
                           //追加を押した時の処理
-                          await Future(() async {
+                          Future(() async {
                             //次の到着座標を追加の緯度経度を格納
                             _waypoints_location_List.add([
                               widget.mapData!.latitude,
                               widget.mapData!.longitude
                             ]);
                             //追加したい場所のルートをと移動時間を取得
-                            travel_time_List = await Request_API().directionsRequest(
-                                _latitude, 
-                                _longitude, 
-                                widget.mapData!.latitude.toString(), 
-                                widget.mapData!.longitude.toString(), 
-                                _waypoints_List, 
-                                widget.selectedTime!
-                            );
-                            //TODO:travel_time_Listが取得できるまで待機 (test)
-                            while (travel_time_List.isEmpty) {
-                              await Future.delayed(const Duration(milliseconds: 100));
-                            }
-                            //出発、到着、平均滞在時刻を取得
-                            time_List = await Time_Conversion().convertTime(
-                                DateTime.now(), travel_time_List, widget.selectedTime!);
-                            // Navigation_Listに経由地の名、到着、出発時刻を格納
-                            for (int i = 0; i <= time_List.length - 1; i++) {
-                              if (i == time_List.length - 1) {
-                                Navigation_List.add({
-                                  'name': widget.mapData!.placeName,
-                                  'arrival_time': time_List[i]['arrival_time'],
-                                  'departure_time': time_List[i]['departure_time'],
-                                });
-                                _average_stay_time = time_List[i]
-                                        ['average_stay_time']
-                                    .toString();
-                              } else {
-                                Navigation_List.add({
-                                  'name': _waypoints_List[i],
-                                  'arrival_time': time_List[i]['arrival_time'],
-                                  'departure_time': time_List[i]['departure_time'],
-                                });
-                              }
-                            }
+                            Navigation_List = await Request_API().directionsRequest(
+                                _latitude, _longitude, widget.mapData!, _waypoints_List, widget.selectedTime!);
+
                             // Navigation_Pageに遷移
                             await Navigator.push(
                               context,
@@ -617,7 +578,6 @@ class _Add_destination_Page extends State<Add_destination_Page> {
                                 builder: (context) => Navigation_Page(
                                   Navigation_List: Navigation_List, // 場所名、到着、出発時刻を格納したリスト
                                   waypoints_location_List:  _waypoints_location_List, // 経由地の緯度経度を格納したリスト
-                                  average_stay_time: _average_stay_time, // 平均滞在時間
                                   photo_name_List: _photo_name_List, //photo_nameを格納したリスト
                                   selected_Time: widget.selectedTime, // 次の予定の時間
                                   map_date: widget.mapData, // 次の予定の場所のデータ（名前、座標）
