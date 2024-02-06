@@ -4,13 +4,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:time_alchemy_app/View/add_destination_page.dart';
 import 'package:time_alchemy_app/View/googlemap.dart';
-import 'package:time_alchemy_app/View/search.dart';
+
+import 'package:time_alchemy_app/View/search_page.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
 import 'package:time_alchemy_app/component/Dashed_Line.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
 import 'package:intl/intl.dart';
+import 'package:time_alchemy_app/logic/flutter/map_class.dart';
 
 void main() => runApp(
       DevicePreview(
@@ -41,7 +43,9 @@ class Navigation_Page extends StatefulWidget {
   final List<List<double>>? waypoints_location_List;
   final String? average_stay_time;
   final List<String>? photo_name_List;
-  Navigation_Page({Key? key , this.Navigation_List , this.average_stay_time, this.waypoints_location_List, this.photo_name_List }) : super(key: key);
+  final MapData? map_date;
+  final DateTime? selected_Time;
+  Navigation_Page({Key? key , this.Navigation_List , this.average_stay_time, this.waypoints_location_List, this.photo_name_List, this.selected_Time, this.map_date }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _Navigation_Page();
@@ -258,7 +262,10 @@ class _Navigation_Page extends State<Navigation_Page> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      Add_destination_Page()),
+                                                      Add_destination_Page(
+                                                        mapData: widget.map_date,
+                                                        selectedTime: widget.selected_Time,
+                                                      )),
                                             );
                                           }
                                         },
