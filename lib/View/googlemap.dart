@@ -140,6 +140,11 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
     _polylinePoints = PolylinePoints();
     addMarkers(); // マーカーを追加
     data = widget.photo_name_List; // data変数に値を代入
+    if (widget.navigationList != null) {
+      for (var item in widget.navigationList!) {
+        label.add(item['name'] ?? '');
+      }
+    }
     // 他の初期化コードはそのまま
     LocationStream.getPositionStream(
       const LocationSettings(
