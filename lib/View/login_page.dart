@@ -96,63 +96,63 @@ class _LoginPage extends State<LoginPage> {
                   ),
                   SizedBox(height: screen.designH(24)),
                   ChoiceButtonRed(
-                      text: 'ログイン',
-                      onPressed: () async {
-                        email = _emailController.text;
-                        password = _passwordController.text;
-                        print(email);
-                        print(password);
-                        if (email.isNotEmpty && password.isNotEmpty) {
-                          try {
-                            User? user = await _loginBackend
-                                .signInWithEmailAndPassword(email, password);
+                    text: 'ログイン',
+                    onPressed: () async {
+                      email = _emailController.text;
+                      password = _passwordController.text;
+                      print(email);
+                      print(password);
+                      if (email.isNotEmpty && password.isNotEmpty) {
+                        try {
+                          User? user = await _loginBackend
+                              .signInWithEmailAndPassword(email, password);
 
-                            if (user != null) {
-                              //ログイン成功時にsearch.dartに画面遷移
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Search()),
-                              );
-                            }
-                          } on FirebaseAuthException catch (e) {
-                            // FirebaseAuthExceptionからエラーコードを取得し、エラーメッセージを表示
-                            String errorMessage = 'ログインに失敗しました。';
-
-                            switch (e.code) {
-                              case 'user-not-found':
-                                errorMessage = 'ユーザーが見つかりませんでした。';
-                                break;
-                              case 'wrong-password':
-                                errorMessage = 'パスワードが間違っています。';
-                                break;
-                              case 'invalid-email':
-                                errorMessage = '無効なメールアドレスです。';
-                                break;
-                              // 他にも必要なエラーコードがあれば追加
-                            }
-
-                            // エラーメッセージの表示
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(errorMessage),
-                              ),
+                          if (user != null) {
+                            //ログイン成功時にsearch.dartに画面遷移
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => Search()),
                             );
-
-                            print('FirebaseAuthException: $e');
                           }
-                        } else {
-                          // ユーザーが入力していない場合の処理を追加
-                          // 例: エラーメッセージの表示
+                        } on FirebaseAuthException catch (e) {
+                          // FirebaseAuthExceptionからエラーコードを取得し、エラーメッセージを表示
+                          String errorMessage = 'ログインに失敗しました。';
+
+                          switch (e.code) {
+                            case 'user-not-found':
+                              errorMessage = 'ユーザーが見つかりませんでした。';
+                              break;
+                            case 'wrong-password':
+                              errorMessage = 'パスワードが間違っています。';
+                              break;
+                            case 'invalid-email':
+                              errorMessage = '無効なメールアドレスです。';
+                              break;
+                            // 他にも必要なエラーコードがあれば追加
+                          }
+
+                          // エラーメッセージの表示
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('ユーザーIDとパスワードを入力してください。'),
+                              content: Text(errorMessage),
                             ),
                           );
+
+                          print('FirebaseAuthException: $e');
                         }
-                      },
-                      height: 150,
-                      width: 45),
+                      } else {
+                        // ユーザーが入力していない場合の処理を追加
+                        // 例: エラーメッセージの表示
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('ユーザーIDとパスワードを入力してください。'),
+                          ),
+                        );
+                      }
+                    },
+                    width: 45,
+                    height: 150,
+                  ),
                   SizedBox(
                     height: screen.designH(16),
                   ),
