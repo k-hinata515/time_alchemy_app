@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:time_alchemy_app/View/add_destination_page.dart';
-import 'package:time_alchemy_app/View/googlemap.dart';
 import 'package:time_alchemy_app/View/profile_page.dart';
+import 'package:time_alchemy_app/View/search_map_page.dart';
 import 'package:time_alchemy_app/View/search_page.dart';
 import 'package:time_alchemy_app/View/setting_page.dart';
 
@@ -35,7 +35,7 @@ class MapScreenTransition {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => MapScreen(),
+        builder: (context) => SearchMap(),
       ),
     );
   }
