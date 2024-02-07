@@ -22,7 +22,7 @@ class Registered_Content extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,//デバックけすやつ
+      debugShowCheckedModeBanner: false, //デバックけすやつ
       useInheritedMediaQuery: true,
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
@@ -136,8 +136,8 @@ class _Registered_Content_Page extends State<Registered_Content_Page> {
                       ChoiceButtonRed(
                         text: '次へ',
                         onPressed: () => _newregistration(context),
-                        height: 150,
                         width: 30,
+                        height: 150,
                       ),
                     ],
                   ),
