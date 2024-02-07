@@ -128,8 +128,8 @@ class _Registered_Content_Page extends State<Registered_Content_Page> {
                                       builder: (context) => Sign_Up_Page()),
                                 )
                               },
-                          height: 150,
-                          width: 30),
+                          height: 30,
+                          width: 150),
                       SizedBox(
                         width: screen.designW(16),
                       ),
@@ -137,7 +137,7 @@ class _Registered_Content_Page extends State<Registered_Content_Page> {
                         text: '次へ',
                         onPressed: () => _newregistration(context),
                         width: 150,
-                        height: 30,
+                        height: 45,
                       ),
                     ],
                   ),
