@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:time_alchemy_app/View/email_address_change_page.dart';
+import 'package:time_alchemy_app/View/password_change_page.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/menubar.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
@@ -31,42 +33,52 @@ class PersonalInformaitionPreferencePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors_compornet.globalBackgroundColorwhite,
-      appBar: AppBarBrackIconCompornent(
-        title: '個人情報設定',
-        rightText: '',
-        onPressedLeft: () {
-          // TODO: 遷移先の処理を追加
-        },
-        onPressedRight: () {
-          // TODO: 遷移先の処理を追加
-        },
-      ),
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              // メールアドレス変更
-              LinkButton(
-                title: 'メールアドレス変更する',
-                onPressedPage: () => (), //TODO: 遷移先の処理を追加
-              ),
-              BorderLine(),
-              // パスワードを変更する
-              LinkButton(
-                title: 'パスワードを変更する',
-                onPressedPage: () => (), //TODO: 遷移先の処理を追加
-              ),
-              BorderLine(),
-            ],
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: ClockMenu(),
-          )
-        ],
-      )
-    );
+        backgroundColor: Colors_compornet.globalBackgroundColorwhite,
+        appBar: AppBarBrackIconCompornent(
+          title: '個人情報設定',
+          rightText: '',
+          onPressedLeft: () {
+            // "戻る" ボタンが押されたときの処理
+            Navigator.pop(context);
+          },
+          onPressedRight: () {
+            // TODO: 遷移先の処理を追加
+          },
+        ),
+        body: Stack(
+          children: [
+            Column(
+              children: [
+                // メールアドレス変更
+                LinkButton(
+                  title: 'メールアドレス変更する',
+                  onPressedPage: () => (Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => email_address_change_page(),
+                    ),
+                  )), //TODO: 遷移先の処理を追加
+                ),
+                BorderLine(),
+                // パスワードを変更する
+                LinkButton(
+                  title: 'パスワードを変更する',
+                  onPressedPage: () => (Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => aPasswordChangePage(),
+                    ),
+                  )), //TODO: 遷移先の処理を追加
+                ),
+                BorderLine(),
+              ],
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: ClockMenu(),
+            )
+          ],
+        ));
   }
 }
 

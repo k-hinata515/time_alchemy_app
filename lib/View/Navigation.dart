@@ -113,7 +113,10 @@ class _Navigation_Page extends State<Navigation_Page> {
             MaterialPageRoute(builder: (context) => SearchPage()),
           )
         },
-        onPressedRight: () => {},
+        onPressedRight: () => {
+          // "戻る" ボタンが押されたときの処理
+          Navigator.pop(context)
+        },
         showRightText: false, //右の
       ),
       body: Stack(
