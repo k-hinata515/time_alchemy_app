@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:time_alchemy_app/component/menubar.dart';
 import 'package:time_alchemy_app/constant/Colors_comrponent%20.dart';
 import 'package:time_alchemy_app/constant/screen_pod.dart';
+import 'package:time_alchemy_app/env/env.dart';
 import 'package:time_alchemy_app/logic/flutter/googlemap_b.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
@@ -36,7 +37,12 @@ class MyApp extends StatelessWidget {
 class MapScreen extends StatelessWidget {
   final List<Map<String, String?>>? navigationList;
   final List<List<double>>? waypointsLocationList;
-  const MapScreen({Key? key, this.navigationList, this.waypointsLocationList})
+  final List<String>? photo_name_List;
+  const MapScreen(
+      {Key? key,
+      this.navigationList,
+      this.waypointsLocationList,
+      this.photo_name_List})
       : super(key: key);
 
   @override
@@ -54,7 +60,8 @@ class MapScreen extends StatelessWidget {
           return GoogleMapWidget(
               initialPosition: initialPosition,
               navigationList: navigationList,
-              waypointsLocationList: waypointsLocationList);
+              waypointsLocationList: waypointsLocationList,
+              photo_name_List: photo_name_List);
         }
       },
     );
@@ -66,12 +73,14 @@ class GoogleMapWidget extends StatefulWidget {
   final Position? initialPosition;
   final List<Map<String, String?>>? navigationList;
   final List<List<double>>? waypointsLocationList;
+  final List<String>? photo_name_List;
 
   const GoogleMapWidget(
       {Key? key,
       this.initialPosition,
       this.navigationList,
-      this.waypointsLocationList})
+      this.waypointsLocationList,
+      this.photo_name_List})
       : super(key: key);
 
   @override
@@ -80,15 +89,10 @@ class GoogleMapWidget extends StatefulWidget {
 
 class GoogleMapWidgetState extends State<GoogleMapWidget> {
   late GoogleMapController _controller;
+  final API_KEY = Env.key;
   Set<Marker> markers = {}; // Define markers set
-  final data = [
-    // 'assets/logo_images/ECCcanpas.png',
-    // 'assets/logo_images/daisensou.png',
-    // 'assets/logo_images/osakastation.png',
-    // 'assets/logo_images/rinkutownstation.png',
-    // 'assets/logo_images/mcdnald.png'
-  ];
-  final label = ['ECCコンピュータ専門学校', 'ラーメン大戦争', '大阪駅', 'りんくうタウン駅', 'マクドナルド'];
+  List<String>? data; // data変数を定義
+  final label = [];
 
   List<double> get nextLatitudes {
     if (widget.waypointsLocationList != null) {
@@ -135,6 +139,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
     // _polylinePointsを先に初期化
     _polylinePoints = PolylinePoints();
     addMarkers(); // マーカーを追加
+    data = widget.photo_name_List; // data変数に値を代入
     // 他の初期化コードはそのまま
     LocationStream.getPositionStream(
       const LocationSettings(
@@ -155,11 +160,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
   @override
   Widget build(BuildContext context) {
     final screen = ScreenRef(context).watch(screenProvider);
-    print("nextLatitudes");
-    print(nextLatitudes);
-    print("nextLongitudes");
-    print(nextLongitudes);
-
+    print(API_KEY);
     return Scaffold(
       backgroundColor: Colors_compornet.globalBackgroundColorRed,
       body: Stack(
@@ -217,7 +218,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
                       ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
-                        itemCount: data.length,
+                        itemCount: data?.length,
                         itemBuilder: (BuildContext context, int index) {
                           return Container(
                             margin: EdgeInsets.only(left: 8),
@@ -244,9 +245,13 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
                                       height: screen.designH(50),
                                       child: FittedBox(
                                         fit: BoxFit.contain,
-                                        child: Image.asset(
-                                          data[index],
-                                        ),
+                                        child: FittedBox(
+                                            child: Image.network(
+                                          "https://places.googleapis.com/v1/${data?[index]}/media?key=$API_KEY&max_height_px=150&max_width_px=150",
+                                          fit: BoxFit.cover,
+                                          width: screen.designW(85),
+                                          height: screen.designH(75),
+                                        )),
                                       ),
                                     ),
                                     Text(
@@ -331,7 +336,7 @@ class GoogleMapWidgetState extends State<GoogleMapWidget> {
     for (int i = 0; i < allCoordinates.length - 1; i++) {
       List<LatLng> polylineCoordinates = [];
       PolylineResult result = await _polylinePoints.getRouteBetweenCoordinates(
-        'my_api_key',
+        '$API_KEY',
         PointLatLng(
           allCoordinates[i].latitude,
           allCoordinates[i].longitude,

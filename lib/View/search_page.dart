@@ -1,12 +1,10 @@
 import 'dart:math';
-
 import 'package:device_preview/device_preview.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:time_alchemy_app/View/add_destination_page.dart';
 import 'package:time_alchemy_app/View/search_map_page.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
@@ -303,18 +301,18 @@ class _SearchPage extends State<SearchPage> {
               ],
             ),
           ),
-          Positioned(
-            bottom: screen.designH(20), // 下方向の位置
-            right: screen.designH(20), // 右方向の位置
-            child: MapIconButton(
-              onPressed: () {
-                // MapIconButton が押されたときの処理
-                print('Map Icon Button Pressed');
-              },
-              width: screen.designW(60),
-              height: screen.designH(60),
-            ),
-          ),
+          // Positioned(
+          //   bottom: screen.designH(20), // 下方向の位置
+          //   right: screen.designH(20), // 右方向の位置
+          //   child: MapIconButton(
+          //     onPressed: () {
+          //       // MapIconButton が押されたときの処理
+          //       print('Map Icon Button Pressed');
+          //     },
+          //     width: screen.designW(60),
+          //     height: screen.designH(60),
+          //   ),
+          // ),
           Align(
             alignment: Alignment.bottomCenter,
             child: ClockMenu(),

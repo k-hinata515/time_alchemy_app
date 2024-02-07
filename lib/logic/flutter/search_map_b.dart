@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_place/google_place.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:time_alchemy_app/env/env.dart';
 import 'package:time_alchemy_app/logic/flutter/map_class.dart';
 //
 
@@ -11,11 +12,12 @@ class Search_Map_Page extends StatefulWidget {
 
 class _Search_Map_Page extends State<Search_Map_Page> {
   late GooglePlace googlePlace;
+  final API_KEY = Env.key;
   List<AutocompletePrediction> predictions = []; // predictionsに検索結果を格納
 
   @override
   void initState() {
-    googlePlace = GooglePlace("API _KEY"); // ⬅︎GoogleMapと同じAPIキーを指定。
+    googlePlace = GooglePlace("$API_KEY"); // ⬅︎GoogleMapと同じAPIキーを指定。
     super.initState();
   }
 

@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:time_alchemy_app/View/add_destination_page.dart';
 import 'package:time_alchemy_app/View/googlemap.dart';
-
 import 'package:time_alchemy_app/View/search_page.dart';
 import 'package:time_alchemy_app/component/AppCompornent.dart';
 import 'package:time_alchemy_app/component/BackgroundCompornent.dart';
@@ -46,7 +45,14 @@ class Navigation_Page extends StatefulWidget {
   final List<String>? photo_name_List;
   final MapData? map_date;
   final DateTime? selected_Time;
-  Navigation_Page({Key? key , this.Navigation_List , this.waypoints_location_List, this.photo_name_List, this.selected_Time, this.map_date }) : super(key: key);
+  Navigation_Page(
+      {Key? key,
+      this.Navigation_List,
+      this.waypoints_location_List,
+      this.photo_name_List,
+      this.selected_Time,
+      this.map_date})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _Navigation_Page();
@@ -56,7 +62,8 @@ class _Navigation_Page extends State<Navigation_Page> {
   String now_time =
       DateFormat('HH:mm').format(DateTime.now()).toString(); //現在時刻
 
-  List<Map<String, String?>>? update_navigation_list = []; //更新したNavigation_Listを格納する変数
+  List<Map<String, String?>>? update_navigation_list =
+      []; //更新したNavigation_Listを格納する変数
 
   String _latitude = ''; // 現在地の緯度
   String _longitude = ''; // 現在地の経度
@@ -67,7 +74,7 @@ class _Navigation_Page extends State<Navigation_Page> {
     super.initState();
   }
 
-    // 現在地を取得する関数
+  // 現在地を取得する関数
   Future<void> _getCurrentLocation() async {
     try {
       // Geolocationインスタンス作成
@@ -77,7 +84,6 @@ class _Navigation_Page extends State<Navigation_Page> {
       // 現在地の緯度経度を取得
       _latitude = position.latitude.toString();
       _longitude = position.longitude.toString();
-
     } catch (error) {
       setState(() {
         print(error);
@@ -85,9 +91,8 @@ class _Navigation_Page extends State<Navigation_Page> {
     }
   }
 
-
   // 現在の時刻を更新するメソッド
-  Future<void> updateCurrentTime() async{
+  Future<void> updateCurrentTime() async {
     setState(() {
       now_time = DateFormat('HH:mm').format(DateTime.now());
     });
@@ -152,19 +157,21 @@ class _Navigation_Page extends State<Navigation_Page> {
 
                           //ボタンだった場合の処理
                           ElevatedButton(
-                            onPressed: () async{
+                            onPressed: () async {
                               //現在地を押された時の処理
                               await _getCurrentLocation(); // 現在地の取得
                               await updateCurrentTime(); // 現在の時刻を更新
                               widget.Navigation_List!.removeLast();
                               //widget.Navigation_Listの値を更新
-                              update_navigation_list = await Request_API().directionsRequest(
-                                _latitude, 
-                                _longitude, 
-                                widget.map_date!, 
-                                widget.Navigation_List!.map((e) => e['name']!).toList(),
-                                widget.selected_Time!
-                              );
+                              update_navigation_list = await Request_API()
+                                  .directionsRequest(
+                                      _latitude,
+                                      _longitude,
+                                      widget.map_date!,
+                                      widget.Navigation_List!
+                                          .map((e) => e['name']!)
+                                          .toList(),
+                                      widget.selected_Time!);
                               setState(() {
                                 widget.Navigation_List = update_navigation_list;
                               });
@@ -300,8 +307,10 @@ class _Navigation_Page extends State<Navigation_Page> {
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       Add_destination_Page(
-                                                        mapData: widget.map_date,
-                                                        selectedTime: widget.selected_Time,
+                                                        mapData:
+                                                            widget.map_date,
+                                                        selectedTime: widget
+                                                            .selected_Time,
                                                       )),
                                             );
                                           }
@@ -352,8 +361,13 @@ class _Navigation_Page extends State<Navigation_Page> {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) =>
-                                                    MapScreen()),
+                                                builder: (context) => MapScreen(
+                                                    waypointsLocationList: widget
+                                                        .waypoints_location_List,
+                                                    navigationList:
+                                                        widget.Navigation_List,
+                                                    photo_name_List: widget
+                                                        .photo_name_List)),
                                           );
                                         },
                                         icon: Icon(Icons.location_on),
