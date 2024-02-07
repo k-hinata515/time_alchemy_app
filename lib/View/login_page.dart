@@ -150,8 +150,8 @@ class _LoginPage extends State<LoginPage> {
                         );
                       }
                     },
-                    width: 45,
-                    height: 150,
+                    width: 150,
+                    height: 45,
                   ),
                   SizedBox(
                     height: screen.designH(16),

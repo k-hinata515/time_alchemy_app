@@ -136,8 +136,8 @@ class _Registered_Content_Page extends State<Registered_Content_Page> {
                       ChoiceButtonRed(
                         text: '次へ',
                         onPressed: () => _newregistration(context),
-                        width: 30,
-                        height: 150,
+                        width: 150,
+                        height: 30,
                       ),
                     ],
                   ),
