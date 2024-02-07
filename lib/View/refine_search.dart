@@ -367,6 +367,7 @@ class _FilterClassState extends State<FilterClass> {
             label: Text(
               '絞り込み',
               style: TextStyle(fontSize: 12),
+              selectionColor: Colors_compornet.globalBackgroundColorwhite,
             ),
             style: ElevatedButton.styleFrom(
               textStyle: TextStyle(fontSize: 12),
