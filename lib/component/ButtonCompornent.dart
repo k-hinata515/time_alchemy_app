@@ -14,31 +14,35 @@ class ChoiceButtonRed extends StatelessWidget {
     required this.width,
   });
 
-    @override
-      Widget build(BuildContext context){
-        final screen = ScreenRef(context).watch(screenProvider);
-        return SizedBox(
-          height: screen.designH(height),
-          width: screen.designW(width),
-          child: ElevatedButton(
-          onPressed:onPressed,
+  @override
+  Widget build(BuildContext context) {
+    final screen = ScreenRef(context).watch(screenProvider);
+    return SizedBox(
+        width: screen.designW(width),
+        height: screen.designH(height),
+        child: ElevatedButton(
+          onPressed: onPressed,
           child: Text(
             text,
             style: TextStyle(
-              color: Color.fromRGBO(252, 251, 255, 1,),
+              color: Color.fromRGBO(
+                252,
+                251,
+                255,
+                1,
+              ),
               fontSize: screen.designW(15),
             ),
-            ),
+          ),
           style: ElevatedButton.styleFrom(
-            elevation:20,
+            elevation: 20,
             backgroundColor: Color.fromRGBO(126, 70, 62, 1),
             shape: RoundedRectangleBorder(
-              borderRadius:  BorderRadius.circular(40),
+              borderRadius: BorderRadius.circular(40),
             ),
           ),
-        )
-        );
-      } 
+        ));
+  }
 }
 
 class ChoiceButtonWhite extends StatelessWidget {
@@ -67,7 +71,10 @@ class ChoiceButtonWhite extends StatelessWidget {
       ),
       style: ElevatedButton.styleFrom(
         elevation: 20,
-        fixedSize: Size(screen.designH(height), screen.designW(width)),
+        fixedSize: Size(
+          screen.designW(width),
+          screen.designH(height),
+        ),
         backgroundColor: Color.fromRGBO(
           252,
           251,
