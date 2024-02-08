@@ -4,7 +4,6 @@ class Time_Conversion {
     List<String> travel_time , // 移動時間
     DateTime next_appointment_time  // 次の予定の時間
   ){
-
     final List<Map<String, String?>> time_List = []; // 出発、到着、平均滞在時刻を格納するリスト
     final List<String> departure_time = []; // 出発時刻を格納するリスト
     final List<String> arrival_time = []; // 到着時刻を格納するリスト
@@ -55,40 +54,51 @@ class Time_Conversion {
     if(average_stay_time_double < 0){
       average_stay_time_double = 1440 + average_stay_time_double;
     }
+    
 
     //現在時刻から最初の経由場所の到着時刻を計算(到着時刻)
     int arrival = time_now_int + travel_time_List[0].toInt() ;
-    arrival_time.add(formatTime(arrival));
+    arrival_time.add(formatTimeInt(arrival));
 
     for (int i = 1; i <= travel_time_List.length - 1; i++) {
       //到着時刻から平均滞在時間の合計を計算(出発時刻)
       int departure = arrival + average_stay_time_double.toInt() ;
-      departure_time.add(formatTime(departure)); 
+      departure_time.add(formatTimeInt(departure)); 
 
       //出発時刻から移動時間を計算(到着時刻)
       arrival = departure + travel_time_List[i];
-      arrival_time.add(formatTime(arrival));
+      arrival_time.add(formatTimeInt(arrival));
 
       //経由地点間の時刻を追加
       time_List.add({
         'arrival_time': arrival_time[i - 1],
         'departure_time': departure_time[i - 1],
-        'average_stay_time': "${average_stay_time_double.toStringAsFixed(0)}分",
+        'average_stay_time': formatStayTimeInt(average_stay_time_double.toInt()),
       });
     }
 
     time_List.add({
       'arrival_time': arrival_time[arrival_time.length-1],
       'departure_time': null,
-      'average_stay_time': "${average_stay_time_double.toStringAsFixed(0)}分",
+      'average_stay_time': formatStayTimeInt(average_stay_time_double.toInt()),
     });
+
+    print('time_List: $time_List');
     
     return time_List;
   }
   // int型の分換算値を00:00形式に変換
-  String formatTime(int time) {
+  String formatTimeInt(int time) {
     int hour = (time / 60 % 24).truncate();
     int minute = (time % 60).truncate();
-    return hour.toString().padLeft(2, '0') + ":" + minute.toString().padLeft(2, '0');
+    return "${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}";
   }
+
+  // int型の滞在時間を00時00分形式に変換
+  String formatStayTimeInt(int time) {
+    int hour = (time / 60).truncate();
+    int minute = (time % 60).truncate();
+    return "${hour.toString()}時間${minute.toString().padLeft(2, '0')}分";
+  }
+
 }
