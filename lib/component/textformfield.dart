@@ -219,7 +219,7 @@ class String_Display extends StatelessWidget {
                   ? displayText.substring(0, 9) + '...' // 9文字以上の場合は...を追加
                   : displayText,
               style: TextStyle(
-                fontSize: screen.designW(10.5),
+                fontSize: screen.designW(15),
                 color: Colors_compornet.textfontColorBlack,
                 fontWeight: FontWeight.bold
               ),
