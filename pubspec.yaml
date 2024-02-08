@@ -55,6 +55,7 @@ dependencies:
   google_place: ^0.4.7
   shared_preferences: ^2.2.2
   flutter_polyline_points: ^1.0.0
+  collection: ^1.18.0
   
 
   
