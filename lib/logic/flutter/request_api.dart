@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:time_alchemy_app/logic/flutter/get_user_hobby.dart';
 import 'package:time_alchemy_app/logic/flutter/map_class.dart';
@@ -13,7 +14,6 @@ class Request_API {
   List<Map<String, String?>> Navigation_List = [];  // 経由地の名、到着、出発時刻を格納するリスト
   List<String> _user_hobby_List = [];  // ユーザーの趣味を格納する変数
   List<String> _hobby_place_name = [];  // ユーザーの趣味に関連する場所を格納する変数
-  
   // Places API (nearbySearch)にリクエストするための関数
   Future<Map<String, dynamic>> nearbySearchRequest(String latitude , String longitude) async {
     try {
@@ -24,7 +24,12 @@ class Request_API {
       // 取得したデータを _placesResponse に代入
       _placesResponse = json.decode(response.body);
 
+      if (_placesResponse == {}) {
+        _placesResponse = {'検索結果': 'なし'};
+      }
+
     } catch (error) {
+        _placesResponse = {'検索結果': 'なし'};
         print(error);
     }
     return _placesResponse;
@@ -40,9 +45,17 @@ class Request_API {
 
       // 取得したデータを _placesResponse に代入
       _placesResponse = json.decode(response.body);
+
+      //_placesResponseが空の場合は「検索結果:なし」を代入
+      if (_placesResponse.isEmpty) {
+        _placesResponse = {'検索結果':'なし'};
+      }
+
+      print(_placesResponse);
       
     } catch (error) {
-        print(error);
+      _placesResponse = {'検索結果':'なし'};
+      print(error);
     }
     return _placesResponse;
   }
@@ -70,11 +83,6 @@ class Request_API {
       // 取得した移動時間を_travel_time_listに格納
       for (int i = 0; i < _rootResponse['routes'][0]['legs'].length; i++) {
         _travel_time_list.add(_rootResponse['routes'][0]['legs'][i]['duration']['text']);
-      }
-
-      // //TODO:travel_time_Listが取得できるまで待機 (test)
-      while (_travel_time_list.isEmpty) {
-        await Future.delayed(const Duration(milliseconds: 100));
       }
 
       //出発、到着、平均滞在時刻を取得
@@ -108,9 +116,9 @@ class Request_API {
   //OpenAI APIにリクエストするための関数
   Future<List<String>> openAIRequest() async {
     try {
-      // _user_hobby_List = Get_User_Hobby().getUserHobbyData() as List<String>;
-      //TODO:test
-      _user_hobby_List = ['ファッション'];
+      //ユーザーの趣味を取得
+      _user_hobby_List = await Get_User_Hobby().getUserHobbyData() as List<String>;
+
       // OpenAI API にリクエスト
       final http.Response openAIResponse = await http.get(Uri.parse(
           'http://IP:Port/current_openAI?hobby=$_user_hobby_List'));
