@@ -178,7 +178,6 @@ class _Navigation_Page extends State<Navigation_Page> {
                               setState(() {
                                 widget.Navigation_List = update_navigation_list;
                               });
-                              print('更新した中身:${widget.Navigation_List}');
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent, // 背景色を透明にする
@@ -377,23 +376,23 @@ class _Navigation_Page extends State<Navigation_Page> {
                                       ),
                                       if (departureTime != null)
                                         Align(
-                                          alignment: Alignment.centerRight,
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            height: screen.designH(50),
-                                            width: screen.designW(50),
-                                            decoration: BoxDecoration(
-                                              color: Colors_compornet
-                                                  .textfontColorWhite,
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                  color: Colors_compornet
-                                                      .globalBackgroundColorRed),
-                                            ),
+                                          alignment: Alignment.bottomRight,
+                                          // child: Container(
+                                          //   alignment: Alignment.center,
+                                          //   height: screen.designH(60),
+                                          //   width: screen.designW(70),
+                                          //   decoration: BoxDecoration(
+                                          //     color: Colors_compornet
+                                          //         .textfontColorWhite,
+                                          //     shape: BoxShape.circle,
+                                          //     border: Border.all(
+                                          //         color: Colors_compornet
+                                          //             .globalBackgroundColorRed),
+                                          //   ),
                                             child: Column(
                                               children: [
                                                 SizedBox(
-                                                  height: screen.designH(3),
+                                                  height: screen.designH(18),
                                                 ),
                                                 Text(
                                                   '滞在時間',
@@ -418,7 +417,7 @@ class _Navigation_Page extends State<Navigation_Page> {
                                                 )
                                               ],
                                             ),
-                                          ),
+                                          // ),
                                         )
                                     ],
                                   )),
